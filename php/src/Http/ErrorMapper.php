@@ -11,46 +11,41 @@ use Hyvor\Sdk\Exceptions\NotFoundException;
 use Hyvor\Sdk\Exceptions\RateLimitException;
 use Hyvor\Sdk\Exceptions\ServerErrorException;
 use Hyvor\Sdk\Exceptions\ValidationFailedException;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @internal
  */
 final class ErrorMapper
 {
-    public static function fromResponse(HttpResponse $response): HyvorApiException
+    public static function fromResponse(ResponseInterface $response): HyvorApiException
     {
-        $body = null;
-
-        try {
-            $decoded = $response->json();
-            $body = $decoded === [] ? null : $decoded;
-        } catch (\JsonException) {
-            $body = null;
-        }
+        $statusCode = $response->getStatusCode();
+        $body = self::decodeBody($response);
 
         $message = is_array($body) && is_string($body['message'] ?? null)
             ? $body['message']
-            : "Hyvor API request failed with status {$response->statusCode}";
+            : "Hyvor API request failed with status {$statusCode}";
 
         return match (true) {
-            $response->statusCode === 422 => new ValidationFailedException(
+            $statusCode === 422 => new ValidationFailedException(
                 $message,
                 is_array($body['errors'] ?? null) ? $body['errors'] : [],
                 $body,
             ),
-            $response->statusCode === 429 => new RateLimitException(
+            $statusCode === 429 => new RateLimitException(
                 $message,
                 self::retryAfterSeconds($response),
                 $body,
             ),
-            $response->statusCode === 401 || $response->statusCode === 403 => new AuthenticationException(
+            $statusCode === 401 || $statusCode === 403 => new AuthenticationException(
                 $message,
-                $response->statusCode,
+                $statusCode,
                 $body,
             ),
-            $response->statusCode === 404 => new NotFoundException($message, 404, $body),
-            $response->statusCode >= 500 => new ServerErrorException($message, $response->statusCode, $body),
-            default => new ApiException($message, $response->statusCode, $body),
+            $statusCode === 404 => new NotFoundException($message, 404, $body),
+            $statusCode >= 500 => new ServerErrorException($message, $statusCode, $body),
+            default => new ApiException($message, $statusCode, $body),
         };
     }
 
@@ -59,10 +54,30 @@ final class ErrorMapper
         return $statusCode === 429 || $statusCode >= 500;
     }
 
-    private static function retryAfterSeconds(HttpResponse $response): ?int
+    /**
+     * @return array<mixed>|null
+     */
+    private static function decodeBody(ResponseInterface $response): ?array
     {
-        $header = $response->header('retry-after');
+        $raw = (string) $response->getBody();
 
-        return $header !== null && is_numeric($header) ? (int) $header : null;
+        if ($raw === '') {
+            return null;
+        }
+
+        try {
+            $decoded = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return null;
+        }
+
+        return is_array($decoded) ? $decoded : null;
+    }
+
+    private static function retryAfterSeconds(ResponseInterface $response): ?int
+    {
+        $header = $response->getHeaderLine('retry-after');
+
+        return $header !== '' && is_numeric($header) ? (int) $header : null;
     }
 }

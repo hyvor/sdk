@@ -15,12 +15,6 @@ const client = new HyvorClient({
     cloudApiKey: "",
 
     /**
-     * For internal integrations, we generate JWT tokens internally. 
-     * In that case, we provide the JWT token directly to the SDK.
-     */
-    jwtToken: "",
-
-    /**
      * Can be used to set a custom instance
      * @default https://hyvor.com
      */
@@ -35,6 +29,11 @@ const client = new HyvorClient({
      * A customizable, standard HTTP client interface to use.
      */
     httpClient: HttpClient,
+
+    /**
+     * a custom token provider
+     */
+    tokenProvider: TokenProvider, // getToken(): string
 
     /**
      * The maximum time, in milliseconds, to wait for a connection
@@ -110,4 +109,4 @@ client.talk.comments.create(
 - return (ex: Rust) or throw (ex: PHP) custom errors (ValidationFailedError, ServerError, RateLimits) that can be used to handle errors gracefully.
 - resource should be a resource name, like `comments`, `posts`, `users`, etc. Always plural, even if the API uses singular.
   - except for the main resource (`website` in talk, `blog` in blogs, `newsletter` in post)
-- Dockerfile should have a stage for running the SDK tests, and should document testing steps in DEV.md
+- Dockerfile should have a stage for running the SDK tests, compose.yaml should provide mounts, etc. and should document testing steps in DEV.md

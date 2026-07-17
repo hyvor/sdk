@@ -4,40 +4,40 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Support;
 
-use Hyvor\Sdk\Http\HttpClientInterface;
-use Hyvor\Sdk\Http\HttpRequest;
-use Hyvor\Sdk\Http\HttpResponse;
-use Hyvor\Sdk\Http\HttpTransportException;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-final class FakeHttpClient implements HttpClientInterface
+final class FakeHttpClient implements ClientInterface
 {
-    /** @var array<int, HttpResponse|\Throwable> */
+    /** @var array<int, ResponseInterface|ClientExceptionInterface> */
     private array $queue = [];
 
-    /** @var HttpRequest[] */
+    /** @var RequestInterface[] */
     public array $requests = [];
 
-    public function queueResponse(HttpResponse $response): void
+    public function queueResponse(ResponseInterface $response): void
     {
         $this->queue[] = $response;
     }
 
-    public function queueException(\Throwable $exception): void
+    public function queueException(ClientExceptionInterface $exception): void
     {
         $this->queue[] = $exception;
     }
 
-    public function sendRequest(HttpRequest $request): HttpResponse
+    public function sendRequest(RequestInterface $request): ResponseInterface
     {
         $this->requests[] = $request;
 
         $next = array_shift($this->queue);
 
         if ($next === null) {
-            throw new HttpTransportException('FakeHttpClient: no queued response left.');
+            throw new FakeHttpTransportException('FakeHttpClient: no queued response left.');
         }
 
-        if ($next instanceof \Throwable) {
+        if ($next instanceof ClientExceptionInterface) {
             throw $next;
         }
 

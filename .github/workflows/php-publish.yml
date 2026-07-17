@@ -1,0 +1,67 @@
+name: PHP SDK Publish
+
+# Publishes the contents of ./php to the standalone hyvor/sdk-php repo and
+# creates a tagged GitHub release there. Packagist is configured to pick up
+# new releases from that repo automatically via its release webhook.
+#
+# Requires a repo secret PHP_SDK_PUBLISH_TOKEN: a GitHub personal access
+# token (or fine-grained token) with contents + workflows write access to
+# hyvor/sdk-php.
+
+on:
+  push:
+    tags:
+      - 'php-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish, e.g. v1.0.0'
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF#refs/tags/php-}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout monorepo
+        uses: actions/checkout@v4
+        with:
+          path: monorepo
+
+      - name: Checkout hyvor/sdk-php
+        uses: actions/checkout@v4
+        with:
+          repository: hyvor/sdk-php
+          token: ${{ secrets.PHP_SDK_PUBLISH_TOKEN }}
+          path: sdk-php
+
+      - name: Sync PHP SDK code
+        run: rsync -a --delete --exclude='.git' monorepo/php/ sdk-php/
+
+      - name: Commit and push
+        working-directory: sdk-php
+        run: |
+          git config user.name "hyvor-bot"
+          git config user.email "bot@hyvor.com"
+          git add -A
+          git diff --cached --quiet && echo "No changes to publish." && exit 0
+          git commit -m "Release ${{ steps.version.outputs.version }}"
+          git push
+
+      - name: Tag and release
+        working-directory: sdk-php
+        env:
+          GH_TOKEN: ${{ secrets.PHP_SDK_PUBLISH_TOKEN }}
+        run: |
+          gh release create "${{ steps.version.outputs.version }}" \
+            --repo hyvor/sdk-php \
+            --title "${{ steps.version.outputs.version }}" \
+            --generate-notes

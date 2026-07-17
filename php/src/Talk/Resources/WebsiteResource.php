@@ -7,8 +7,8 @@ namespace Hyvor\Sdk\Talk\Resources;
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Http\Transport;
 use Hyvor\Sdk\RequestOptions;
-use Hyvor\Sdk\Talk\Dto\CreateWebsiteRequest;
-use Hyvor\Sdk\Talk\Dto\Website;
+use Hyvor\Sdk\Talk\Dto\Website\CreateWebsiteRequest;
+use Hyvor\Sdk\Talk\Dto\Website\Website;
 
 /**
  * `website` is the main resource of the Talk product.
