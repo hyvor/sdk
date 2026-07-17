@@ -1,0 +1,41 @@
+name: PHP SDK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'php/**'
+      - '.github/workflows/php.yml'
+  pull_request:
+    paths:
+      - 'php/**'
+      - '.github/workflows/php.yml'
+
+defaults:
+  run:
+    working-directory: php
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: curl, json
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run tests
+        run: composer test
