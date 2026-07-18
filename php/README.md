@@ -79,7 +79,7 @@ use Hyvor\Sdk\RequestOptions;
 
 $client->talk->website->create(
     new CreateWebsiteRequest(name: 'My Blog', domain: 'blog.example.com'),
-    new RequestOptions(idempotencyKey: 'unique-key-per-operation'),
+    new RequestOptions(retryMaxAttempts: 1),
 );
 ```
 

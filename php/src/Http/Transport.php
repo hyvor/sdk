@@ -128,10 +128,6 @@ final class Transport
                 ->withBody($this->streamFactory->createStream(json_encode($jsonBody, JSON_THROW_ON_ERROR)));
         }
 
-        if ($options?->idempotencyKey !== null) {
-            $request = $request->withHeader('Idempotency-Key', $options->idempotencyKey);
-        }
-
         $this->logger->debug('Hyvor SDK: sending request', ['method' => $method, 'url' => (string) $request->getUri()]);
 
         $response = $this->httpClient->sendRequest($request);

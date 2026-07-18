@@ -271,23 +271,6 @@ final class WebsiteResourceTest extends TestCase
         );
     }
 
-    public function testCreateWithIdempotencyKey(): void
-    {
-        $http = new FakeHttpClient();
-        $http->queueResponse(new Response(201, [], json_encode(
-            $this->sampleWebsiteData(['id' => 7, 'name' => 'New Site']),
-            JSON_THROW_ON_ERROR,
-        )));
-
-        $client = $this->client($http);
-        $client->talk->website->create(
-            new CreateWebsiteRequest(name: 'New Site', domain: 'new.example.com'),
-            new RequestOptions(idempotencyKey: 'idem-123'),
-        );
-
-        self::assertSame('idem-123', $http->requests[0]->getHeaderLine('Idempotency-Key'));
-    }
-
     public function testValidationErrorThrows(): void
     {
         $http = new FakeHttpClient();

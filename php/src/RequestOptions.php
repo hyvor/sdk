@@ -14,7 +14,6 @@ final class RequestOptions
     public function __construct(
         public readonly ?int $retryMaxAttempts = null,
         public readonly ?float $retryBackoffFactor = null,
-        public readonly ?string $idempotencyKey = null,
     ) {
     }
 }
