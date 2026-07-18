@@ -6,6 +6,7 @@ namespace Hyvor\Sdk;
 
 use Hyvor\Sdk\Auth\CloudApiKeyTokenProvider;
 use Hyvor\Sdk\Auth\TokenProviderInterface;
+use Hyvor\Sdk\Http\ProductBaseUrl;
 use Hyvor\Sdk\Http\Transport;
 use Hyvor\Sdk\Talk\TalkClient;
 use Http\Discovery\Psr17FactoryDiscovery;
@@ -69,18 +70,20 @@ final class HyvorClient
             );
         }
 
-        $transport = new Transport(
+        // both org-level and resource-level Talk endpoints are served
+        // directly by the product itself, e.g. https://talk.hyvor.com
+        $talkTransport = new Transport(
             httpClient: $httpClient,
             requestFactory: $requestFactory,
             streamFactory: $streamFactory,
             logger: $logger,
             tokenProvider: $tokenProvider,
-            baseUrl: $baseUrl,
+            baseUrl: ProductBaseUrl::resolve($baseUrl, 'talk'),
             defaultRetryMaxAttempts: $retryMaxAttempts,
             defaultRetryBackoffFactor: $retryBackoffFactor,
             userAgent: 'hyvor/sdk-php/' . Version::VERSION,
         );
 
-        $this->talk = new TalkClient($transport);
+        $this->talk = new TalkClient($talkTransport);
     }
 }

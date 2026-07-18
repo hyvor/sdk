@@ -23,14 +23,14 @@ final class WebsitesResource
     }
 
     /**
-     * POST /api/talk/websites
+     * POST /api/console/v1/websites
      *
      * @throws HyvorApiException
      */
     public function create(CreateWebsiteRequest $request, ?RequestOptions $options = null): Website
     {
         $body = $this->transport->normalize($request);
-        $data = $this->transport->request('POST', '/api/talk/websites', $body, $options);
+        $data = $this->transport->request('POST', '/api/console/v1/websites', $body, $options);
 
         return $this->transport->denormalize($data, Website::class);
     }
