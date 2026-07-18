@@ -6,7 +6,7 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum DisplayRepliedToType: string
 {
-    case None = 'none';
-    case Deep = 'deep';
-    case All = 'all';
+    case NONE = 'none';
+    case DEEP = 'deep';
+    case ALL = 'all';
 }

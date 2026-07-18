@@ -6,7 +6,7 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum NotifChannel: string
 {
-    case Email = 'email';
-    case Slack = 'slack';
-    case Off = 'off';
+    case EMAIL = 'email';
+    case SLACK = 'slack';
+    case OFF = 'off';
 }

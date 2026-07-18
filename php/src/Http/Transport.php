@@ -8,12 +8,14 @@ use Hyvor\Sdk\Auth\TokenProviderInterface;
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Exceptions\NetworkException;
 use Hyvor\Sdk\RequestOptions;
+use Hyvor\Sdk\Serialization\SerializerFactory;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * Executes API requests: builds the HTTP request, authenticates it, retries
@@ -26,6 +28,8 @@ final class Transport
 {
     private const BASE_RETRY_DELAY_MS = 200;
 
+    private readonly Serializer $serializer;
+
     public function __construct(
         private readonly ClientInterface $httpClient,
         private readonly RequestFactoryInterface $requestFactory,
@@ -37,6 +41,29 @@ final class Transport
         private readonly float $defaultRetryBackoffFactor,
         private readonly string $userAgent,
     ) {
+        $this->serializer = SerializerFactory::create();
+    }
+
+    /**
+     * @template T of object
+     * @param array<mixed> $data
+     * @param class-string<T> $class
+     * @return T
+     */
+    public function denormalize(array $data, string $class): object
+    {
+        return $this->serializer->denormalize($data, $class, null);
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function normalize(object $data): array
+    {
+        /** @var array<mixed> $normalized */
+        $normalized = $this->serializer->normalize($data, null);
+
+        return $normalized;
     }
 
     /**

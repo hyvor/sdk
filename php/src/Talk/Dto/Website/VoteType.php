@@ -6,7 +6,7 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum VoteType: string
 {
-    case Both = 'both';
-    case Upvotes = 'upvotes';
-    case None = 'none';
+    case BOTH = 'both';
+    case UPVOTES = 'upvotes';
+    case NONE = 'none';
 }

@@ -6,7 +6,7 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum ReactionDisplayType: string
 {
-    case Text = 'text';
-    case Image = 'image';
-    case Both = 'both';
+    case TEXT = 'text';
+    case IMAGE = 'image';
+    case BOTH = 'both';
 }

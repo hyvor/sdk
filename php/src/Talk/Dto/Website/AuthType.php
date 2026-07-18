@@ -6,6 +6,6 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum AuthType: string
 {
-    case Hyvor = 'hyvor';
-    case Sso = 'sso';
+    case HYVOR = 'hyvor';
+    case SSO = 'sso';
 }

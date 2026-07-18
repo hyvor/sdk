@@ -6,7 +6,7 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum MembershipsCurrency: string
 {
-    case Usd = 'usd';
-    case Eur = 'eur';
-    case Gbp = 'gbp';
+    case USD = 'usd';
+    case EUR = 'eur';
+    case GBP = 'gbp';
 }

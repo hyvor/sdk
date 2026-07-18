@@ -59,4 +59,12 @@ final class HyvorClientTest extends TestCase
         );
         self::assertInstanceOf(HyvorClient::class, $client);
     }
+
+    public function testDiscoversHttpClientAndFactoriesWhenNotProvided(): void
+    {
+        // No httpClient/requestFactory/streamFactory given: php-http/discovery
+        // must find guzzlehttp/guzzle + guzzlehttp/psr7 (installed for tests).
+        $client = new HyvorClient(cloudApiKey: 'abc');
+        self::assertInstanceOf(HyvorClient::class, $client);
+    }
 }

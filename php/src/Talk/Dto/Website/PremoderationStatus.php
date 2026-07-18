@@ -6,8 +6,8 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum PremoderationStatus: string
 {
-    case Off = 'off';
-    case Guest = 'guest';
-    case GuestAndNewCommenters = 'guest_and_new_commenters';
-    case All = 'all';
+    case OFF = 'off';
+    case GUEST = 'guest';
+    case GUEST_AND_NEW_COMMENTERS = 'guest_and_new_commenters';
+    case ALL = 'all';
 }

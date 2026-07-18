@@ -235,8 +235,8 @@ final class WebsiteResourceTest extends TestCase
 
         self::assertSame(42, $website->id);
         self::assertSame('My Blog', $website->name);
-        self::assertSame(\Hyvor\Sdk\Talk\Dto\Website\AuthType::Hyvor, $website->authType);
-        self::assertSame(\Hyvor\Sdk\Talk\Dto\Website\ColorTheme::Os, $website->colorTheme);
+        self::assertSame(\Hyvor\Sdk\Talk\Dto\Website\AuthType::HYVOR, $website->authType);
+        self::assertSame(\Hyvor\Sdk\Talk\Dto\Website\ColorTheme::OS, $website->colorTheme);
 
         self::assertCount(1, $http->requests);
         self::assertSame('GET', $http->requests[0]->getMethod());

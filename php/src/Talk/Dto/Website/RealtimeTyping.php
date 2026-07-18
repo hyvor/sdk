@@ -6,7 +6,7 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum RealtimeTyping: string
 {
-    case Off = 'off';
-    case OnWithoutTyper = 'on_without_typer';
-    case OnWithTyper = 'on_with_typer';
+    case OFF = 'off';
+    case ON_WITHOUT_TYPER = 'on_without_typer';
+    case ON_WITH_TYPER = 'on_with_typer';
 }

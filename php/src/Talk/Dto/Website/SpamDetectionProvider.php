@@ -6,7 +6,7 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum SpamDetectionProvider: string
 {
-    case None = 'none';
-    case Akismet = 'akismet';
-    case Fortguard = 'fortguard';
+    case NONE = 'none';
+    case AKISMET = 'akismet';
+    case FORTGUARD = 'fortguard';
 }

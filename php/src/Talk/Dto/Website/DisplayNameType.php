@@ -6,6 +6,6 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum DisplayNameType: string
 {
-    case Name = 'name';
-    case Username = 'username';
+    case NAME = 'name';
+    case USERNAME = 'username';
 }

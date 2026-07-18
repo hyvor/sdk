@@ -6,7 +6,7 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum ColorTheme: string
 {
-    case Light = 'light';
-    case Dark = 'dark';
-    case Os = 'os';
+    case LIGHT = 'light';
+    case DARK = 'dark';
+    case OS = 'os';
 }

@@ -28,7 +28,7 @@ final class WebsiteResource
     {
         $data = $this->transport->request('GET', '/api/talk/website', null, $options);
 
-        return Website::fromArray($data);
+        return $this->transport->denormalize($data, Website::class);
     }
 
     /**
@@ -38,8 +38,9 @@ final class WebsiteResource
      */
     public function create(CreateWebsiteRequest $request, ?RequestOptions $options = null): Website
     {
-        $data = $this->transport->request('POST', '/api/talk/website', $request->toArray(), $options);
+        $body = $this->transport->normalize($request);
+        $data = $this->transport->request('POST', '/api/talk/website', $body, $options);
 
-        return Website::fromArray($data);
+        return $this->transport->denormalize($data, Website::class);
     }
 }

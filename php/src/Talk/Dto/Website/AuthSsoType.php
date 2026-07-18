@@ -6,6 +6,6 @@ namespace Hyvor\Sdk\Talk\Dto\Website;
 
 enum AuthSsoType: string
 {
-    case Stateless = 'stateless';
-    case Openid = 'openid';
+    case STATELESS = 'stateless';
+    case OPENID = 'openid';
 }

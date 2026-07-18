@@ -8,30 +8,23 @@ Official PHP SDK for Hyvor products (Talk, Post).
 composer require hyvor/sdk-php
 ```
 
-Requires PHP >= 8.1 and a [PSR-18](https://www.php-fig.org/psr/psr-18/) HTTP client plus a
-[PSR-17](https://www.php-fig.org/psr/psr-17/) request/stream factory (e.g. Guzzle + its PSR-17
-factory, or Symfony HttpClient's PSR-18 adapter + Nyholm's PSR-17 factory). The SDK does not ship
-an HTTP client implementation itself — you bring your own so you control timeouts, proxies, TLS,
-etc.
+Requires PHP >= 8.1. The SDK talks HTTP through [PSR-18](https://www.php-fig.org/psr/psr-18/) /
+[PSR-17](https://www.php-fig.org/psr/psr-17/) and does not ship its own HTTP client. If your
+project already has one installed (Guzzle, Symfony HttpClient, Nyholm, etc.), it's discovered
+automatically via [php-http/discovery](https://github.com/php-http/discovery) — no extra wiring
+needed:
 
 ```bash
-composer require guzzlehttp/guzzle guzzlehttp/psr7 http-interop/http-factory-guzzle
+composer require guzzlehttp/guzzle
 ```
 
 ## Usage
 
 ```php
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\HttpFactory;
 use Hyvor\Sdk\HyvorClient;
 use Hyvor\Sdk\Talk\Dto\Website\CreateWebsiteRequest;
 
-$httpFactory = new HttpFactory();
-
 $client = new HyvorClient(
-    httpClient: new Client(),
-    requestFactory: $httpFactory,
-    streamFactory: $httpFactory,
     cloudApiKey: 'your-cloud-api-key', // or tokenProvider: new SomeTokenProviderInterface()
 );
 
@@ -48,12 +41,12 @@ $website = $client->talk->website->create(
 
 ```php
 $client = new HyvorClient(
-    httpClient: $psr18Client,                  // Psr\Http\Client\ClientInterface, required
-    requestFactory: $psr17Factory,              // Psr\Http\Message\RequestFactoryInterface, required
-    streamFactory: $psr17Factory,                // Psr\Http\Message\StreamFactoryInterface, required
     cloudApiKey: '...',                          // or tokenProvider: ...
     cloudInstance: 'https://hyvor.com',          // default
     logger: $psrLogger,                          // PSR-3 logger, default NullLogger
+    httpClient: $psr18Client,                    // Psr\Http\Client\ClientInterface, default: auto-discovered
+    requestFactory: $psr17Factory,               // Psr\Http\Message\RequestFactoryInterface, default: auto-discovered
+    streamFactory: $psr17Factory,                // Psr\Http\Message\StreamFactoryInterface, default: auto-discovered
     retryMaxAttempts: 3,
     retryBackoffFactor: 2.0,
 );
@@ -73,9 +66,6 @@ Provide exactly one of:
 use Hyvor\Sdk\Auth\StaticTokenProvider;
 
 $client = new HyvorClient(
-    httpClient: $psr18Client,
-    requestFactory: $psr17Factory,
-    streamFactory: $psr17Factory,
     tokenProvider: new StaticTokenProvider('your-jwt'),
 );
 ```

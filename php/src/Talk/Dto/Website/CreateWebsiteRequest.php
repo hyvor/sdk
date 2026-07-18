@@ -14,16 +14,4 @@ final class CreateWebsiteRequest
         public readonly string $domain,
     ) {
     }
-
-    /**
-     * @return array<string, string>
-     * @internal
-     */
-    public function toArray(): array
-    {
-        return [
-            'name' => $this->name,
-            'domain' => $this->domain,
-        ];
-    }
 }
