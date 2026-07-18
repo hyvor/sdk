@@ -9,8 +9,8 @@ use Hyvor\Sdk\Exceptions\RateLimitException;
 use Hyvor\Sdk\Exceptions\ServerErrorException;
 use Hyvor\Sdk\Exceptions\ValidationFailedException;
 use Hyvor\Sdk\HyvorClient;
-use Hyvor\Sdk\RequestOptions;
 use Hyvor\Sdk\Talk\Dto\Website\CreateWebsiteRequest;
+use Hyvor\Sdk\Talk\Dto\Website\UpdateWebsiteRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
@@ -40,6 +40,7 @@ final class WebsiteTest extends TestCase
         return array_merge([
             'id' => 42,
             'name' => 'My Blog',
+            'organization_id' => 10,
 
             'auth_type' => 'hyvor',
             'auth_sso_type' => null,
@@ -109,9 +110,17 @@ final class WebsiteTest extends TestCase
             'is_images_enabled' => true,
             'is_embed_enabled' => true,
             'is_math_enabled' => false,
+            'is_spoiler_enabled' => true,
+            'is_code_blocks_enabled' => true,
+            'is_links_enabled' => true,
+            'is_gifs_enabled' => true,
+            'is_inline_styles_enabled' => true,
+            'is_mentions_enabled' => true,
+            'is_blockquotes_enabled' => true,
 
             'is_spam_detection_on' => true,
             'spam_detection_provider' => 'none',
+            'spam_detection_fortguard_model' => 'gpt-4o-mini',
             'spam_detection_fortguard_content_score' => null,
             'spam_detection_fortguard_languages' => [],
             'spam_detection_fortguard_languages_exclude' => false,
@@ -196,19 +205,6 @@ final class WebsiteTest extends TestCase
             'mod_alias_name' => null,
             'mod_alias_picture_url' => null,
 
-            'memberships_enabled' => false,
-            'memberships_currency' => 'usd',
-            'memberships_yearly_discount' => null,
-            'memberships_text_button' => null,
-            'memberships_text_modal_title' => null,
-            'memberships_text_modal_title_members' => null,
-            'memberships_text_login_to_subscribe' => null,
-            'memberships_text_subscribe_as' => null,
-            'memberships_text_manage_subscription' => null,
-            'memberships_text_payment_success' => null,
-            'memberships_payment_success_url' => null,
-            'memberships_gated_allow_google' => false,
-
             'email_report_daily' => false,
             'email_report_weekly' => true,
             'email_report_monthly' => false,
@@ -219,6 +215,18 @@ final class WebsiteTest extends TestCase
             'highlight_upvote_threshold_1_color' => null,
             'highlight_upvote_threshold_2' => null,
             'highlight_upvote_threshold_2_color' => null,
+
+            'newsletter_enabled' => false,
+            'newsletter_title' => null,
+            'newsletter_description' => null,
+            'newsletter_button_text' => null,
+            'newsletter_success_message' => null,
+            'newsletter_custom_css' => null,
+            'newsletter_width' => null,
+            'newsletter_ask_commenters_subscribe' => false,
+            'newsletter_auto_subscribe_members' => false,
+            'newsletter_auto_subscribe_commenters' => false,
+            'newsletter_sending_addresses' => [],
         ], $overrides);
     }
 
@@ -237,10 +245,14 @@ final class WebsiteTest extends TestCase
         self::assertSame('My Blog', $website->name);
         self::assertSame(\Hyvor\Sdk\Talk\Dto\Website\AuthType::HYVOR, $website->auth_type);
         self::assertSame(\Hyvor\Sdk\Talk\Dto\Website\ColorTheme::OS, $website->color_theme);
+        self::assertSame(
+            \Hyvor\Sdk\Talk\Dto\Website\SpamDetectionFortguardModel::GPT_4O_MINI,
+            $website->spam_detection_fortguard_model,
+        );
 
         self::assertCount(1, $http->requests);
         self::assertSame('GET', $http->requests[0]->getMethod());
-        self::assertSame('https://hyvor.com/api/talk/websites/42', (string) $http->requests[0]->getUri());
+        self::assertSame('https://talk.hyvor.com/api/console/v1/42/website', (string) $http->requests[0]->getUri());
         self::assertSame('Bearer test-jwt-token', $http->requests[0]->getHeaderLine('Authorization'));
         self::assertStringStartsWith('hyvor/sdk-php/', $http->requests[0]->getHeaderLine('User-Agent'));
     }
@@ -264,8 +276,22 @@ final class WebsiteTest extends TestCase
         $website = $client->talk->website(42, 'resource-api-key')->get();
 
         self::assertSame(42, $website->id);
-        self::assertSame('https://hyvor.com/api/talk/websites/42', (string) $http->requests[0]->getUri());
+        self::assertSame('https://talk.hyvor.com/api/console/v1/42/website', (string) $http->requests[0]->getUri());
         self::assertSame('Bearer resource-api-key', $http->requests[0]->getHeaderLine('Authorization'));
+    }
+
+    public function testGetWithCustomHeadersFromWebsiteClient(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueResponse(new Response(200, [], json_encode(
+            $this->sampleWebsiteData(),
+            JSON_THROW_ON_ERROR,
+        )));
+
+        $client = $this->client($http);
+        $client->talk->website(42, headers: ['X-AUTH-USER-EMAIL' => 'mod@example.com'])->get();
+
+        self::assertSame('mod@example.com', $http->requests[0]->getHeaderLine('X-AUTH-USER-EMAIL'));
     }
 
     public function testGetWithoutAnyCredentialsThrows(): void
@@ -280,6 +306,25 @@ final class WebsiteTest extends TestCase
 
         $this->expectException(\Hyvor\Sdk\Exceptions\AuthenticationException::class);
         $client->talk->website(42)->get();
+    }
+
+    public function testUpdateSendsOnlyNonNullFields(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueResponse(new Response(200, [], json_encode(
+            $this->sampleWebsiteData(['name' => 'Renamed']),
+            JSON_THROW_ON_ERROR,
+        )));
+
+        $client = $this->client($http);
+        $website = $client->talk->website(42)->update(new UpdateWebsiteRequest(name: 'Renamed'));
+
+        self::assertSame('Renamed', $website->name);
+
+        $request = $http->requests[0];
+        self::assertSame('PATCH', $request->getMethod());
+        self::assertSame('https://talk.hyvor.com/api/console/v1/42/website', (string) $request->getUri());
+        self::assertSame(['name' => 'Renamed'], json_decode((string) $request->getBody(), true));
     }
 
     public function testCreateSendsNameAndDomain(): void
@@ -301,7 +346,7 @@ final class WebsiteTest extends TestCase
 
         $request = $http->requests[0];
         self::assertSame('POST', $request->getMethod());
-        self::assertSame('https://hyvor.com/api/talk/websites', (string) $request->getUri());
+        self::assertSame('https://talk.hyvor.com/api/console/v1/websites', (string) $request->getUri());
         self::assertSame(
             ['name' => 'New Site', 'domain' => 'new.example.com'],
             json_decode((string) $request->getBody(), true),

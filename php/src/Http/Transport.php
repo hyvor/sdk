@@ -13,9 +13,11 @@ use Hyvor\Sdk\Serialization\SerializerFactory;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 /**
@@ -57,18 +59,41 @@ final class Transport
     }
 
     /**
+     * @template T of object
+     * @param array<mixed> $data
+     * @param class-string<T> $class
+     * @return T[]
+     */
+    public function denormalizeList(array $data, string $class): array
+    {
+        /** @var T[] $list */
+        $list = $this->serializer->denormalize($data, $class . '[]', null);
+
+        return $list;
+    }
+
+    /**
+     * Normalizes a request DTO to a JSON-ready array. Null properties are
+     * skipped: throughout the Console API, a null field on a request means
+     * "leave unchanged" (updates) or "no filter" (list queries), and API
+     * keys created before a field existed should not have it reset by an
+     * SDK upgrade that merely adds the property.
+     *
      * @return array<mixed>
      */
     public function normalize(object $data): array
     {
         /** @var array<mixed> $normalized */
-        $normalized = $this->serializer->normalize($data, null);
+        $normalized = $this->serializer->normalize($data, null, [
+            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+        ]);
 
         return $normalized;
     }
 
     /**
      * @param array<mixed>|null $jsonBody
+     * @param array<string, string> $extraHeaders
      * @return array<mixed>
      *
      * @throws HyvorApiException
@@ -79,15 +104,57 @@ final class Transport
         ?array $jsonBody = null,
         ?RequestOptions $options = null,
         ?string $apiKeyOverride = null,
+        array $extraHeaders = [],
     ): array {
+        return $this->execute(
+            $options,
+            fn () => $this->buildJsonRequest($method, $path, $jsonBody, $apiKeyOverride, $options, $extraHeaders),
+        );
+    }
+
+    /**
+     * Sends a `multipart/form-data` request, for endpoints that accept file
+     * uploads (e.g. `POST /media/image`).
+     *
+     * @param array<string, scalar|null> $fields
+     * @param array<string, UploadedFile> $files
+     * @param array<string, string> $extraHeaders
+     * @return array<mixed>
+     *
+     * @throws HyvorApiException
+     */
+    public function requestMultipart(
+        string $method,
+        string $path,
+        array $fields,
+        array $files,
+        ?RequestOptions $options = null,
+        ?string $apiKeyOverride = null,
+        array $extraHeaders = [],
+    ): array {
+        return $this->execute(
+            $options,
+            fn () => $this->buildMultipartRequest($method, $path, $fields, $files, $apiKeyOverride, $options, $extraHeaders),
+        );
+    }
+
+    /**
+     * @return array<mixed>
+     *
+     * @throws HyvorApiException
+     */
+    private function execute(?RequestOptions $options, callable $buildRequest): array
+    {
         $maxAttempts = max(1, $options?->retryMaxAttempts ?? $this->defaultRetryMaxAttempts);
         $backoffFactor = $options?->retryBackoffFactor ?? $this->defaultRetryBackoffFactor;
 
         $lastException = null;
 
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            $request = $buildRequest();
+
             try {
-                $response = $this->send($method, $path, $jsonBody, $apiKeyOverride);
+                $response = $this->send($request);
             } catch (ClientExceptionInterface $e) {
                 $lastException = new NetworkException($e->getMessage(), $e);
 
@@ -119,14 +186,17 @@ final class Transport
 
     /**
      * @param array<mixed>|null $jsonBody
+     * @param array<string, string> $extraHeaders
      */
-    private function send(string $method, string $path, ?array $jsonBody, ?string $apiKeyOverride): ResponseInterface
-    {
-        $request = $this->requestFactory
-            ->createRequest($method, $this->baseUrl . $path)
-            ->withHeader('Authorization', 'Bearer ' . $this->resolveToken($apiKeyOverride))
-            ->withHeader('Accept', 'application/json')
-            ->withHeader('User-Agent', $this->userAgent);
+    private function buildJsonRequest(
+        string $method,
+        string $path,
+        ?array $jsonBody,
+        ?string $apiKeyOverride,
+        ?RequestOptions $options,
+        array $extraHeaders,
+    ): RequestInterface {
+        $request = $this->baseRequest($method, $path, $apiKeyOverride, $options, $extraHeaders);
 
         if ($jsonBody !== null) {
             $request = $request
@@ -134,12 +204,63 @@ final class Transport
                 ->withBody($this->streamFactory->createStream(json_encode($jsonBody, JSON_THROW_ON_ERROR)));
         }
 
-        $this->logger->debug('Hyvor SDK: sending request', ['method' => $method, 'url' => (string) $request->getUri()]);
+        return $request;
+    }
+
+    /**
+     * @param array<string, scalar|null> $fields
+     * @param array<string, UploadedFile> $files
+     */
+    private function buildMultipartRequest(
+        string $method,
+        string $path,
+        array $fields,
+        array $files,
+        ?string $apiKeyOverride,
+        ?RequestOptions $options,
+    ): RequestInterface {
+        [$boundary, $body] = MultipartBody::build($fields, $files);
+
+        return $this->baseRequest($method, $path, $apiKeyOverride, $options, [])
+            ->withHeader('Content-Type', "multipart/form-data; boundary={$boundary}")
+            ->withBody($this->streamFactory->createStream($body));
+    }
+
+    /**
+     * @param array<string, string> $extraHeaders
+     */
+    private function baseRequest(
+        string $method,
+        string $path,
+        ?string $apiKeyOverride,
+        ?RequestOptions $options,
+        array $extraHeaders,
+    ): RequestInterface {
+        $request = $this->requestFactory
+            ->createRequest($method, $this->baseUrl . $path)
+            ->withHeader('Authorization', 'Bearer ' . $this->resolveToken($apiKeyOverride))
+            ->withHeader('Accept', 'application/json')
+            ->withHeader('User-Agent', $this->userAgent);
+
+        // $extraHeaders carries structural headers (client-level default
+        // headers from TalkClient::website(), and endpoint-specific ones
+        // like X-ID-Type); $options->headers is the caller's per-call
+        // override and is applied last so it always wins.
+        foreach ([...$extraHeaders, ...($options?->headers ?? [])] as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
+
+        return $request;
+    }
+
+    private function send(RequestInterface $request): ResponseInterface
+    {
+        $this->logger->debug('Hyvor SDK: sending request', ['method' => $request->getMethod(), 'url' => (string) $request->getUri()]);
 
         $response = $this->httpClient->sendRequest($request);
 
         $this->logger->debug('Hyvor SDK: received response', [
-            'method' => $method,
+            'method' => $request->getMethod(),
             'url' => (string) $request->getUri(),
             'status' => $response->getStatusCode(),
         ]);

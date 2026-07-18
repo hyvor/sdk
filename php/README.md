@@ -23,21 +23,33 @@ composer require guzzlehttp/guzzle
 ```php
 use Hyvor\Sdk\HyvorClient;
 use Hyvor\Sdk\Talk\Dto\Website\CreateWebsiteRequest;
+use Hyvor\Sdk\Talk\Dto\Comment\ListCommentsRequest;
 
 // org-level access, via a cloud API key
 $client = new HyvorClient(
     cloudApiKey: 'your-cloud-api-key', // or tokenProvider: new SomeTokenProviderInterface()
 );
 
-// GET /api/talk/websites/{id} — resource-level access to a specific website.
+// GET /api/console/v1/{id}/website — resource-level access to a specific website.
 // The cloud API key/token provider must have access to this website.
 $website = $client->talk->website($websiteId)->get();
 
-// POST /api/talk/websites — org-level endpoint, not scoped to one website
+// POST /api/console/v1/websites — org-level endpoint, not scoped to one website
 $website = $client->talk->websites->create(
     new CreateWebsiteRequest(name: 'My Blog', domain: 'blog.example.com')
 );
+
+// every Console API resource hangs off the website client, e.g.:
+$comments = $client->talk->website($websiteId)->comments->list(new ListCommentsRequest(limit: 10));
+$pages = $client->talk->website($websiteId)->pages->list();
+$moderators = $client->talk->website($websiteId)->moderators->list();
 ```
+
+`$client->talk->website($websiteId)` exposes: `comments`, `reactions`, `ratings`, `pages`, `users`,
+`analytics`, `moderators`, `emailDomain`, `rules`, `emailLogs`, `ips`, `domains`, `badges`, `sso`,
+`jobs`, `webhooks`, `integrations` (`->slack`), and `media` — matching the
+[Console API](https://talk.hyvor.com/docs/api-console) one-to-one, plus `get()`/`update()` for the
+website itself.
 
 ### Resource-level API keys
 
@@ -88,7 +100,7 @@ $client = new HyvorClient(
 
 ### Request options
 
-Per-request overrides (retries, idempotency keys):
+Per-request overrides (retries, extra headers):
 
 ```php
 use Hyvor\Sdk\RequestOptions;
@@ -96,6 +108,28 @@ use Hyvor\Sdk\RequestOptions;
 $client->talk->websites->create(
     new CreateWebsiteRequest(name: 'My Blog', domain: 'blog.example.com'),
     new RequestOptions(retryMaxAttempts: 1),
+);
+```
+
+### Acting as a specific moderator
+
+By default, the Console API is authenticated as the website owner. To act as a different
+moderator (see the Console API's "User Authentication" docs), set `X-AUTH-USER-EMAIL` or
+`X-AUTH-USER-SSO-ID` — either as a default for every call made through a `WebsiteClient` and its
+sub-resources:
+
+```php
+$website = $client->talk->website($websiteId, headers: ['X-AUTH-USER-EMAIL' => 'mod@example.com']);
+$website->comments->reply($commentId, new ReplyToCommentRequest(body: 'Thanks!'));
+```
+
+or per call, via `RequestOptions::$headers` (overrides the client-level default for that call):
+
+```php
+$website->comments->reply(
+    $commentId,
+    new ReplyToCommentRequest(body: 'Thanks!'),
+    new RequestOptions(headers: ['X-AUTH-USER-EMAIL' => 'mod@example.com']),
 );
 ```
 
@@ -119,12 +153,20 @@ See [DEV.md](../DEV.md) at the repo root for running tests (with or without Dock
 
 ## Notes
 
-The `website` endpoints are not publicly documented at the Cloud API level. This SDK assumes:
+- Talk requests are sent directly to the product's own instance, derived from `cloudInstance` by
+  prefixing its host with the product name — e.g. `cloudInstance: 'https://hyvor.com'` (the
+  default) resolves to `https://talk.hyvor.com`. Both org-level endpoints (like
+  `$client->talk->websites->create()`) and resource-level ones (everything under
+  `$client->talk->website($id)`) go through this same per-product instance.
+- A `cloudApiKey` is exchanged for a short-lived JWT via `POST {cloudInstance}/api/cloud/token`,
+  then sent as `Authorization: Bearer <jwt>` on Talk requests. A resource-level API key (passed to
+  `$client->talk->website($id, $apiKey)`) is sent the same way, as a bearer token, without any
+  token exchange — even though the public Console API docs only document `X-API-KEY` auth for
+  resource-level keys.
 
-- Talk endpoints are reached through the configured `cloudInstance` at `/api/talk/*` (there is no separate per-product instance URL in the client config).
-- A `cloudApiKey` is exchanged for a short-lived JWT via `POST {cloudInstance}/api/cloud/token`.
-- A resource-level API key (passed to `$client->talk->website($id, $apiKey)`) is used directly as
-  the bearer token, without any token exchange.
-
-The `Website` DTO's fields mirror the publicly documented
-[Talk Console API website object](https://talk.hyvor.com/docs/api-console#website-object).
+DTO fields mirror the publicly documented
+[Talk Console API](https://talk.hyvor.com/docs/api-console) one-to-one, except: request DTOs treat
+a `null` property as "omit this field" (so partial updates and list filters don't need every
+property set) rather than sending a literal JSON `null` — the one documented exception is
+`VoteOnCommentRequest::$type`, where `null` is itself a meaningful instruction (remove the vote),
+so it's always sent verbatim.

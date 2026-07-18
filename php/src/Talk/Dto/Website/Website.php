@@ -16,6 +16,7 @@ final class Website
     public function __construct(
         public readonly int $id,
         public readonly string $name,
+        public readonly int $organization_id,
 
         public readonly AuthType $auth_type,
         public readonly ?AuthSsoType $auth_sso_type,
@@ -85,9 +86,17 @@ final class Website
         public readonly bool $is_images_enabled,
         public readonly bool $is_embed_enabled,
         public readonly bool $is_math_enabled,
+        public readonly bool $is_spoiler_enabled,
+        public readonly bool $is_code_blocks_enabled,
+        public readonly bool $is_links_enabled,
+        public readonly bool $is_gifs_enabled,
+        public readonly bool $is_inline_styles_enabled,
+        public readonly bool $is_mentions_enabled,
+        public readonly bool $is_blockquotes_enabled,
 
         public readonly bool $is_spam_detection_on,
         public readonly SpamDetectionProvider $spam_detection_provider,
+        public readonly SpamDetectionFortguardModel $spam_detection_fortguard_model,
         public readonly ?int $spam_detection_fortguard_content_score,
         /** @var string[] */
         public readonly array $spam_detection_fortguard_languages,
@@ -175,19 +184,6 @@ final class Website
         public readonly ?string $mod_alias_name,
         public readonly ?string $mod_alias_picture_url,
 
-        public readonly bool $memberships_enabled,
-        public readonly MembershipsCurrency $memberships_currency,
-        public readonly ?int $memberships_yearly_discount,
-        public readonly ?string $memberships_text_button,
-        public readonly ?string $memberships_text_modal_title,
-        public readonly ?string $memberships_text_modal_title_members,
-        public readonly ?string $memberships_text_login_to_subscribe,
-        public readonly ?string $memberships_text_subscribe_as,
-        public readonly ?string $memberships_text_manage_subscription,
-        public readonly ?string $memberships_text_payment_success,
-        public readonly ?string $memberships_payment_success_url,
-        public readonly bool $memberships_gated_allow_google,
-
         public readonly bool $email_report_daily,
         public readonly bool $email_report_weekly,
         public readonly bool $email_report_monthly,
@@ -198,6 +194,19 @@ final class Website
         public readonly ?string $highlight_upvote_threshold_1_color,
         public readonly ?int $highlight_upvote_threshold_2,
         public readonly ?string $highlight_upvote_threshold_2_color,
+
+        public readonly bool $newsletter_enabled,
+        public readonly ?string $newsletter_title,
+        public readonly ?string $newsletter_description,
+        public readonly ?string $newsletter_button_text,
+        public readonly ?string $newsletter_success_message,
+        public readonly ?string $newsletter_custom_css,
+        public readonly ?int $newsletter_width,
+        public readonly bool $newsletter_ask_commenters_subscribe,
+        public readonly bool $newsletter_auto_subscribe_members,
+        public readonly bool $newsletter_auto_subscribe_commenters,
+        /** @var string[] */
+        public readonly array $newsletter_sending_addresses,
     ) {
     }
 }

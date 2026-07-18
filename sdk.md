@@ -135,3 +135,6 @@ const sends = client.relay.project(projectId, "your-product-api-key").sends.list
 - resource should be a resource name, like `comments`, `posts`, `users`, etc. Always plural, even if the API uses singular.
   - except for the main resource (`website` in talk, `blog` in blogs, `newsletter` in post)
 - Dockerfile should have a stage for running the SDK tests, compose.yaml should provide mounts, etc. and should document testing steps in DEV.md
+- testing
+  - all endpoints should be tested with mock HTTP responses
+  - abstract commonly used methods into a base test class or helper functions
