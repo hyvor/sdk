@@ -1,22 +1,18 @@
 # hyvor/sdk-php
 
-Official PHP SDK for Hyvor products (Talk, Post).
+Official PHP SDK for HYVOR Products.
 
 ## Install
 
 ```bash
-composer require hyvor/sdk-php
+composer require hyvor/sdk
 ```
 
-Requires PHP >= 8.1. The SDK talks HTTP through [PSR-18](https://www.php-fig.org/psr/psr-18/) /
+Requires PHP >= 8.4. The SDK talks HTTP through [PSR-18](https://www.php-fig.org/psr/psr-18/) /
 [PSR-17](https://www.php-fig.org/psr/psr-17/) and does not ship its own HTTP client. If your
 project already has one installed (Guzzle, Symfony HttpClient, Nyholm, etc.), it's discovered
-automatically via [php-http/discovery](https://github.com/php-http/discovery) — no extra wiring
-needed:
-
-```bash
-composer require guzzlehttp/guzzle
-```
+automatically via [php-http/discovery](https://github.com/php-http/discovery) - no extra wiring
+needed.
 
 ## Usage
 
@@ -50,6 +46,36 @@ $moderators = $client->talk->website($websiteId)->moderators->list();
 `jobs`, `webhooks`, `integrations` (`->slack`), and `media` — matching the
 [Console API](https://talk.hyvor.com/docs/api-console) one-to-one, plus `get()`/`update()` for the
 website itself.
+
+### Hyvor Post
+
+```php
+use Hyvor\Sdk\Post\Dto\Issue\ListIssuesRequest;
+use Hyvor\Sdk\Post\Dto\Newsletter\UpdateNewsletterRequest;
+
+$client = new HyvorClient(cloudApiKey: 'your-cloud-api-key');
+
+// resource-level access to a specific newsletter (the cloud API key/token
+// provider must have access to it)
+$newsletter = $client->post->newsletter($newsletterId)->get();
+$newsletter = $client->post->newsletter($newsletterId)->update(
+    new UpdateNewsletterRequest(name: 'My Newsletter'),
+);
+
+$issues = $client->post->newsletter($newsletterId)->issues->list(new ListIssuesRequest(limit: 10));
+$subscribers = $client->post->newsletter($newsletterId)->subscribers->list();
+```
+
+`$client->post->newsletter($newsletterId)` exposes: `issues`, `lists`, `subscribers`,
+`subscriberMetadataDefinitions`, `sendingProfiles`, `templates`, `users`, `invites`, `media`, and
+`exports` — matching the [Console API](https://post.hyvor.com/docs/api-console) one-to-one, plus
+`get()`/`update()` for the newsletter itself.
+
+Unlike Talk, Post has no org-level endpoints (there's no API to create a newsletter), so
+`PostClient` only exposes `newsletter()`. Also unlike Talk, Post's Console API doesn't embed the
+newsletter's ID in the URL — every request instead carries an `X-Newsletter-Id` header, which is
+how an org-level cloud API key (otherwise valid for every newsletter the org can access) resolves
+to one specific newsletter.
 
 ### Resource-level API keys
 
@@ -170,3 +196,11 @@ a `null` property as "omit this field" (so partial updates and list filters don'
 property set) rather than sending a literal JSON `null` — the one documented exception is
 `VoteOnCommentRequest::$type`, where `null` is itself a meaningful instruction (remove the vote),
 so it's always sent verbatim.
+
+- Post's Console API paths (unlike Talk's) don't embed any resource ID — `GET /issues`, not
+  `GET /{newsletterId}/issues`. `$client->post->newsletter($id)` instead sends `X-Newsletter-Id: $id`
+  as a default header on every request made through it and its sub-resources, which is what lets an
+  org-level cloud API key (otherwise valid for every newsletter the org can access) resolve to one
+  specific newsletter. DTO fields otherwise mirror the publicly documented
+  [Post Console API](https://post.hyvor.com/docs/api-console) one-to-one, with the same
+  null-means-omit convention as Talk.

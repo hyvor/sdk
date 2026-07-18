@@ -210,6 +210,7 @@ final class Transport
     /**
      * @param array<string, scalar|null> $fields
      * @param array<string, UploadedFile> $files
+     * @param array<string, string> $extraHeaders
      */
     private function buildMultipartRequest(
         string $method,
@@ -218,10 +219,11 @@ final class Transport
         array $files,
         ?string $apiKeyOverride,
         ?RequestOptions $options,
+        array $extraHeaders,
     ): RequestInterface {
         [$boundary, $body] = MultipartBody::build($fields, $files);
 
-        return $this->baseRequest($method, $path, $apiKeyOverride, $options, [])
+        return $this->baseRequest($method, $path, $apiKeyOverride, $options, $extraHeaders)
             ->withHeader('Content-Type', "multipart/form-data; boundary={$boundary}")
             ->withBody($this->streamFactory->createStream($body));
     }

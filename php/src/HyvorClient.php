@@ -8,6 +8,7 @@ use Hyvor\Sdk\Auth\CloudApiKeyTokenProvider;
 use Hyvor\Sdk\Auth\TokenProviderInterface;
 use Hyvor\Sdk\Http\ProductBaseUrl;
 use Hyvor\Sdk\Http\Transport;
+use Hyvor\Sdk\Post\PostClient;
 use Hyvor\Sdk\Talk\TalkClient;
 use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
@@ -37,6 +38,7 @@ use Psr\Log\NullLogger;
 final class HyvorClient
 {
     public readonly TalkClient $talk;
+    public readonly PostClient $post;
 
     public function __construct(
         ?string $cloudApiKey = null,
@@ -57,12 +59,11 @@ final class HyvorClient
         $httpClient ??= Psr18ClientDiscovery::find();
         $requestFactory ??= Psr17FactoryDiscovery::findRequestFactory();
         $streamFactory ??= Psr17FactoryDiscovery::findStreamFactory();
-        $baseUrl = rtrim($cloudInstance, '/');
 
         if ($tokenProvider === null && $cloudApiKey !== null) {
             $tokenProvider = new CloudApiKeyTokenProvider(
                 $cloudApiKey,
-                $baseUrl,
+                $cloudInstance,
                 $httpClient,
                 $requestFactory,
                 $streamFactory,
@@ -70,20 +71,19 @@ final class HyvorClient
             );
         }
 
-        // both org-level and resource-level Talk endpoints are served
-        // directly by the product itself, e.g. https://talk.hyvor.com
-        $talkTransport = new Transport(
+        $transport = fn($product) => new Transport(
             httpClient: $httpClient,
             requestFactory: $requestFactory,
             streamFactory: $streamFactory,
             logger: $logger,
             tokenProvider: $tokenProvider,
-            baseUrl: ProductBaseUrl::resolve($baseUrl, 'talk'),
+            baseUrl: ProductBaseUrl::resolve($cloudInstance, $product),
             defaultRetryMaxAttempts: $retryMaxAttempts,
             defaultRetryBackoffFactor: $retryBackoffFactor,
             userAgent: 'hyvor/sdk-php/' . Version::VERSION,
         );
 
-        $this->talk = new TalkClient($talkTransport);
+        $this->talk = new TalkClient($transport('talk'));
+        $this->post = new PostClient($transport('post'));
     }
 }

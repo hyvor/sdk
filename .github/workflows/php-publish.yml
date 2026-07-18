@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish, e.g. v1.0.0'
+        description: 'Version to publish, e.g. 1.0.0'
         required: true
 
 jobs:
@@ -49,8 +49,8 @@ jobs:
       - name: Commit and push
         working-directory: sdk-php
         run: |
-          git config user.name "hyvor-bot"
-          git config user.email "bot@hyvor.com"
+          git config user.name "hyvor-chef"
+          git config user.email "chef@hyvor.com"
           git add -A
           git diff --cached --quiet && echo "No changes to publish." && exit 0
           git commit -m "Release ${{ steps.version.outputs.version }}"
