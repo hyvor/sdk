@@ -12,12 +12,14 @@ use PHPUnit\Framework\TestCase;
 
 final class HyvorClientTest extends TestCase
 {
-    public function testThrowsWhenNoCredentialsProvided(): void
+    public function testAllowsNoCredentialsProvided(): void
     {
+        // Valid: resource-level API keys can be passed per-call instead
+        // (e.g. $client->talk->website($id, 'resource-api-key')).
         $factory = new Psr17Factory();
 
-        $this->expectException(\InvalidArgumentException::class);
-        new HyvorClient(httpClient: new FakeHttpClient(), requestFactory: $factory, streamFactory: $factory);
+        $client = new HyvorClient(httpClient: new FakeHttpClient(), requestFactory: $factory, streamFactory: $factory);
+        self::assertInstanceOf(HyvorClient::class, $client);
     }
 
     public function testThrowsWhenBothCredentialsProvided(): void

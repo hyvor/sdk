@@ -20,8 +20,13 @@ use Psr\Log\NullLogger;
  * The main entry point to the Hyvor SDK.
  *
  * ```php
+ * // org-level access, via a cloud API key
  * $client = new HyvorClient(cloudApiKey: '...');
- * $website = $client->talk->website->get();
+ * $website = $client->talk->websites->create(new CreateWebsiteRequest(...));
+ *
+ * // resource-level access, via a per-product API key, no client-level auth needed
+ * $client = new HyvorClient();
+ * $website = $client->talk->website($websiteId, 'your-product-api-key')->get();
  * ```
  *
  * If `httpClient`/`requestFactory`/`streamFactory` are not given, they are
@@ -43,10 +48,6 @@ final class HyvorClient
         int $retryMaxAttempts = 3,
         float $retryBackoffFactor = 2.0,
     ) {
-        if ($cloudApiKey === null && $tokenProvider === null) {
-            throw new \InvalidArgumentException('Either cloudApiKey or tokenProvider must be provided.');
-        }
-
         if ($cloudApiKey !== null && $tokenProvider !== null) {
             throw new \InvalidArgumentException('Provide either cloudApiKey or tokenProvider, not both.');
         }
@@ -57,8 +58,7 @@ final class HyvorClient
         $streamFactory ??= Psr17FactoryDiscovery::findStreamFactory();
         $baseUrl = rtrim($cloudInstance, '/');
 
-        if ($tokenProvider === null) {
-            /** @var string $cloudApiKey */
+        if ($tokenProvider === null && $cloudApiKey !== null) {
             $tokenProvider = new CloudApiKeyTokenProvider(
                 $cloudApiKey,
                 $baseUrl,
