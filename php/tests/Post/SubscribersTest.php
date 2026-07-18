@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\Subscriber\BulkSubscriberAction;
-use Hyvor\Sdk\Post\Dto\Subscriber\ListsStrategy;
-use Hyvor\Sdk\Post\Dto\Subscriber\SubscriberStatusFilter;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
@@ -18,7 +15,7 @@ final class SubscribersTest extends PostTestCase
         $this->queueJson($http, [$this->sampleSubscriber()]);
 
         $subscribers = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->subscribers->list(
-            ['status' => SubscriberStatusFilter::SUBSCRIBED, 'list_id' => 1],
+            ['status' => 'subscribed', 'list_id' => 1],
         );
 
         self::assertCount(1, $subscribers);
@@ -50,7 +47,7 @@ final class SubscribersTest extends PostTestCase
             [
                 'email' => 'jane@example.com',
                 'lists' => ['Default'],
-                'lists_strategy' => ListsStrategy::MERGE,
+                'lists_strategy' => 'merge',
             ],
         );
 
@@ -89,8 +86,8 @@ final class SubscribersTest extends PostTestCase
         $response = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->subscribers->bulkUpdate(
             [
                 'subscribers_ids' => [1, 2],
-                'action' => BulkSubscriberAction::STATUS_CHANGE,
-                'status' => SubscriberStatusFilter::UNSUBSCRIBED,
+                'action' => 'status_change',
+                'status' => 'unsubscribed',
             ],
         );
 

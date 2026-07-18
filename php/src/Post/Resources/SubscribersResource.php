@@ -5,16 +5,8 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Resources;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
-use Hyvor\Sdk\Post\Dto\Subscriber\BulkSubscriberAction;
 use Hyvor\Sdk\Post\Dto\Subscriber\BulkUpdateSubscribersResponse;
-use Hyvor\Sdk\Post\Dto\Subscriber\ListRemovalReason;
-use Hyvor\Sdk\Post\Dto\Subscriber\ListSkipResubscribeReason;
-use Hyvor\Sdk\Post\Dto\Subscriber\ListsStrategy;
-use Hyvor\Sdk\Post\Dto\Subscriber\MetadataStrategy;
 use Hyvor\Sdk\Post\Dto\Subscriber\Subscriber;
-use Hyvor\Sdk\Post\Dto\Subscriber\SubscriberSource;
-use Hyvor\Sdk\Post\Dto\Subscriber\SubscriberStatus;
-use Hyvor\Sdk\Post\Dto\Subscriber\SubscriberStatusFilter;
 use Hyvor\Sdk\RequestOptions;
 
 /**
@@ -31,7 +23,7 @@ final class SubscribersResource extends NewsletterScopedResource
      * @param array{
      *     limit?: int,
      *     offset?: int,
-     *     status?: SubscriberStatusFilter|string,
+     *     status?: 'subscribed'|'unsubscribed'|'pending',
      *     list_id?: int,
      *     search?: string,
      * } $data search searches by email.
@@ -67,15 +59,15 @@ final class SubscribersResource extends NewsletterScopedResource
      * @param array{
      *     email: string,
      *     lists?: (int|string)[],
-     *     status?: SubscriberStatus|string,
-     *     source?: SubscriberSource|string,
+     *     status?: 'subscribed'|'pending',
+     *     source?: 'console'|'form'|'import',
      *     subscribe_ip?: string,
      *     subscribed_at?: int,
      *     metadata?: array<string, string>,
-     *     lists_strategy?: ListsStrategy|string,
-     *     list_skip_resubscribe_on?: (ListSkipResubscribeReason|string)[],
-     *     list_removal_reason?: ListRemovalReason|string,
-     *     metadata_strategy?: MetadataStrategy|string,
+     *     lists_strategy?: 'merge'|'overwrite'|'remove',
+     *     list_skip_resubscribe_on?: ('unsubscribe'|'bounce'|'complaint'|'auto')[],
+     *     list_removal_reason?: 'unsubscribe'|'bounce'|'other',
+     *     metadata_strategy?: 'merge'|'overwrite',
      *     send_pending_confirmation_email?: bool,
      * } $data lists: an array of list IDs or names; subscribes to or
      *  unsubscribes from lists based on `lists_strategy`. status: default
@@ -116,8 +108,8 @@ final class SubscribersResource extends NewsletterScopedResource
      *
      * @param array{
      *     subscribers_ids: int[],
-     *     action: BulkSubscriberAction|string,
-     *     status?: SubscriberStatusFilter|string,
+     *     action: 'delete'|'status_change'|'metadata_update',
+     *     status?: 'subscribed'|'unsubscribed'|'pending',
      *     metadata?: array<string, string>,
      * } $data status is required if `action` is `status_change`. metadata is
      *  required if `action` is `metadata_update`.

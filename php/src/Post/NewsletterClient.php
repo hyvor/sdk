@@ -6,7 +6,6 @@ namespace Hyvor\Sdk\Post;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Http\Transport;
-use Hyvor\Sdk\Post\Dto\Newsletter\FormColorPalette;
 use Hyvor\Sdk\Post\Dto\Newsletter\Newsletter;
 use Hyvor\Sdk\Post\Resources\ExportsResource;
 use Hyvor\Sdk\Post\Resources\InvitesResource;
@@ -150,7 +149,7 @@ final class NewsletterClient
      *     form_dark_input_box_shadow?: string,
      *     form_dark_input_border?: string,
      *     form_dark_border_radius?: int,
-     *     form_default_color_palette?: FormColorPalette|string,
+     *     form_default_color_palette?: 'light'|'dark'|'os',
      *     form_input_border_radius?: int,
      * } $data
      * @throws HyvorApiException
