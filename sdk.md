@@ -68,31 +68,56 @@ const client = new HyvorClient({
 
 Then, client have product namespaces:
 
-For now:
+Product APIs to support
 
-- `talk`: Hyvor Talk
-- `post`: Hyvor Post
+- (talk) Hyvor Talk: https://talk.hyvor.com/docs/api-console
+- (blogs) Hyvor Blogs: https://blogs.hyvor.com/docs/api-console
+- (post) Hyvor Post: https://post.hyvor.com/docs/api-console
+- (relay) Hyvor Relay: https://relay.hyvor.com/docs/api-console
+
+## Calling the API with a cloud API key
+
+Cloud API keys are org-level, and created at https://hyvor.com/account/org/api-keys by an admin of the organization. This feature is NOT SUPPORTED in self-hosted instances (because it depends on hyvor.com for token exchange).
 
 ```ts
-client.talk.resource.method();
-client.post.resource.method();
+const client = new HyvorClient({
+    cloudApiKey: "your-cloud-api-key",
+});
+
+/**
+ * client.talk => Hyvor Talk product namespace
+ * client.talk.for(websiteId) => Access a specific website by its ID
+ * 
+ * the cloud API key must have access to the given resource (website, blog, newsletter, etc.)
+ */
+const comments = client.talk.website(websiteId).comments.list();
+const posts = client.blogs.blog(blogSubdomain).posts.list(); // for supports id or subdomain
+const issues = client.post.newsletter(newsletterId).issues.list();
+const sends = client.relay.project(projectId).sends.list();
+
+/**
+ * Calling an org-level endpoint
+ */
+const newWebsite = client.talk.websites.create({
+    name: "My Blog",
+    domain: "blog.example.com",
+});
 ```
 
-Endpoints to support:
+## Calling the API with a resource-level API key
 
-- Hyvor Talk: https://talk.hyvor.com/docs/api-console
-- Hyvor Post: https://post.hyvor.com/docs/api-console
+Resource API keys are generated in the Console of each product.
 
 ```ts
-client.talk.comments.create(
-    {
-        // request body
-    },
-    {
-        // request options (override default timeouts, retry config etc.)
-        // some endpoints support idempotency keys, which can be set here.
-    }
-);
+const client = new HyvorClient();
+
+const comments = client.talk.website(websiteId, "your-product-api-key").comments.list();
+const posts = client.blogs.blog(blogSubdomain, "your-product-api-key").posts.list();
+const issues = client.post.newsletter(newsletterId, "your-product-api-key").issues.list();
+const sends = client.relay.project(projectId, "your-product-api-key").sends.list();
+
+// org-level endpoints are not supported this way
+// because resource-level API keys are scoped to a specific resource (website, blog, etc.)
 ```
 
 ## Rules

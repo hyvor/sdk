@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Http;
 
 use Hyvor\Sdk\Auth\TokenProviderInterface;
+use Hyvor\Sdk\Exceptions\AuthenticationException;
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Exceptions\NetworkException;
 use Hyvor\Sdk\RequestOptions;
@@ -35,7 +36,7 @@ final class Transport
         private readonly RequestFactoryInterface $requestFactory,
         private readonly StreamFactoryInterface $streamFactory,
         private readonly LoggerInterface $logger,
-        private readonly TokenProviderInterface $tokenProvider,
+        private readonly ?TokenProviderInterface $tokenProvider,
         private readonly string $baseUrl,
         private readonly int $defaultRetryMaxAttempts,
         private readonly float $defaultRetryBackoffFactor,
@@ -72,8 +73,13 @@ final class Transport
      *
      * @throws HyvorApiException
      */
-    public function request(string $method, string $path, ?array $jsonBody = null, ?RequestOptions $options = null): array
-    {
+    public function request(
+        string $method,
+        string $path,
+        ?array $jsonBody = null,
+        ?RequestOptions $options = null,
+        ?string $apiKeyOverride = null,
+    ): array {
         $maxAttempts = max(1, $options?->retryMaxAttempts ?? $this->defaultRetryMaxAttempts);
         $backoffFactor = $options?->retryBackoffFactor ?? $this->defaultRetryBackoffFactor;
 
@@ -81,7 +87,7 @@ final class Transport
 
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
             try {
-                $response = $this->send($method, $path, $jsonBody, $options);
+                $response = $this->send($method, $path, $jsonBody, $apiKeyOverride);
             } catch (ClientExceptionInterface $e) {
                 $lastException = new NetworkException($e->getMessage(), $e);
 
@@ -114,11 +120,11 @@ final class Transport
     /**
      * @param array<mixed>|null $jsonBody
      */
-    private function send(string $method, string $path, ?array $jsonBody, ?RequestOptions $options): ResponseInterface
+    private function send(string $method, string $path, ?array $jsonBody, ?string $apiKeyOverride): ResponseInterface
     {
         $request = $this->requestFactory
             ->createRequest($method, $this->baseUrl . $path)
-            ->withHeader('Authorization', 'Bearer ' . $this->tokenProvider->getToken())
+            ->withHeader('Authorization', 'Bearer ' . $this->resolveToken($apiKeyOverride))
             ->withHeader('Accept', 'application/json')
             ->withHeader('User-Agent', $this->userAgent);
 
@@ -139,6 +145,25 @@ final class Transport
         ]);
 
         return $response;
+    }
+
+    /**
+     * @throws AuthenticationException
+     */
+    private function resolveToken(?string $apiKeyOverride): string
+    {
+        if ($apiKeyOverride !== null) {
+            return $apiKeyOverride;
+        }
+
+        if ($this->tokenProvider !== null) {
+            return $this->tokenProvider->getToken();
+        }
+
+        throw new AuthenticationException(
+            'No credentials configured. Provide a cloudApiKey/tokenProvider to HyvorClient, '
+            . 'or pass a resource-level API key when accessing the resource (e.g. $client->talk->website($id, $apiKey)).',
+        );
     }
 
     /**

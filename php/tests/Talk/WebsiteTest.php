@@ -16,7 +16,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 
-final class WebsiteResourceTest extends TestCase
+final class WebsiteTest extends TestCase
 {
     private function client(FakeHttpClient $httpClient, int $retryMaxAttempts = 3): HyvorClient
     {
@@ -231,7 +231,7 @@ final class WebsiteResourceTest extends TestCase
         )));
 
         $client = $this->client($http);
-        $website = $client->talk->website->get();
+        $website = $client->talk->website(42)->get();
 
         self::assertSame(42, $website->id);
         self::assertSame('My Blog', $website->name);
@@ -240,9 +240,46 @@ final class WebsiteResourceTest extends TestCase
 
         self::assertCount(1, $http->requests);
         self::assertSame('GET', $http->requests[0]->getMethod());
-        self::assertSame('https://hyvor.com/api/talk/website', (string) $http->requests[0]->getUri());
+        self::assertSame('https://hyvor.com/api/talk/websites/42', (string) $http->requests[0]->getUri());
         self::assertSame('Bearer test-jwt-token', $http->requests[0]->getHeaderLine('Authorization'));
         self::assertStringStartsWith('hyvor/sdk-php/', $http->requests[0]->getHeaderLine('User-Agent'));
+    }
+
+    public function testGetWithResourceApiKeyOverridesAuth(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueResponse(new Response(200, [], json_encode(
+            $this->sampleWebsiteData(),
+            JSON_THROW_ON_ERROR,
+        )));
+
+        // no client-level auth configured at all
+        $factory = new Psr17Factory();
+        $client = new HyvorClient(
+            httpClient: $http,
+            requestFactory: $factory,
+            streamFactory: $factory,
+        );
+
+        $website = $client->talk->website(42, 'resource-api-key')->get();
+
+        self::assertSame(42, $website->id);
+        self::assertSame('https://hyvor.com/api/talk/websites/42', (string) $http->requests[0]->getUri());
+        self::assertSame('Bearer resource-api-key', $http->requests[0]->getHeaderLine('Authorization'));
+    }
+
+    public function testGetWithoutAnyCredentialsThrows(): void
+    {
+        $http = new FakeHttpClient();
+        $factory = new Psr17Factory();
+        $client = new HyvorClient(
+            httpClient: $http,
+            requestFactory: $factory,
+            streamFactory: $factory,
+        );
+
+        $this->expectException(\Hyvor\Sdk\Exceptions\AuthenticationException::class);
+        $client->talk->website(42)->get();
     }
 
     public function testCreateSendsNameAndDomain(): void
@@ -254,7 +291,7 @@ final class WebsiteResourceTest extends TestCase
         )));
 
         $client = $this->client($http);
-        $website = $client->talk->website->create(new CreateWebsiteRequest(
+        $website = $client->talk->websites->create(new CreateWebsiteRequest(
             name: 'New Site',
             domain: 'new.example.com',
         ));
@@ -264,7 +301,7 @@ final class WebsiteResourceTest extends TestCase
 
         $request = $http->requests[0];
         self::assertSame('POST', $request->getMethod());
-        self::assertSame('https://hyvor.com/api/talk/website', (string) $request->getUri());
+        self::assertSame('https://hyvor.com/api/talk/websites', (string) $request->getUri());
         self::assertSame(
             ['name' => 'New Site', 'domain' => 'new.example.com'],
             json_decode((string) $request->getBody(), true),
@@ -282,7 +319,7 @@ final class WebsiteResourceTest extends TestCase
         $client = $this->client($http);
 
         try {
-            $client->talk->website->create(new CreateWebsiteRequest(name: 'X', domain: ''));
+            $client->talk->websites->create(new CreateWebsiteRequest(name: 'X', domain: ''));
             self::fail('Expected ValidationFailedException to be thrown.');
         } catch (ValidationFailedException $e) {
             self::assertSame(422, $e->statusCode);
@@ -300,7 +337,7 @@ final class WebsiteResourceTest extends TestCase
         )));
 
         $client = $this->client($http, retryMaxAttempts: 2);
-        $website = $client->talk->website->get();
+        $website = $client->talk->website(1)->get();
 
         self::assertSame(1, $website->id);
         self::assertCount(2, $http->requests);
@@ -315,7 +352,7 @@ final class WebsiteResourceTest extends TestCase
         $client = $this->client($http, retryMaxAttempts: 2);
 
         $this->expectException(RateLimitException::class);
-        $client->talk->website->get();
+        $client->talk->website(1)->get();
     }
 
     public function testServerErrorThrows(): void
@@ -327,6 +364,6 @@ final class WebsiteResourceTest extends TestCase
         $client = $this->client($http, retryMaxAttempts: 2);
 
         $this->expectException(ServerErrorException::class);
-        $client->talk->website->get();
+        $client->talk->website(1)->get();
     }
 }

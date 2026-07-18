@@ -24,17 +24,33 @@ composer require guzzlehttp/guzzle
 use Hyvor\Sdk\HyvorClient;
 use Hyvor\Sdk\Talk\Dto\Website\CreateWebsiteRequest;
 
+// org-level access, via a cloud API key
 $client = new HyvorClient(
     cloudApiKey: 'your-cloud-api-key', // or tokenProvider: new SomeTokenProviderInterface()
 );
 
-// GET /website
-$website = $client->talk->website->get();
+// GET /api/talk/websites/{id} — resource-level access to a specific website.
+// The cloud API key/token provider must have access to this website.
+$website = $client->talk->website($websiteId)->get();
 
-// POST /website
-$website = $client->talk->website->create(
+// POST /api/talk/websites — org-level endpoint, not scoped to one website
+$website = $client->talk->websites->create(
     new CreateWebsiteRequest(name: 'My Blog', domain: 'blog.example.com')
 );
+```
+
+### Resource-level API keys
+
+Resource-level API keys are generated in the Console of each product and are scoped to a
+single resource (e.g. one website). They can be used without any client-level auth:
+
+```php
+$client = new HyvorClient();
+
+$website = $client->talk->website($websiteId, 'your-product-api-key')->get();
+
+// org-level endpoints (like $client->talk->websites->create()) are not supported
+// this way, since resource-level API keys are scoped to a single resource.
 ```
 
 ### Configuration
@@ -54,7 +70,7 @@ $client = new HyvorClient(
 
 ### Authentication
 
-Provide exactly one of:
+`HyvorClient` accepts at most one of (both are optional — see resource-level API keys above):
 
 - `cloudApiKey` — a Cloud API key created at `https://hyvor.com/account/org/api-keys`. The SDK
   exchanges it for a short-lived JWT internally (and refreshes it as needed).
@@ -77,7 +93,7 @@ Per-request overrides (retries, idempotency keys):
 ```php
 use Hyvor\Sdk\RequestOptions;
 
-$client->talk->website->create(
+$client->talk->websites->create(
     new CreateWebsiteRequest(name: 'My Blog', domain: 'blog.example.com'),
     new RequestOptions(retryMaxAttempts: 1),
 );
@@ -107,6 +123,8 @@ The `website` endpoints are not publicly documented at the Cloud API level. This
 
 - Talk endpoints are reached through the configured `cloudInstance` at `/api/talk/*` (there is no separate per-product instance URL in the client config).
 - A `cloudApiKey` is exchanged for a short-lived JWT via `POST {cloudInstance}/api/cloud/token`.
+- A resource-level API key (passed to `$client->talk->website($id, $apiKey)`) is used directly as
+  the bearer token, without any token exchange.
 
 The `Website` DTO's fields mirror the publicly documented
 [Talk Console API website object](https://talk.hyvor.com/docs/api-console#website-object).

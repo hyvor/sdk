@@ -11,35 +11,26 @@ use Hyvor\Sdk\Talk\Dto\Website\CreateWebsiteRequest;
 use Hyvor\Sdk\Talk\Dto\Website\Website;
 
 /**
- * `website` is the main resource of the Talk product.
+ * Org-level access to websites, accessible via `$client->talk->websites`.
+ *
+ * Requires org-level auth (a cloud API key or token provider), since it is
+ * not scoped to a single website.
  */
-final class WebsiteResource
+final class WebsitesResource
 {
     public function __construct(private readonly Transport $transport)
     {
     }
 
     /**
-     * GET /website
-     *
-     * @throws HyvorApiException
-     */
-    public function get(?RequestOptions $options = null): Website
-    {
-        $data = $this->transport->request('GET', '/api/talk/website', null, $options);
-
-        return $this->transport->denormalize($data, Website::class);
-    }
-
-    /**
-     * POST /website
+     * POST /api/talk/websites
      *
      * @throws HyvorApiException
      */
     public function create(CreateWebsiteRequest $request, ?RequestOptions $options = null): Website
     {
         $body = $this->transport->normalize($request);
-        $data = $this->transport->request('POST', '/api/talk/website', $body, $options);
+        $data = $this->transport->request('POST', '/api/talk/websites', $body, $options);
 
         return $this->transport->denormalize($data, Website::class);
     }
