@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Dto\Subscriber;
 
 /**
- * Used in `ListSubscribersRequest::$status` and
- * `BulkUpdateSubscribersRequest::$status`. Broader than `SubscriberStatus`
+ * Used in `SubscribersResource::list()`'s and
+ * `SubscribersResource::bulkUpdate()`'s `status` key. Broader than `SubscriberStatus`
  * (includes `unsubscribed`), since a subscriber can be filtered or bulk-moved
  * into that status even though it's never returned on the `Subscriber` object.
  */

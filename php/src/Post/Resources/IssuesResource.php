@@ -6,9 +6,7 @@ namespace Hyvor\Sdk\Post\Resources;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Post\Dto\Issue\Issue;
-use Hyvor\Sdk\Post\Dto\Issue\ListIssuesRequest;
 use Hyvor\Sdk\Post\Dto\Issue\Send;
-use Hyvor\Sdk\Post\Dto\Issue\UpdateIssueRequest;
 use Hyvor\Sdk\RequestOptions;
 
 /**
@@ -19,15 +17,18 @@ final class IssuesResource extends NewsletterScopedResource
     /**
      * GET /issues
      *
+     * @param array{
+     *     limit?: int,
+     *     offset?: int,
+     * } $data
      * @return Issue[]
      * @throws HyvorApiException
      */
-    public function list(?ListIssuesRequest $request = null, ?RequestOptions $options = null): array
+    public function list(array $data = [], ?RequestOptions $options = null): array
     {
-        $body = $this->transport->normalize($request ?? new ListIssuesRequest());
-        $data = $this->request('GET', $this->path('/issues'), $body, $options);
+        $result = $this->request('GET', $this->path('/issues'), $data, $options);
 
-        return $this->transport->denormalizeList($data, Issue::class);
+        return $this->transport->denormalizeList($result, Issue::class);
     }
 
     /**
@@ -59,14 +60,21 @@ final class IssuesResource extends NewsletterScopedResource
     /**
      * PATCH /issues/{id}
      *
+     * Every key is optional; keys left out of `$data` are left unchanged.
+     *
+     * @param array{
+     *     subject?: string,
+     *     lists?: int[],
+     *     content?: string,
+     *     sending_profile_id?: int,
+     * } $data
      * @throws HyvorApiException
      */
-    public function update(int $id, UpdateIssueRequest $request, ?RequestOptions $options = null): Issue
+    public function update(int $id, array $data, ?RequestOptions $options = null): Issue
     {
-        $body = $this->transport->normalize($request);
-        $data = $this->request('PATCH', $this->path("/issues/{$id}"), $body, $options);
+        $result = $this->request('PATCH', $this->path("/issues/{$id}"), $data, $options);
 
-        return $this->transport->denormalize($data, Issue::class);
+        return $this->transport->denormalize($result, Issue::class);
     }
 
     /**

@@ -6,8 +6,8 @@ namespace Hyvor\Sdk\Post;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Http\Transport;
+use Hyvor\Sdk\Post\Dto\Newsletter\FormColorPalette;
 use Hyvor\Sdk\Post\Dto\Newsletter\Newsletter;
-use Hyvor\Sdk\Post\Dto\Newsletter\UpdateNewsletterRequest;
 use Hyvor\Sdk\Post\Resources\ExportsResource;
 use Hyvor\Sdk\Post\Resources\InvitesResource;
 use Hyvor\Sdk\Post\Resources\IssuesResource;
@@ -102,20 +102,70 @@ final class NewsletterClient
     /**
      * PATCH /newsletter
      *
+     * Every key is optional; keys left out of `$data` are left unchanged.
+     * Matches `Newsletter` except `id` and `created_at`, which cannot be
+     * updated.
+     *
+     * @param array{
+     *     name?: string,
+     *     address?: string,
+     *     unsubscribe_text?: string,
+     *     branding?: bool,
+     *     template_color_accent?: string,
+     *     template_color_accent_text?: string,
+     *     template_color_background?: string,
+     *     template_color_background_text?: string,
+     *     template_color_box?: string,
+     *     template_color_box_text?: string,
+     *     template_box_shadow?: string,
+     *     template_box_radius?: string,
+     *     template_box_border?: string,
+     *     template_font_family?: string,
+     *     template_font_size?: string,
+     *     template_font_weight?: string,
+     *     template_font_weight_heading?: string,
+     *     template_font_line_height?: string,
+     *     form_title?: string,
+     *     form_description?: string,
+     *     form_footer_text?: string,
+     *     form_button_text?: string,
+     *     form_success_message?: string,
+     *     form_width?: int,
+     *     form_custom_css?: string,
+     *     form_color_light_text?: string,
+     *     form_color_light_text_light?: string,
+     *     form_color_light_accent?: string,
+     *     form_color_light_accent_text?: string,
+     *     form_color_light_input?: string,
+     *     form_color_light_input_text?: string,
+     *     form_light_input_box_shadow?: string,
+     *     form_light_input_border?: string,
+     *     form_light_border_radius?: int,
+     *     form_color_dark_text?: string,
+     *     form_color_dark_text_light?: string,
+     *     form_color_dark_accent?: string,
+     *     form_color_dark_accent_text?: string,
+     *     form_color_dark_input?: string,
+     *     form_color_dark_input_text?: string,
+     *     form_dark_input_box_shadow?: string,
+     *     form_dark_input_border?: string,
+     *     form_dark_border_radius?: int,
+     *     form_default_color_palette?: FormColorPalette|string,
+     *     form_input_border_radius?: int,
+     * } $data
      * @throws HyvorApiException
      */
-    public function update(UpdateNewsletterRequest $request, ?RequestOptions $options = null): Newsletter
+    public function update(array $data, ?RequestOptions $options = null): Newsletter
     {
-        $body = $this->transport->normalize($request);
-        $data = $this->transport->request(
+        $result = $this->transport->request(
             'PATCH',
             $this->path('/newsletter'),
-            $body,
+            $data,
             $options,
             $this->apiKey,
             $this->resourceHeaders,
         );
 
-        return $this->transport->denormalize($data, Newsletter::class);
+        return $this->transport->denormalize($result, Newsletter::class);
     }
 }

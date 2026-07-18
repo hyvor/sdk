@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\User\CreateInviteRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
@@ -42,7 +41,7 @@ final class InvitesTest extends PostTestCase
         $this->queueJson($http, $this->sampleInvite(), 201);
 
         $invite = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->invites->create(
-            new CreateInviteRequest(email: 'bob@example.com'),
+            ['email' => 'bob@example.com'],
         );
 
         self::assertSame('Bob', $invite->user->name);

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Resources;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
-use Hyvor\Sdk\Post\Dto\User\CreateInviteRequest;
 use Hyvor\Sdk\Post\Dto\User\UserInvite;
 use Hyvor\Sdk\RequestOptions;
 
@@ -30,16 +29,20 @@ final class InvitesResource extends NewsletterScopedResource
     /**
      * POST /invites
      *
-     * The invitee must already have a HYVOR account.
+     * The invitee must already have a HYVOR account. Either `username` or
+     * `email` of the invitee's HYVOR account is required.
      *
+     * @param array{
+     *     username?: string,
+     *     email?: string,
+     * } $data
      * @throws HyvorApiException
      */
-    public function create(CreateInviteRequest $request, ?RequestOptions $options = null): UserInvite
+    public function create(array $data, ?RequestOptions $options = null): UserInvite
     {
-        $body = $this->transport->normalize($request);
-        $data = $this->request('POST', $this->path('/invites'), $body, $options);
+        $result = $this->request('POST', $this->path('/invites'), $data, $options);
 
-        return $this->transport->denormalize($data, UserInvite::class);
+        return $this->transport->denormalize($result, UserInvite::class);
     }
 
     /**

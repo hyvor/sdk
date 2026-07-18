@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\SubscriberMetadataDefinition\CreateSubscriberMetadataDefinitionRequest;
-use Hyvor\Sdk\Post\Dto\SubscriberMetadataDefinition\UpdateSubscriberMetadataDefinitionRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
@@ -23,7 +21,7 @@ final class SubscriberMetadataDefinitionsTest extends PostTestCase
         ], 201);
 
         $definition = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->subscriberMetadataDefinitions->create(
-            new CreateSubscriberMetadataDefinitionRequest(key: 'favorite_color', name: 'Favorite Color'),
+            ['key' => 'favorite_color', 'name' => 'Favorite Color'],
         );
 
         self::assertSame('favorite_color', $definition->key);
@@ -50,7 +48,7 @@ final class SubscriberMetadataDefinitionsTest extends PostTestCase
 
         $definition = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->subscriberMetadataDefinitions->update(
             1,
-            new UpdateSubscriberMetadataDefinitionRequest(name: 'Renamed'),
+            ['name' => 'Renamed'],
         );
 
         self::assertSame('Renamed', $definition->name);

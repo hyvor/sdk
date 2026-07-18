@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Resources;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
-use Hyvor\Sdk\Post\Dto\SendingProfile\CreateSendingProfileRequest;
 use Hyvor\Sdk\Post\Dto\SendingProfile\SendingProfile;
-use Hyvor\Sdk\Post\Dto\SendingProfile\UpdateSendingProfileRequest;
 use Hyvor\Sdk\RequestOptions;
 
 /**
@@ -31,27 +29,45 @@ final class SendingProfilesResource extends NewsletterScopedResource
     /**
      * POST /sending-profiles
      *
+     * @param array{
+     *     from_email: string,
+     *     from_name?: string,
+     *     reply_to_email?: string,
+     *     brand_name?: string,
+     *     brand_logo?: string,
+     *     brand_url?: string,
+     * } $data brand_logo is a publicly accessible URL of the logo.
      * @throws HyvorApiException
      */
-    public function create(CreateSendingProfileRequest $request, ?RequestOptions $options = null): SendingProfile
+    public function create(array $data, ?RequestOptions $options = null): SendingProfile
     {
-        $body = $this->transport->normalize($request);
-        $data = $this->request('POST', $this->path('/sending-profiles'), $body, $options);
+        $result = $this->request('POST', $this->path('/sending-profiles'), $data, $options);
 
-        return $this->transport->denormalize($data, SendingProfile::class);
+        return $this->transport->denormalize($result, SendingProfile::class);
     }
 
     /**
      * PATCH /sending-profiles/{id}
      *
+     * Every key is optional; keys left out of `$data` are left unchanged.
+     *
+     * @param array{
+     *     from_email?: string,
+     *     from_name?: string,
+     *     reply_to_email?: string,
+     *     brand_name?: string,
+     *     brand_logo?: string,
+     *     brand_url?: string,
+     *     is_default?: true,
+     * } $data brand_logo is a publicly accessible URL of the logo. is_default:
+     *  only `true` is meaningful; makes this profile the default one.
      * @throws HyvorApiException
      */
-    public function update(int $id, UpdateSendingProfileRequest $request, ?RequestOptions $options = null): SendingProfile
+    public function update(int $id, array $data, ?RequestOptions $options = null): SendingProfile
     {
-        $body = $this->transport->normalize($request);
-        $data = $this->request('PATCH', $this->path("/sending-profiles/{$id}"), $body, $options);
+        $result = $this->request('PATCH', $this->path("/sending-profiles/{$id}"), $data, $options);
 
-        return $this->transport->denormalize($data, SendingProfile::class);
+        return $this->transport->denormalize($result, SendingProfile::class);
     }
 
     /**

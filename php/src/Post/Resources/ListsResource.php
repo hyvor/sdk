@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Resources;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
-use Hyvor\Sdk\Post\Dto\List\CreateListRequest;
 use Hyvor\Sdk\Post\Dto\List\SubscriberList;
-use Hyvor\Sdk\Post\Dto\List\UpdateListRequest;
 use Hyvor\Sdk\RequestOptions;
 
 /**
@@ -18,27 +16,37 @@ final class ListsResource extends NewsletterScopedResource
     /**
      * POST /lists
      *
+     * @param array{
+     *     name: string,
+     *     description?: string,
+     * } $data name max length: 255.
+     *
      * @throws HyvorApiException
      */
-    public function create(CreateListRequest $request, ?RequestOptions $options = null): SubscriberList
+    public function create(array $data, ?RequestOptions $options = null): SubscriberList
     {
-        $body = $this->transport->normalize($request);
-        $data = $this->request('POST', $this->path('/lists'), $body, $options);
+        $result = $this->request('POST', $this->path('/lists'), $data, $options);
 
-        return $this->transport->denormalize($data, SubscriberList::class);
+        return $this->transport->denormalize($result, SubscriberList::class);
     }
 
     /**
      * PATCH /lists/{id}
      *
+     * Every key is optional; keys left out of `$data` are left unchanged.
+     *
+     * @param array{
+     *     name?: string,
+     *     description?: string,
+     * } $data name max length: 255.
+     *
      * @throws HyvorApiException
      */
-    public function update(int $id, UpdateListRequest $request, ?RequestOptions $options = null): SubscriberList
+    public function update(int $id, array $data, ?RequestOptions $options = null): SubscriberList
     {
-        $body = $this->transport->normalize($request);
-        $data = $this->request('PATCH', $this->path("/lists/{$id}"), $body, $options);
+        $result = $this->request('PATCH', $this->path("/lists/{$id}"), $data, $options);
 
-        return $this->transport->denormalize($data, SubscriberList::class);
+        return $this->transport->denormalize($result, SubscriberList::class);
     }
 
     /**

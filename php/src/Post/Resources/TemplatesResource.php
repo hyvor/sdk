@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Resources;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
-use Hyvor\Sdk\Post\Dto\Template\RenderTemplateRequest;
 use Hyvor\Sdk\Post\Dto\Template\RenderTemplateResponse;
 use Hyvor\Sdk\Post\Dto\Template\Template;
-use Hyvor\Sdk\Post\Dto\Template\UpdateTemplateRequest;
 use Hyvor\Sdk\RequestOptions;
 
 /**
@@ -31,26 +29,30 @@ final class TemplatesResource extends NewsletterScopedResource
     /**
      * PATCH /templates
      *
+     * @param array{
+     *     template?: string,
+     * } $data
      * @throws HyvorApiException
      */
-    public function update(UpdateTemplateRequest $request, ?RequestOptions $options = null): Template
+    public function update(array $data, ?RequestOptions $options = null): Template
     {
-        $body = $this->transport->normalize($request);
-        $data = $this->request('PATCH', $this->path('/templates'), $body, $options);
+        $result = $this->request('PATCH', $this->path('/templates'), $data, $options);
 
-        return $this->transport->denormalize($data, Template::class);
+        return $this->transport->denormalize($result, Template::class);
     }
 
     /**
      * POST /templates/render
      *
+     * @param array{
+     *     template?: string,
+     * } $data
      * @throws HyvorApiException
      */
-    public function render(?RenderTemplateRequest $request = null, ?RequestOptions $options = null): RenderTemplateResponse
+    public function render(array $data = [], ?RequestOptions $options = null): RenderTemplateResponse
     {
-        $body = $this->transport->normalize($request ?? new RenderTemplateRequest());
-        $data = $this->request('POST', $this->path('/templates/render'), $body, $options);
+        $result = $this->request('POST', $this->path('/templates/render'), $data, $options);
 
-        return $this->transport->denormalize($data, RenderTemplateResponse::class);
+        return $this->transport->denormalize($result, RenderTemplateResponse::class);
     }
 }

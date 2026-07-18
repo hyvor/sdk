@@ -50,19 +50,14 @@ website itself.
 ### Hyvor Post
 
 ```php
-use Hyvor\Sdk\Post\Dto\Issue\ListIssuesRequest;
-use Hyvor\Sdk\Post\Dto\Newsletter\UpdateNewsletterRequest;
-
 $client = new HyvorClient(cloudApiKey: 'your-cloud-api-key');
 
 // resource-level access to a specific newsletter (the cloud API key/token
 // provider must have access to it)
 $newsletter = $client->post->newsletter($newsletterId)->get();
-$newsletter = $client->post->newsletter($newsletterId)->update(
-    new UpdateNewsletterRequest(name: 'My Newsletter'),
-);
+$newsletter = $client->post->newsletter($newsletterId)->update(['name' => 'My Newsletter']);
 
-$issues = $client->post->newsletter($newsletterId)->issues->list(new ListIssuesRequest(limit: 10));
+$issues = $client->post->newsletter($newsletterId)->issues->list(['limit' => 10]);
 $subscribers = $client->post->newsletter($newsletterId)->subscribers->list();
 ```
 

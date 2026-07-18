@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Dto\Subscriber;
 
 /**
- * How `CreateOrUpdateSubscriberRequest::$lists` is processed when updating
- * an existing subscriber's list subscriptions.
+ * How `SubscribersResource::createOrUpdate()`'s `lists` key is processed
+ * when updating an existing subscriber's list subscriptions.
  */
 enum ListsStrategy: string
 {

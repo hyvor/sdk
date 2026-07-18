@@ -6,7 +6,6 @@ namespace Hyvor\Sdk\Tests\Post;
 
 use Hyvor\Sdk\Exceptions\ValidationFailedException;
 use Hyvor\Sdk\HyvorClient;
-use Hyvor\Sdk\Post\Dto\Newsletter\UpdateNewsletterRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -133,14 +132,14 @@ final class NewsletterTest extends PostTestCase
         self::assertSame('override', $http->requests[0]->getHeaderLine('X-Newsletter-Id'));
     }
 
-    public function testUpdateSendsOnlyNonNullFields(): void
+    public function testUpdateSendsOnlyProvidedFields(): void
     {
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleNewsletterData(['name' => 'Renamed']));
 
         $client = $this->client($http);
         $newsletter = $client->post->newsletter(self::NEWSLETTER_ID)->update(
-            new UpdateNewsletterRequest(name: 'Renamed'),
+            ['name' => 'Renamed'],
         );
 
         self::assertSame('Renamed', $newsletter->name);
@@ -162,7 +161,7 @@ final class NewsletterTest extends PostTestCase
         $client = $this->client($http);
 
         try {
-            $client->post->newsletter(self::NEWSLETTER_ID)->update(new UpdateNewsletterRequest(name: ''));
+            $client->post->newsletter(self::NEWSLETTER_ID)->update(['name' => '']);
             self::fail('Expected ValidationFailedException to be thrown.');
         } catch (ValidationFailedException $e) {
             self::assertSame(422, $e->statusCode);

@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Tests\Post;
 
 use Hyvor\Sdk\Post\Dto\Subscriber\BulkSubscriberAction;
-use Hyvor\Sdk\Post\Dto\Subscriber\BulkUpdateSubscribersRequest;
-use Hyvor\Sdk\Post\Dto\Subscriber\CreateOrUpdateSubscriberRequest;
 use Hyvor\Sdk\Post\Dto\Subscriber\ListsStrategy;
-use Hyvor\Sdk\Post\Dto\Subscriber\ListSubscribersRequest;
 use Hyvor\Sdk\Post\Dto\Subscriber\SubscriberStatusFilter;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
@@ -21,7 +18,7 @@ final class SubscribersTest extends PostTestCase
         $this->queueJson($http, [$this->sampleSubscriber()]);
 
         $subscribers = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->subscribers->list(
-            new ListSubscribersRequest(status: SubscriberStatusFilter::SUBSCRIBED, list_id: 1),
+            ['status' => SubscriberStatusFilter::SUBSCRIBED, 'list_id' => 1],
         );
 
         self::assertCount(1, $subscribers);
@@ -50,11 +47,11 @@ final class SubscribersTest extends PostTestCase
         $this->queueJson($http, $this->sampleSubscriber(), 201);
 
         $subscriber = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->subscribers->createOrUpdate(
-            new CreateOrUpdateSubscriberRequest(
-                email: 'jane@example.com',
-                lists: ['Default'],
-                lists_strategy: ListsStrategy::MERGE,
-            ),
+            [
+                'email' => 'jane@example.com',
+                'lists' => ['Default'],
+                'lists_strategy' => ListsStrategy::MERGE,
+            ],
         );
 
         self::assertSame('jane@example.com', $subscriber->email);
@@ -90,11 +87,11 @@ final class SubscribersTest extends PostTestCase
         ]);
 
         $response = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->subscribers->bulkUpdate(
-            new BulkUpdateSubscribersRequest(
-                subscribers_ids: [1, 2],
-                action: BulkSubscriberAction::STATUS_CHANGE,
-                status: SubscriberStatusFilter::UNSUBSCRIBED,
-            ),
+            [
+                'subscribers_ids' => [1, 2],
+                'action' => BulkSubscriberAction::STATUS_CHANGE,
+                'status' => SubscriberStatusFilter::UNSUBSCRIBED,
+            ],
         );
 
         self::assertSame('ok', $response->status);

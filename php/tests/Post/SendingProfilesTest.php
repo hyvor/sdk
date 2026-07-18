@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\SendingProfile\CreateSendingProfileRequest;
-use Hyvor\Sdk\Post\Dto\SendingProfile\UpdateSendingProfileRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
@@ -49,7 +47,7 @@ final class SendingProfilesTest extends PostTestCase
         $this->queueJson($http, $this->sampleSendingProfile(), 201);
 
         $profile = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->sendingProfiles->create(
-            new CreateSendingProfileRequest(from_email: 'news@example.com', from_name: 'My Newsletter'),
+            ['from_email' => 'news@example.com', 'from_name' => 'My Newsletter'],
         );
 
         self::assertSame('news@example.com', $profile->from_email);
@@ -70,7 +68,7 @@ final class SendingProfilesTest extends PostTestCase
 
         $profile = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->sendingProfiles->update(
             1,
-            new UpdateSendingProfileRequest(is_default: true),
+            ['is_default' => true],
         );
 
         self::assertTrue($profile->is_default);

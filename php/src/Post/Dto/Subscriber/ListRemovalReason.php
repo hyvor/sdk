@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Dto\Subscriber;
 
 /**
- * Used in `CreateOrUpdateSubscriberRequest::$list_removal_reason`, when
- * `$lists_strategy` is `REMOVE`.
+ * Used in `SubscribersResource::createOrUpdate()`'s `list_removal_reason`
+ * key, when `lists_strategy` is `REMOVE`.
  */
 enum ListRemovalReason: string
 {

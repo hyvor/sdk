@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\List\CreateListRequest;
-use Hyvor\Sdk\Post\Dto\List\UpdateListRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
@@ -23,7 +21,7 @@ final class ListsTest extends PostTestCase
         ], 201);
 
         $list = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->lists->create(
-            new CreateListRequest(name: 'Default'),
+            ['name' => 'Default'],
         );
 
         self::assertSame('Default', $list->name);
@@ -47,7 +45,7 @@ final class ListsTest extends PostTestCase
 
         $list = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->lists->update(
             1,
-            new UpdateListRequest(name: 'Renamed', description: 'New description'),
+            ['name' => 'Renamed', 'description' => 'New description'],
         );
 
         self::assertSame('Renamed', $list->name);

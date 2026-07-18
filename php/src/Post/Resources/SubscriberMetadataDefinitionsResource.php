@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Resources;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
-use Hyvor\Sdk\Post\Dto\SubscriberMetadataDefinition\CreateSubscriberMetadataDefinitionRequest;
 use Hyvor\Sdk\Post\Dto\SubscriberMetadataDefinition\SubscriberMetadataDefinition;
-use Hyvor\Sdk\Post\Dto\SubscriberMetadataDefinition\UpdateSubscriberMetadataDefinitionRequest;
 use Hyvor\Sdk\RequestOptions;
 
 /**
@@ -18,32 +16,39 @@ final class SubscriberMetadataDefinitionsResource extends NewsletterScopedResour
     /**
      * POST /subscriber-metadata-definitions
      *
+     * @param array{
+     *     key: string,
+     *     name: string,
+     * } $data key: max length 255, can only contain lowercase letters,
+     *  numbers, and underscores, cannot be changed once created. name: max
+     *  length 255.
      * @throws HyvorApiException
      */
     public function create(
-        CreateSubscriberMetadataDefinitionRequest $request,
+        array $data,
         ?RequestOptions $options = null,
     ): SubscriberMetadataDefinition {
-        $body = $this->transport->normalize($request);
-        $data = $this->request('POST', $this->path('/subscriber-metadata-definitions'), $body, $options);
+        $result = $this->request('POST', $this->path('/subscriber-metadata-definitions'), $data, $options);
 
-        return $this->transport->denormalize($data, SubscriberMetadataDefinition::class);
+        return $this->transport->denormalize($result, SubscriberMetadataDefinition::class);
     }
 
     /**
      * PATCH /subscriber-metadata-definitions/{id}
      *
+     * @param array{
+     *     name: string,
+     * } $data name: max length 255.
      * @throws HyvorApiException
      */
     public function update(
         int $id,
-        UpdateSubscriberMetadataDefinitionRequest $request,
+        array $data,
         ?RequestOptions $options = null,
     ): SubscriberMetadataDefinition {
-        $body = $this->transport->normalize($request);
-        $data = $this->request('PATCH', $this->path("/subscriber-metadata-definitions/{$id}"), $body, $options);
+        $result = $this->request('PATCH', $this->path("/subscriber-metadata-definitions/{$id}"), $data, $options);
 
-        return $this->transport->denormalize($data, SubscriberMetadataDefinition::class);
+        return $this->transport->denormalize($result, SubscriberMetadataDefinition::class);
     }
 
     /**

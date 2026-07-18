@@ -6,8 +6,8 @@ namespace Hyvor\Sdk\Post\Dto\Subscriber;
 
 /**
  * The subscriber's status, as returned by the API and as settable via
- * `CreateOrUpdateSubscriberRequest`. See `SubscriberStatusFilter` for the
- * broader set of statuses usable in filters and bulk actions.
+ * `SubscribersResource::createOrUpdate()`. See `SubscriberStatusFilter` for
+ * the broader set of statuses usable in filters and bulk actions.
  */
 enum SubscriberStatus: string
 {

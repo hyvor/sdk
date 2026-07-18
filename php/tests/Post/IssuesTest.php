@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Tests\Post;
 
 use Hyvor\Sdk\Post\Dto\Issue\IssueStatus;
-use Hyvor\Sdk\Post\Dto\Issue\ListIssuesRequest;
 use Hyvor\Sdk\Post\Dto\Issue\SendStatus;
-use Hyvor\Sdk\Post\Dto\Issue\UpdateIssueRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
@@ -45,7 +43,7 @@ final class IssuesTest extends PostTestCase
         $this->queueJson($http, [$this->sampleIssue()]);
 
         $issues = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->issues->list(
-            new ListIssuesRequest(limit: 10),
+            ['limit' => 10],
         );
 
         self::assertCount(1, $issues);
@@ -87,7 +85,7 @@ final class IssuesTest extends PostTestCase
 
         $issue = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->issues->update(
             1,
-            new UpdateIssueRequest(subject: 'Updated', lists: [1, 2]),
+            ['subject' => 'Updated', 'lists' => [1, 2]],
         );
 
         self::assertSame('Updated', $issue->subject);
