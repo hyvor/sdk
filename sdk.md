@@ -138,3 +138,11 @@ const sends = client.relay.project(projectId, "your-product-api-key").sends.list
 - testing
   - all endpoints should be tested with mock HTTP responses
   - abstract commonly used methods into a base test class or helper functions
+- PHP
+  - use PHPStan-friendly array shapes (`@phpstan-type` PHPDoc annotations) for both request and
+    response objects, instead of typed DTO classes — this overrides the general "use enums"
+    guideline above for PHP specifically: closed value sets are also expressed as string-literal
+    unions in the array shape (e.g. `'newest'|'oldest'|...`), not as enum classes
+  - request shapes use optional keys (`key?: type`) to mean "omit to leave unchanged / no filter",
+    matching what the API expects; `Transport::normalize()` recursively strips any literal nulls
+    that slip through as a safety net
