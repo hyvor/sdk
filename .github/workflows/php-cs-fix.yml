@@ -1,0 +1,57 @@
+name: PHP CS Fix
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - main
+    paths:
+      - 'php/**'
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: php
+
+jobs:
+  cs-fix:
+    name: "PHP CS Fixer"
+    runs-on: ubuntu-latest
+    # skip draft PRs, and PRs from forks (GITHUB_TOKEN can't push to fork branches)
+    if: |
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: curl, json
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHP CS Fixer
+        run: composer cs-fix
+
+      - name: Commit and push fixes
+        run: |
+          git config user.name "hyvor-chef"
+          git config user.email "chef@hyvor.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No CS issues found."
+          else
+            git commit -m "style: fix code style issues (php-cs-fixer)"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
