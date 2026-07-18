@@ -1,6 +1,6 @@
 {
-    "name": "hyvor/sdk-php",
-    "description": "Official PHP SDK for Hyvor products (Talk, Post)",
+    "name": "hyvor/sdk",
+    "description": "Official PHP SDK for HYVOR products",
     "type": "library",
     "license": "MIT",
     "require": {
@@ -35,5 +35,10 @@
     "prefer-stable": true,
     "scripts": {
         "test": "phpunit"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     }
 }
