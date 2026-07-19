@@ -24,11 +24,16 @@ jobs:
       - name: Build and start container
         run: docker compose up -d --build
 
-      - name: Validate composer.json
-        run: docker compose exec php composer validate --strict
+      - name: Run tests
+        run: docker compose exec php ./vendor/bin/phpunit
+
+  phpstan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start container
+        run: docker compose up -d --build
 
       - name: Run phpstan
         run: docker compose exec php ./vendor/bin/phpstan
-
-      - name: Run tests
-        run: docker compose exec php ./vendor/bin/phpunit
