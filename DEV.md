@@ -2,8 +2,13 @@
 
 ```bash
 cd php
-docker compose run --rm test
-```
 
-Rebuild after changing `composer.json`/`composer.lock` (`docker compose build test`) — the
-container's `vendor/` lives in an anonymous volume and won't pick up new dependencies otherwise.
+# first, run the container
+docker compose up -d --build
+
+# run tests
+docker compose exec php ./vendor/bin/phpunit
+
+# run phpstan
+docker compose exec php ./vendor/bin/phpstan
+```

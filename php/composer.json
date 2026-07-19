@@ -33,9 +33,6 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "scripts": {
-        "test": "phpunit"
-    },
     "config": {
         "allow-plugins": {
             "php-http/discovery": true
