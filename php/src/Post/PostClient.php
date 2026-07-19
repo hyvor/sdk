@@ -5,18 +5,21 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post;
 
 use Hyvor\Sdk\Http\Transport;
+use Hyvor\Sdk\Post\Resources\OrgNewslettersResource;
 
 /**
  * Namespace for the Hyvor Post product, accessible via `$client->post`.
- *
- * Unlike Talk, Post's Console API has no org-level endpoints (e.g. no way to
- * create a new newsletter over the API), so this client exposes only
- * `newsletter()`.
  */
 final class PostClient
 {
+    /**
+     * Org-level access to newsletters, accessible via `$client->post->newsletters`.
+     */
+    public readonly OrgNewslettersResource $newsletters;
+
     public function __construct(private readonly Transport $transport)
     {
+        $this->newsletters = new OrgNewslettersResource($this->transport);
     }
 
     /**

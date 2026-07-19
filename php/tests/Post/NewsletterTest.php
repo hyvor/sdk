@@ -168,4 +168,52 @@ final class NewsletterTest extends PostTestCase
             self::assertSame(['The name field is required.'], $e->errors['name']);
         }
     }
+
+    public function testCreateSendsNameAndSubdomain(): void
+    {
+        $http = new FakeHttpClient();
+        $this->queueJson($http, $this->sampleNewsletterData([
+            'id' => 'nl_7',
+            'subdomain' => 'new-newsletter',
+            'name' => 'New Newsletter',
+        ]), 201);
+
+        $client = $this->client($http);
+        $newsletter = $client->post->newsletters->create([
+            'name' => 'New Newsletter',
+            'subdomain' => 'new-newsletter',
+        ]);
+
+        self::assertSame('nl_7', $newsletter->id);
+        self::assertSame('New Newsletter', $newsletter->name);
+        self::assertSame('new-newsletter', $newsletter->subdomain);
+
+        $request = $http->requests[0];
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame($this->baseUrl() . '/newsletters', (string) $request->getUri());
+        self::assertSame(
+            ['name' => 'New Newsletter', 'subdomain' => 'new-newsletter'],
+            json_decode((string) $request->getBody(), true),
+        );
+        self::assertSame('Bearer test-jwt-token', $request->getHeaderLine('Authorization'));
+    }
+
+    public function testCreateValidationErrorThrows(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueResponse(new Response(422, [], json_encode([
+            'message' => 'The given data was invalid.',
+            'errors' => ['subdomain' => ['The subdomain has already been taken.']],
+        ], JSON_THROW_ON_ERROR)));
+
+        $client = $this->client($http);
+
+        try {
+            $client->post->newsletters->create(['name' => 'X', 'subdomain' => 'taken']);
+            self::fail('Expected ValidationFailedException to be thrown.');
+        } catch (ValidationFailedException $e) {
+            self::assertSame(422, $e->statusCode);
+            self::assertSame(['The subdomain has already been taken.'], $e->errors['subdomain']);
+        }
+    }
 }
