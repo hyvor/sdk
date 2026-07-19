@@ -375,7 +375,7 @@ final class WebsiteTest extends TestCase
     public function testRateLimitRetriesThenSucceeds(): void
     {
         $http = new FakeHttpClient();
-        $http->queueResponse(new Response(429, ['retry-after' => '0'], json_encode(['message' => 'Too many requests'])));
+        $http->queueResponse(new Response(429, ['retry-after' => '0'], json_encode(['message' => 'Too many requests'], JSON_THROW_ON_ERROR)));
         $http->queueResponse(new Response(200, [], json_encode(
             $this->sampleWebsiteData(['id' => 1, 'name' => 'Site']),
             JSON_THROW_ON_ERROR,
@@ -391,8 +391,8 @@ final class WebsiteTest extends TestCase
     public function testRateLimitExhaustsRetriesAndThrows(): void
     {
         $http = new FakeHttpClient();
-        $http->queueResponse(new Response(429, ['retry-after' => '0'], json_encode(['message' => 'Too many requests'])));
-        $http->queueResponse(new Response(429, ['retry-after' => '0'], json_encode(['message' => 'Too many requests'])));
+        $http->queueResponse(new Response(429, ['retry-after' => '0'], json_encode(['message' => 'Too many requests'], JSON_THROW_ON_ERROR)));
+        $http->queueResponse(new Response(429, ['retry-after' => '0'], json_encode(['message' => 'Too many requests'], JSON_THROW_ON_ERROR)));
 
         $client = $this->client($http, retryMaxAttempts: 2);
 
@@ -403,8 +403,8 @@ final class WebsiteTest extends TestCase
     public function testServerErrorThrows(): void
     {
         $http = new FakeHttpClient();
-        $http->queueResponse(new Response(500, [], json_encode(['message' => 'Internal error'])));
-        $http->queueResponse(new Response(500, [], json_encode(['message' => 'Internal error'])));
+        $http->queueResponse(new Response(500, [], json_encode(['message' => 'Internal error'], JSON_THROW_ON_ERROR)));
+        $http->queueResponse(new Response(500, [], json_encode(['message' => 'Internal error'], JSON_THROW_ON_ERROR)));
 
         $client = $this->client($http, retryMaxAttempts: 2);
 

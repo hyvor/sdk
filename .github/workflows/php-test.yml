@@ -18,27 +18,17 @@ defaults:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version: ['8.4', '8.5']
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up PHP ${{ matrix.php-version }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: curl, json
-          coverage: none
+      - name: Build and start container
+        run: docker compose up -d --build
 
       - name: Validate composer.json
-        run: composer validate --strict
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: docker compose exec php composer validate --strict
 
       - name: Run phpstan
-        run: composer phpstan
+        run: docker compose exec php ./vendor/bin/phpstan
 
       - name: Run tests
-        run: composer test
+        run: docker compose exec php ./vendor/bin/phpunit

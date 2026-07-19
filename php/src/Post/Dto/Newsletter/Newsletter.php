@@ -71,6 +71,11 @@ final class Newsletter
 
         public readonly FormColorPalette $form_default_color_palette,
         public readonly int $form_input_border_radius,
+
+        /**
+         * @var array<string, string>
+         */
+        public readonly array $metadata
     ) {
     }
 }

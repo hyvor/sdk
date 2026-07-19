@@ -71,7 +71,7 @@ final class HyvorClient
             );
         }
 
-        $transport = fn($product) => new Transport(
+        $transport = fn(string $product) => new Transport(
             httpClient: $httpClient,
             requestFactory: $requestFactory,
             streamFactory: $streamFactory,

@@ -30,7 +30,7 @@ final class ErrorMapper
         return match (true) {
             $statusCode === 422 => new ValidationFailedException(
                 $message,
-                is_array($body['errors'] ?? null) ? $body['errors'] : [],
+                self::normalizeValidationErrors($body),
                 $body,
             ),
             $statusCode === 429 => new RateLimitException(
@@ -79,5 +79,30 @@ final class ErrorMapper
         $header = $response->getHeaderLine('retry-after');
 
         return $header !== '' && is_numeric($header) ? (int) $header : null;
+    }
+
+    /**
+     * @param array<mixed>|null $body
+     * @return array<string, array<int, string>>
+     */
+    private static function normalizeValidationErrors(?array $body): array
+    {
+        $errors = $body['errors'] ?? null;
+
+        if (!is_array($errors)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($errors as $field => $messages) {
+            if (!is_string($field) || !is_array($messages)) {
+                continue;
+            }
+
+            $normalized[$field] = array_values(array_filter($messages, 'is_string'));
+        }
+
+        return $normalized;
     }
 }
