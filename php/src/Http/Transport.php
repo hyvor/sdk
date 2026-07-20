@@ -139,14 +139,15 @@ final class Transport
     }
 
     /**
+     * @param callable(): RequestInterface $buildRequest
      * @return array<mixed>
      *
      * @throws HyvorApiException
      */
     private function execute(?RequestOptions $options, callable $buildRequest): array
     {
-        $maxAttempts = max(1, $options?->retryMaxAttempts ?? $this->defaultRetryMaxAttempts);
-        $backoffFactor = $options?->retryBackoffFactor ?? $this->defaultRetryBackoffFactor;
+        $maxAttempts = max(1, $options->retryMaxAttempts ?? $this->defaultRetryMaxAttempts);
+        $backoffFactor = $options->retryBackoffFactor ?? $this->defaultRetryBackoffFactor;
 
         $lastException = null;
 
@@ -170,7 +171,7 @@ final class Transport
                 return self::decodeSuccessBody($response);
             }
 
-            $exception = ErrorMapper::fromResponse($response);
+            $exception = ErrorMapper::fromResponse($response, $request);
 
             if (ErrorMapper::isRetryable($response->getStatusCode()) && $attempt < $maxAttempts) {
                 $lastException = $exception;
@@ -248,7 +249,7 @@ final class Transport
         // headers from TalkClient::website(), and endpoint-specific ones
         // like X-ID-Type); $options->headers is the caller's per-call
         // override and is applied last so it always wins.
-        foreach ([...$extraHeaders, ...($options?->headers ?? [])] as $name => $value) {
+        foreach ([...$extraHeaders, ...($options->headers ?? [])] as $name => $value) {
             $request = $request->withHeader($name, $value);
         }
 

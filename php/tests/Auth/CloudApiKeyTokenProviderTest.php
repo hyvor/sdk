@@ -34,7 +34,7 @@ final class CloudApiKeyTokenProviderTest extends TestCase
     public function testThrowsAuthenticationExceptionOnFailedExchange(): void
     {
         $http = new FakeHttpClient();
-        $http->queueResponse(new Response(401, [], json_encode(['message' => 'Invalid API key'])));
+        $http->queueResponse(new Response(401, [], json_encode(['message' => 'Invalid API key'], JSON_THROW_ON_ERROR)));
 
         $factory = new Psr17Factory();
         $provider = new CloudApiKeyTokenProvider('bad-key', 'https://hyvor.com', $http, $factory, $factory, new NullLogger());

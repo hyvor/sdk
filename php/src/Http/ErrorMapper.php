@@ -11,6 +11,7 @@ use Hyvor\Sdk\Exceptions\NotFoundException;
 use Hyvor\Sdk\Exceptions\RateLimitException;
 use Hyvor\Sdk\Exceptions\ServerErrorException;
 use Hyvor\Sdk\Exceptions\ValidationFailedException;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -18,19 +19,21 @@ use Psr\Http\Message\ResponseInterface;
  */
 final class ErrorMapper
 {
-    public static function fromResponse(ResponseInterface $response): HyvorApiException
+    public static function fromResponse(ResponseInterface $response, RequestInterface $request): HyvorApiException
     {
         $statusCode = $response->getStatusCode();
         $body = self::decodeBody($response);
+        $requestMethod = $request->getMethod();
+        $requestUrl = (string) $request->getUri();
 
         $message = is_array($body) && is_string($body['message'] ?? null)
             ? $body['message']
-            : "Hyvor API request failed with status {$statusCode}";
+            : "{$requestMethod} {$requestUrl} returned HTTP {$statusCode}";
 
         return match (true) {
             $statusCode === 422 => new ValidationFailedException(
                 $message,
-                is_array($body['errors'] ?? null) ? $body['errors'] : [],
+                self::normalizeValidationErrors($body),
                 $body,
             ),
             $statusCode === 429 => new RateLimitException(
@@ -79,5 +82,30 @@ final class ErrorMapper
         $header = $response->getHeaderLine('retry-after');
 
         return $header !== '' && is_numeric($header) ? (int) $header : null;
+    }
+
+    /**
+     * @param array<mixed>|null $body
+     * @return array<string, array<int, string>>
+     */
+    private static function normalizeValidationErrors(?array $body): array
+    {
+        $errors = $body['errors'] ?? null;
+
+        if (!is_array($errors)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($errors as $field => $messages) {
+            if (!is_string($field) || !is_array($messages)) {
+                continue;
+            }
+
+            $normalized[$field] = array_values(array_filter($messages, 'is_string'));
+        }
+
+        return $normalized;
     }
 }
