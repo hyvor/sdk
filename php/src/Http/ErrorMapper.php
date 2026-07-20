@@ -11,6 +11,7 @@ use Hyvor\Sdk\Exceptions\NotFoundException;
 use Hyvor\Sdk\Exceptions\RateLimitException;
 use Hyvor\Sdk\Exceptions\ServerErrorException;
 use Hyvor\Sdk\Exceptions\ValidationFailedException;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -18,14 +19,16 @@ use Psr\Http\Message\ResponseInterface;
  */
 final class ErrorMapper
 {
-    public static function fromResponse(ResponseInterface $response): HyvorApiException
+    public static function fromResponse(ResponseInterface $response, RequestInterface $request): HyvorApiException
     {
         $statusCode = $response->getStatusCode();
         $body = self::decodeBody($response);
+        $requestMethod = $request->getMethod();
+        $requestUrl = (string) $request->getUri();
 
         $message = is_array($body) && is_string($body['message'] ?? null)
             ? $body['message']
-            : "Hyvor API request failed with status {$statusCode}";
+            : "{$requestMethod} {$requestUrl} returned HTTP {$statusCode}";
 
         return match (true) {
             $statusCode === 422 => new ValidationFailedException(

@@ -171,7 +171,7 @@ final class Transport
                 return self::decodeSuccessBody($response);
             }
 
-            $exception = ErrorMapper::fromResponse($response);
+            $exception = ErrorMapper::fromResponse($response, $request);
 
             if (ErrorMapper::isRetryable($response->getStatusCode()) && $attempt < $maxAttempts) {
                 $lastException = $exception;
