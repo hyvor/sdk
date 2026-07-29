@@ -20,7 +20,7 @@ final class NewsletterTest extends PostTestCase
     private function sampleNewsletterData(array $overrides = []): array
     {
         return array_merge([
-            'id' => 'nl_42',
+            'id' => 42,
             'subdomain' => 'my-newsletter',
             'created_at' => 1700000000,
             'name' => 'My Newsletter',
@@ -77,6 +77,8 @@ final class NewsletterTest extends PostTestCase
 
             'form_default_color_palette' => 'os',
             'form_input_border_radius' => 4,
+
+            'metadata' => [],
         ], $overrides);
     }
 
@@ -87,7 +89,7 @@ final class NewsletterTest extends PostTestCase
 
         $newsletter = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->get();
 
-        self::assertSame('nl_42', $newsletter->id);
+        self::assertSame(42, $newsletter->id);
         self::assertSame('My Newsletter', $newsletter->name);
         self::assertSame(
             \Hyvor\Sdk\Post\Dto\Newsletter\FormColorPalette::OS,
@@ -115,7 +117,7 @@ final class NewsletterTest extends PostTestCase
 
         $newsletter = $client->post->newsletter(self::NEWSLETTER_ID, 'resource-api-key')->get();
 
-        self::assertSame('nl_42', $newsletter->id);
+        self::assertSame(42, $newsletter->id);
         self::assertSame($this->baseUrl() . '/newsletter', (string) $http->requests[0]->getUri());
         self::assertSame('Bearer resource-api-key', $http->requests[0]->getHeaderLine('Authorization'));
         self::assertSame('nl_42', $http->requests[0]->getHeaderLine('X-Newsletter-Id'));
@@ -173,7 +175,7 @@ final class NewsletterTest extends PostTestCase
     {
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleNewsletterData([
-            'id' => 'nl_7',
+            'id' => 7,
             'subdomain' => 'new-newsletter',
             'name' => 'New Newsletter',
         ]), 201);
@@ -184,7 +186,7 @@ final class NewsletterTest extends PostTestCase
             'subdomain' => 'new-newsletter',
         ]);
 
-        self::assertSame('nl_7', $newsletter->id);
+        self::assertSame(7, $newsletter->id);
         self::assertSame('New Newsletter', $newsletter->name);
         self::assertSame('new-newsletter', $newsletter->subdomain);
 
@@ -196,6 +198,20 @@ final class NewsletterTest extends PostTestCase
             json_decode((string) $request->getBody(), true),
         );
         self::assertSame('Bearer test-jwt-token', $request->getHeaderLine('Authorization'));
+    }
+
+    public function testDelete(): void
+    {
+        $http = new FakeHttpClient();
+        $this->queueJson($http, []);
+
+        $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->delete();
+
+        $request = $http->requests[0];
+        self::assertSame('DELETE', $request->getMethod());
+        self::assertSame($this->baseUrl() . '/newsletter', (string) $request->getUri());
+        self::assertSame('Bearer test-jwt-token', $request->getHeaderLine('Authorization'));
+        self::assertSame('nl_42', $request->getHeaderLine('X-Newsletter-Id'));
     }
 
     public function testCreateValidationErrorThrows(): void
