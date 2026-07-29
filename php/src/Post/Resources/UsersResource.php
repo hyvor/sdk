@@ -27,12 +27,37 @@ final class UsersResource extends NewsletterScopedResource
     }
 
     /**
-     * DELETE /users/{id}
+     * POST /users
      *
+     * @param array{
+     *     user_id: int,
+     *     on_duplicate?: 'throw'|'ignore',
+     * } $data user_id: the user's id in HYVOR. on_duplicate:
+     *  what to do if the user is already added to the newsletter; throw
+     *  returns a 400 error (default), ignore returns the existing user
+     *  without an error.
      * @throws HyvorApiException
      */
-    public function delete(int $id, ?RequestOptions $options = null): void
+    public function create(array $data, ?RequestOptions $options = null): User
     {
-        $this->request('DELETE', $this->path("/users/{$id}"), null, $options);
+        $result = $this->request('POST', $this->path('/users'), $data, $options);
+
+        return $this->transport->denormalize($result, User::class);
+    }
+
+    /**
+     * DELETE /users
+     *
+     * @param array{
+     *     user_id?: int,
+     *     id?: int,
+     * } $data one of user_id or id is required. user_id: the user's id in
+     *  HYVOR. id: the user's id in this newsletter's user
+     *  list.
+     * @throws HyvorApiException
+     */
+    public function delete(array $data, ?RequestOptions $options = null): void
+    {
+        $this->request('DELETE', $this->path('/users'), $data, $options);
     }
 }

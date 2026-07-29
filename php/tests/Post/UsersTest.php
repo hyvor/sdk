@@ -30,15 +30,41 @@ final class UsersTest extends PostTestCase
         self::assertSame($this->baseUrl() . '/users', (string) $http->requests[0]->getUri());
     }
 
+    public function testCreate(): void
+    {
+        $http = new FakeHttpClient();
+        $this->queueJson($http, [
+            'id' => 1,
+            'role' => 'admin',
+            'created_at' => 1700000000,
+            'user' => $this->sampleUserMini(),
+        ], 201);
+
+        $user = $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->users->create(
+            ['user_id' => 5, 'on_duplicate' => 'ignore'],
+        );
+
+        self::assertSame(UserRole::ADMIN, $user->role);
+
+        $request = $http->requests[0];
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame($this->baseUrl() . '/users', (string) $request->getUri());
+        self::assertSame(
+            ['user_id' => 5, 'on_duplicate' => 'ignore'],
+            json_decode((string) $request->getBody(), true),
+        );
+    }
+
     public function testDelete(): void
     {
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->users->delete(1);
+        $this->client($http)->post->newsletter(self::NEWSLETTER_ID)->users->delete(['user_id' => 5]);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());
-        self::assertSame($this->baseUrl() . '/users/1', (string) $request->getUri());
+        self::assertSame($this->baseUrl() . '/users', (string) $request->getUri());
+        self::assertSame(['user_id' => 5], json_decode((string) $request->getBody(), true));
     }
 }
