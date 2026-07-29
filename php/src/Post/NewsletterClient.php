@@ -167,4 +167,19 @@ final class NewsletterClient
 
         return $this->transport->denormalize($result, Newsletter::class);
     }
+
+    /**
+     * DELETE /newsletter
+     */
+    public function delete(?RequestOptions $options = null): void
+    {
+        $this->transport->request(
+            'DELETE',
+            $this->path('/newsletter'),
+            null,
+            $options,
+            $this->apiKey,
+            $this->resourceHeaders,
+        );
+    }
 }
