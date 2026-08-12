@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Hyvor\Sdk\Post\Resources;
+namespace Hyvor\Sdk\Post\Newsletter;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Post\Dto\SendingProfile\SendingProfile;

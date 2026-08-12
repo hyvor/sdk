@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post;
 
 use Hyvor\Sdk\Http\Transport;
-use Hyvor\Sdk\Post\Resources\OrgNewslettersResource;
+use Hyvor\Sdk\Post\Org\OrgNewslettersResource;
 
 /**
  * Namespace for the Hyvor Post product, accessible via `$client->post`.

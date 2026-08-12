@@ -7,16 +7,16 @@ namespace Hyvor\Sdk\Post;
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Http\Transport;
 use Hyvor\Sdk\Post\Dto\Newsletter\Newsletter;
-use Hyvor\Sdk\Post\Resources\ExportsResource;
-use Hyvor\Sdk\Post\Resources\InvitesResource;
-use Hyvor\Sdk\Post\Resources\IssuesResource;
-use Hyvor\Sdk\Post\Resources\ListsResource;
-use Hyvor\Sdk\Post\Resources\MediaResource;
-use Hyvor\Sdk\Post\Resources\SendingProfilesResource;
-use Hyvor\Sdk\Post\Resources\SubscriberMetadataDefinitionsResource;
-use Hyvor\Sdk\Post\Resources\SubscribersResource;
-use Hyvor\Sdk\Post\Resources\TemplatesResource;
-use Hyvor\Sdk\Post\Resources\UsersResource;
+use Hyvor\Sdk\Post\Newsletter\ExportsResource;
+use Hyvor\Sdk\Post\Newsletter\InvitesResource;
+use Hyvor\Sdk\Post\Newsletter\IssuesResource;
+use Hyvor\Sdk\Post\Newsletter\ListsResource;
+use Hyvor\Sdk\Post\Newsletter\MediaResource;
+use Hyvor\Sdk\Post\Newsletter\SendingProfilesResource;
+use Hyvor\Sdk\Post\Newsletter\SubscriberMetadataDefinitionsResource;
+use Hyvor\Sdk\Post\Newsletter\SubscribersResource;
+use Hyvor\Sdk\Post\Newsletter\TemplatesResource;
+use Hyvor\Sdk\Post\Newsletter\UsersResource;
 use Hyvor\Sdk\RequestOptions;
 
 /**
