@@ -16,16 +16,13 @@ final class Issue
         public readonly IssueStatus $status,
         /** @var int[] */
         public readonly array $lists,
-
         public readonly ?int $scheduled_at,
         public readonly ?int $sending_at,
         public readonly ?int $sent_at,
         public readonly int $total_sends,
-
         public readonly ?string $from_email,
         public readonly ?string $from_name,
         public readonly ?string $reply_to_email,
-
         public readonly int $sendable_subscribers_count,
     ) {
     }

@@ -74,7 +74,7 @@ final class HyvorClient
 
         $serializer = SerializerFactory::create();
 
-        $transport = fn(string $product) => new Transport(
+        $transport = fn (string $product) => new Transport(
             httpClient: $httpClient,
             requestFactory: $requestFactory,
             streamFactory: $streamFactory,

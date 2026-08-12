@@ -18,7 +18,6 @@ final class Send
         public readonly ?Subscriber $subscriber,
         public readonly string $email,
         public readonly SendStatus $status,
-
         public readonly ?int $sent_at,
         public readonly ?int $failed_at,
         public readonly ?int $delivered_at,
