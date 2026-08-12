@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Product\Talk;
 
 use Hyvor\Sdk\Http\Transport;
-use Hyvor\Sdk\Product\Talk\Resources\WebsitesResource;
+use Hyvor\Sdk\Product\Talk\Org\OrgWebsitesResource;
 
 /**
  * Namespace for the Hyvor Talk product, accessible via `$client->talk`.
@@ -13,13 +13,13 @@ use Hyvor\Sdk\Product\Talk\Resources\WebsitesResource;
 final class TalkClient
 {
     /**
-     * Org-level access to all websites (e.g. `->create()`).
+     * Org-level access to all websites, accessible via `$client->talk->websites`.
      */
-    public readonly WebsitesResource $websites;
+    public readonly OrgWebsitesResource $websites;
 
     public function __construct(private readonly Transport $transport)
     {
-        $this->websites = new WebsitesResource($this->transport);
+        $this->websites = new OrgWebsitesResource($this->transport);
     }
 
     /**
@@ -30,8 +30,8 @@ final class TalkClient
      *  website. If omitted, the client's org-level auth is used instead.
      * @param array<string, string> $headers Default headers merged into
      *  every request made through the returned client (and its
-     *  sub-resources), e.g. X-AUTH-USER-EMAIL to act as a specific
-     *  moderator. Can be overridden per-call via `RequestOptions::$headers`.
+     *  sub-resources). Can be overridden per-call via
+     *  `RequestOptions::$headers`.
      */
     public function website(int|string $websiteId, ?string $apiKey = null, array $headers = []): WebsiteClient
     {

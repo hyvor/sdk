@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Product\Talk\Dto\Moderator;
 
-use Hyvor\Sdk\Product\Talk\Dto\User\UserMini;
-use Hyvor\Sdk\Product\Talk\Dto\User\UserRole;
+use Hyvor\Sdk\Product\Talk\Dto\Website\Website;
 
+/**
+ * The moderator entity embedded in a `Website`'s `mods` relation.
+ */
 final class Mod
 {
     public function __construct(
-        public readonly int $id,
-        public readonly int $created_at,
-        public readonly UserRole $role,
-        public readonly UserMini $user,
-        public readonly ?UserMini $sso_user,
-        public readonly bool $is_alias_used,
+        public readonly int|string $id,
+        public readonly int|string $userId,
+        public readonly string $role,
+        public readonly int $websiteId,
+        public readonly ?Website $website,
+        public readonly string $createdAt,
     ) {
     }
 }
