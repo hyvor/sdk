@@ -153,6 +153,12 @@ const sends = client.relay.project(projectId, "your-product-api-key").sends.list
   - all endpoints should be tested with mock HTTP responses
   - abstract commonly used methods into a base test class or helper functions
 
+### OpenAPI
+
+- All clients should be generated from OpenAPI specs (./openapi/*.json).
+- Use metadata (descriptions, etc.) from OpenAPI spec to generate doc comments in the SDK. Avoid adding extra comments that are not in the OpenAPI spec.
+- Org-level endpoints have a `org-endpoint` tag.
+
 ### PHP
 
 Folder structure:
