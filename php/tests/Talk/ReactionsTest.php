@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Reaction\ListReactionsRequest;
-use Hyvor\Sdk\Talk\Dto\Reaction\ReactionType;
+use Hyvor\Sdk\Product\Talk\Dto\Reaction\ListReactionsRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Reaction\ReactionType;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

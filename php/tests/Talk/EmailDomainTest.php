@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\EmailDomain\CreateEmailDomainRequest;
+use Hyvor\Sdk\Product\Talk\Dto\EmailDomain\CreateEmailDomainRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

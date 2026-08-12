@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Comment\BulkModerateRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\CommentStatus;
-use Hyvor\Sdk\Talk\Dto\Comment\CreateCommentRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\CreateFlagRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\GetFlagsRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\GetVotersRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\ListCommentsRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\MarkCommentsReadRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\ReplyToCommentRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\UpdateCommentRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\VoteDirection;
-use Hyvor\Sdk\Talk\Dto\Comment\VoteOnCommentRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\BulkModerateRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\CommentStatus;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\CreateCommentRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\CreateFlagRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\GetFlagsRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\GetVotersRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\ListCommentsRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\MarkCommentsReadRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\ReplyToCommentRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\UpdateCommentRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\VoteDirection;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\VoteOnCommentRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

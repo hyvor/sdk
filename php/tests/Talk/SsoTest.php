@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Sso\DeleteSsoUserRequest;
-use Hyvor\Sdk\Talk\Dto\Sso\ListSsoUsersRequest;
-use Hyvor\Sdk\Talk\Dto\Sso\UpsertSsoUserRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Sso\DeleteSsoUserRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Sso\ListSsoUsersRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Sso\UpsertSsoUserRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

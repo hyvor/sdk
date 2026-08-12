@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Integration\SetSlackChannelRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Integration\SetSlackChannelRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

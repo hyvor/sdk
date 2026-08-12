@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Webhook\CreateWebhookRequest;
-use Hyvor\Sdk\Talk\Dto\Webhook\UpdateWebhookRequest;
-use Hyvor\Sdk\Talk\Dto\Webhook\WebhookEvent;
+use Hyvor\Sdk\Product\Talk\Dto\Webhook\CreateWebhookRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Webhook\UpdateWebhookRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Webhook\WebhookEvent;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

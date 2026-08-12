@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk;
 
+use Http\Discovery\Psr17FactoryDiscovery;
+use Http\Discovery\Psr18ClientDiscovery;
 use Hyvor\Sdk\Auth\CloudApiKeyTokenProvider;
 use Hyvor\Sdk\Auth\TokenProviderInterface;
 use Hyvor\Sdk\Http\ProductBaseUrl;
 use Hyvor\Sdk\Http\Transport;
-use Hyvor\Sdk\Post\PostClient;
+use Hyvor\Sdk\Product\Post\PostClient;
+use Hyvor\Sdk\Product\Talk\TalkClient;
 use Hyvor\Sdk\Serialization\SerializerFactory;
-use Hyvor\Sdk\Talk\TalkClient;
-use Http\Discovery\Psr17FactoryDiscovery;
-use Http\Discovery\Psr18ClientDiscovery;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;

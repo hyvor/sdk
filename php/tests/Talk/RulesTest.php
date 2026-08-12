@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Comment\CommentStatus;
-use Hyvor\Sdk\Talk\Dto\Rule\RuleType;
-use Hyvor\Sdk\Talk\Dto\Rule\UpsertRuleRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Comment\CommentStatus;
+use Hyvor\Sdk\Product\Talk\Dto\Rule\RuleType;
+use Hyvor\Sdk\Product\Talk\Dto\Rule\UpsertRuleRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

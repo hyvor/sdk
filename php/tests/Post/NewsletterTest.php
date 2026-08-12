@@ -92,7 +92,7 @@ final class NewsletterTest extends PostTestCase
         self::assertSame(42, $newsletter->id);
         self::assertSame('My Newsletter', $newsletter->name);
         self::assertSame(
-            \Hyvor\Sdk\Post\Dto\Newsletter\FormColorPalette::OS,
+            \Hyvor\Sdk\Product\Post\Dto\Newsletter\FormColorPalette::OS,
             $newsletter->form_default_color_palette,
         );
 

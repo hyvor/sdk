@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Domain\CreateDomainsRequest;
-use Hyvor\Sdk\Talk\Dto\Domain\DeleteDomainRequest;
-use Hyvor\Sdk\Talk\Dto\Domain\DomainOnDuplicate;
-use Hyvor\Sdk\Talk\Dto\Domain\UpdateDomainRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Domain\CreateDomainsRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Domain\DeleteDomainRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Domain\DomainOnDuplicate;
+use Hyvor\Sdk\Product\Talk\Dto\Domain\UpdateDomainRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

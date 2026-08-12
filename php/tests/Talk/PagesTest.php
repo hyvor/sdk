@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Page\CreatePageRequest;
-use Hyvor\Sdk\Talk\Dto\Page\ListPagesRequest;
-use Hyvor\Sdk\Talk\Dto\Page\PageSort;
-use Hyvor\Sdk\Talk\Dto\Page\ResetPageDataRequest;
-use Hyvor\Sdk\Talk\Dto\Page\UpdatePageRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Page\CreatePageRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Page\ListPagesRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Page\PageSort;
+use Hyvor\Sdk\Product\Talk\Dto\Page\ResetPageDataRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Page\UpdatePageRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

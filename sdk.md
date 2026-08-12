@@ -162,7 +162,7 @@ src/
   Auth/ (for token provider, etc.)
   Exceptions/ (for custom exceptions)
   Http/ (transport)
-  Products/ (for each product namespace)
+  Product/ (for each product namespace)
     Post/
       Dto/ (for response DTOs)
       Newsletter/ (newsletter-level resources)

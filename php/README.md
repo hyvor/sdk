@@ -17,9 +17,7 @@ needed.
 ## Usage
 
 ```php
-use Hyvor\Sdk\HyvorClient;
-use Hyvor\Sdk\Talk\Dto\Website\CreateWebsiteRequest;
-use Hyvor\Sdk\Talk\Dto\Comment\ListCommentsRequest;
+use Hyvor\Sdk\HyvorClient;use Hyvor\Sdk\Product\Talk\Dto\Comment\ListCommentsRequest;use Hyvor\Sdk\Product\Talk\Dto\Website\CreateWebsiteRequest;
 
 // org-level access, via a cloud API key
 $client = new HyvorClient(

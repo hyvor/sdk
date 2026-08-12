@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Analytics\AnalyticsGroupBy;
-use Hyvor\Sdk\Talk\Dto\Analytics\CommentAnalyticsRequest;
-use Hyvor\Sdk\Talk\Dto\Analytics\CreditAnalyticsRequest;
-use Hyvor\Sdk\Talk\Dto\Analytics\CreditEvent;
+use Hyvor\Sdk\Product\Talk\Dto\Analytics\AnalyticsGroupBy;
+use Hyvor\Sdk\Product\Talk\Dto\Analytics\CommentAnalyticsRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Analytics\CreditAnalyticsRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Analytics\CreditEvent;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

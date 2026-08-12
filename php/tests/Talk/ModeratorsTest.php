@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\Moderator\AddModeratorRequest;
-use Hyvor\Sdk\Talk\Dto\Moderator\DeleteModeratorRequest;
-use Hyvor\Sdk\Talk\Dto\Moderator\ModeratorOnDuplicate;
-use Hyvor\Sdk\Talk\Dto\Moderator\UpdateModeratorRequest;
-use Hyvor\Sdk\Talk\Dto\User\UserRole;
+use Hyvor\Sdk\Product\Talk\Dto\Moderator\AddModeratorRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Moderator\DeleteModeratorRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Moderator\ModeratorOnDuplicate;
+use Hyvor\Sdk\Product\Talk\Dto\Moderator\UpdateModeratorRequest;
+use Hyvor\Sdk\Product\Talk\Dto\User\UserRole;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

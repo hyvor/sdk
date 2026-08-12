@@ -9,8 +9,8 @@ use Hyvor\Sdk\Exceptions\RateLimitException;
 use Hyvor\Sdk\Exceptions\ServerErrorException;
 use Hyvor\Sdk\Exceptions\ValidationFailedException;
 use Hyvor\Sdk\HyvorClient;
-use Hyvor\Sdk\Talk\Dto\Website\CreateWebsiteRequest;
-use Hyvor\Sdk\Talk\Dto\Website\UpdateWebsiteRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Website\CreateWebsiteRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Website\UpdateWebsiteRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
@@ -243,10 +243,10 @@ final class WebsiteTest extends TestCase
 
         self::assertSame(42, $website->id);
         self::assertSame('My Blog', $website->name);
-        self::assertSame(\Hyvor\Sdk\Talk\Dto\Website\AuthType::HYVOR, $website->auth_type);
-        self::assertSame(\Hyvor\Sdk\Talk\Dto\Website\ColorTheme::OS, $website->color_theme);
+        self::assertSame(\Hyvor\Sdk\Product\Talk\Dto\Website\AuthType::HYVOR, $website->auth_type);
+        self::assertSame(\Hyvor\Sdk\Product\Talk\Dto\Website\ColorTheme::OS, $website->color_theme);
         self::assertSame(
-            \Hyvor\Sdk\Talk\Dto\Website\SpamDetectionFortguardModel::GPT_4O_MINI,
+            \Hyvor\Sdk\Product\Talk\Dto\Website\SpamDetectionFortguardModel::GPT_4O_MINI,
             $website->spam_detection_fortguard_model,
         );
 

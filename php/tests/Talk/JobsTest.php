@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Tests\Talk;
 
 use Hyvor\Sdk\Http\UploadedFile;
-use Hyvor\Sdk\Talk\Dto\Job\ExportDataRequest;
-use Hyvor\Sdk\Talk\Dto\Job\ExportFormat;
-use Hyvor\Sdk\Talk\Dto\Job\ImportCommentsFormat;
-use Hyvor\Sdk\Talk\Dto\Job\ImportCommentsRequest;
-use Hyvor\Sdk\Talk\Dto\Job\JobStatus;
-use Hyvor\Sdk\Talk\Dto\Job\JobType;
-use Hyvor\Sdk\Talk\Dto\Job\ListJobsRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Job\ExportDataRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Job\ExportFormat;
+use Hyvor\Sdk\Product\Talk\Dto\Job\ImportCommentsFormat;
+use Hyvor\Sdk\Product\Talk\Dto\Job\ImportCommentsRequest;
+use Hyvor\Sdk\Product\Talk\Dto\Job\JobStatus;
+use Hyvor\Sdk\Product\Talk\Dto\Job\JobType;
+use Hyvor\Sdk\Product\Talk\Dto\Job\ListJobsRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 

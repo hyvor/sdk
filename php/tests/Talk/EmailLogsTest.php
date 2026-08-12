@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
-use Hyvor\Sdk\Talk\Dto\EmailLog\EmailLogType;
-use Hyvor\Sdk\Talk\Dto\EmailLog\ListEmailLogsRequest;
+use Hyvor\Sdk\Product\Talk\Dto\EmailLog\EmailLogType;
+use Hyvor\Sdk\Product\Talk\Dto\EmailLog\ListEmailLogsRequest;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 
