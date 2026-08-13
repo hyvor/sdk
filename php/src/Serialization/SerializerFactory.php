@@ -42,7 +42,6 @@ final class SerializerFactory
         return new Serializer([
             new BackedEnumNormalizer(),
             new ArrayDenormalizer(),
-            new CommentingUserDenormalizer(),
             new ObjectNormalizer(propertyTypeExtractor: $propertyInfo),
         ]);
     }

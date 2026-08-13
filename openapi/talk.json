@@ -1,0 +1,644 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Hyvor Talk",
+    "description": "Privacy-first Commenting Platform",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/console/v1/{websiteId}/domains": {
+      "post": {
+        "operationId": "post_api_console_app_api_console_domain_update",
+        "parameters": [
+          {
+            "name": "websiteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "\\d+"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDomainsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated list of domains for the website.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DomainObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/v1/{websiteId}/mods": {
+      "post": {
+        "operationId": "post_api_console_app_api_console_mod_create",
+        "parameters": [
+          {
+            "name": "websiteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "\\d+"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateModInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns the created moderator object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModObject"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Returns the existing moderator object, if `on_duplicate` is `ignore` and the user is already a moderator.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_api_console_app_api_console_mod_delete",
+        "parameters": [
+          {
+            "name": "websiteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "\\d+"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteModInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Returns an empty object on successful deletion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/v1/websites": {
+      "post": {
+        "tags": [
+          "org-endpoint"
+        ],
+        "operationId": "post_api_console_app_api_console_website_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebsiteInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns the created website object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/v1/{websiteId}/website": {
+      "delete": {
+        "operationId": "delete_api_console_app_api_console_website_delete",
+        "parameters": [
+          {
+            "name": "websiteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "\\d+"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Returns an empty object on successful deletion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateDomainsInput": {
+        "properties": {
+          "domains": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ],
+            "default": []
+          },
+          "operation": {
+            "type": "string",
+            "default": "add",
+            "enum": [
+              "add",
+              "set"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "CreateModInput": {
+        "required": [
+          "user_id"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "role": {
+            "type": "string",
+            "default": "mod",
+            "enum": [
+              "mod",
+              "admin"
+            ]
+          },
+          "on_duplicate": {
+            "type": "string",
+            "default": "throw",
+            "enum": [
+              "throw",
+              "ignore"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "DeleteModInput": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "mod_id": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "type": "object"
+      },
+      "CreateWebsiteInput": {
+        "required": [
+          "name",
+          "domain"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "domain": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "default": [],
+            "additionalProperties": {
+              "nullable": true
+            }
+          },
+          "start_trial": {
+            "type": "boolean",
+            "default": true
+          },
+          "owner_user_id": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "type": "object"
+      },
+      "Domain": {
+        "required": [
+          "id",
+          "websiteId",
+          "domain",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "websiteId": {
+            "type": "integer"
+          },
+          "website": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Website"
+              }
+            ]
+          },
+          "domain": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "Website": {
+        "required": [
+          "id",
+          "name",
+          "domains",
+          "mods",
+          "ownerId",
+          "organizationId",
+          "createdAt",
+          "blocked",
+          "isBlocked",
+          "deleted",
+          "isDeleted",
+          "authType",
+          "ssoStatelessKeyless",
+          "ssoStatelessIsKeyless"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "metadata": {
+            "title": "Arbitrary metadata set by the caller when creating the website (e.g. Hyvor Blogs integration data).",
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {
+              "nullable": true
+            }
+          },
+          "domains": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Domain"
+            }
+          },
+          "mods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Mod"
+            }
+          },
+          "ownerId": {
+            "type": "integer"
+          },
+          "organizationId": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "blocked": {
+            "type": "boolean"
+          },
+          "isBlocked": {
+            "type": "boolean"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "authType": {
+            "type": "string"
+          },
+          "ssoType": {
+            "type": "string",
+            "nullable": true
+          },
+          "ssoPrivateKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "ssoStatelessLoginUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "ssoStatelessKeyless": {
+            "type": "boolean"
+          },
+          "ssoStatelessIsKeyless": {
+            "type": "boolean"
+          },
+          "consoleApiKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBySource": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "Mod": {
+        "required": [
+          "id",
+          "userId",
+          "role",
+          "websiteId",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "userId": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "role": {
+            "type": "string"
+          },
+          "websiteId": {
+            "type": "integer"
+          },
+          "website": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Website"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "DomainObject": {
+        "required": [
+          "id",
+          "domain"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/Domain"
+          }
+        },
+        "type": "object"
+      },
+      "AuthUser": {
+        "required": [
+          "id",
+          "username",
+          "name",
+          "email"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "picture_url": {
+            "type": "string",
+            "nullable": true,
+            "default": null
+          },
+          "location": {
+            "type": "string",
+            "nullable": true,
+            "default": null
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "default": null
+          },
+          "website_url": {
+            "type": "string",
+            "nullable": true,
+            "default": null
+          },
+          "oidc_sub": {
+            "type": "string",
+            "nullable": true,
+            "default": null
+          }
+        },
+        "type": "object"
+      },
+      "ModObject": {
+        "required": [
+          "id",
+          "created_at",
+          "role",
+          "website_id",
+          "user"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "role": {
+            "type": "string"
+          },
+          "website_id": {
+            "type": "integer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUser"
+          }
+        },
+        "type": "object"
+      },
+      "WebsiteObject": {
+        "required": [
+          "id",
+          "name",
+          "organization_id",
+          "owner_id",
+          "created_at",
+          "is_blocked",
+          "is_deleted",
+          "domains"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "organization_id": {
+            "type": "integer"
+          },
+          "owner_id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "is_blocked": {
+            "type": "boolean"
+          },
+          "is_deleted": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {
+              "nullable": true
+            }
+          },
+          "created_by_source": {
+            "type": "string",
+            "nullable": true
+          },
+          "domains": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DomainObject"
+            }
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "org-endpoint"
+    }
+  ]
+}

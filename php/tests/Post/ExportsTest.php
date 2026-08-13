@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\Export\SubscriberExportStatus;
+use Hyvor\Sdk\Product\Post\Dto\Export\SubscriberExportStatus;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 

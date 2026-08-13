@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\Issue\IssueStatus;
-use Hyvor\Sdk\Post\Dto\Issue\SendStatus;
+use Hyvor\Sdk\Product\Post\Dto\Issue\IssueStatus;
+use Hyvor\Sdk\Product\Post\Dto\Issue\SendStatus;
 use Hyvor\Sdk\Tests\Support\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 

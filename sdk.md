@@ -70,10 +70,22 @@ Then, client have product namespaces:
 
 Product APIs to support
 
-- (talk) Hyvor Talk: https://talk.hyvor.com/docs/api-console
-- (blogs) Hyvor Blogs: https://blogs.hyvor.com/docs/api-console
-- (post) Hyvor Post: https://post.hyvor.com/docs/api-console
-- (relay) Hyvor Relay: https://relay.hyvor.com/docs/api-console
+- talk
+  - name: Hyvor Talk
+  - url: https://talk.hyvor.com
+  - docs: https://talk.hyvor.com/docs/api-console
+- blogs
+  - name: Hyvor Blogs
+  - url: https://blogs.hyvor.com
+  - docs: https://blogs.hyvor.com/docs/api-console
+- post
+  - name: Hyvor Post
+  - url: https://post.hyvor.com
+  - docs: https://post.hyvor.com/docs/api-console
+- relay
+  - name: Hyvor Relay
+  - url: https://relay.hyvor.com
+  - docs: https://relay.hyvor.com/docs/api-console
 
 ## Calling the API with a cloud API key
 
@@ -122,6 +134,8 @@ const sends = client.relay.project(projectId, "your-product-api-key").sends.list
 
 ## Rules
 
+### General
+
 - set SDK name to `hyvor/sdk-{language}` (@hyvor for npm, and adjust for others)
 - Github Actions based CI.
 - All inputs and outputs should be typed.
@@ -134,15 +148,44 @@ const sends = client.relay.project(projectId, "your-product-api-key").sends.list
 - return (ex: Rust) or throw (ex: PHP) custom errors (ValidationFailedError, ServerError, RateLimits) that can be used to handle errors gracefully.
 - resource should be a resource name, like `comments`, `posts`, `users`, etc. Always plural, even if the API uses singular.
   - except for the main resource (`website` in talk, `blog` in blogs, `newsletter` in post)
-- Dockerfile should have a stage for running the SDK tests, compose.yaml should provide mounts, etc. and should document testing steps in DEV.md
+- Dockerfile should be configured for running the SDK tests, compose.yaml should provide mounts, etc. and should document testing steps in DEV.md
 - testing
   - all endpoints should be tested with mock HTTP responses
   - abstract commonly used methods into a base test class or helper functions
-- PHP
-  - use PHPStan-friendly array shapes (`@phpstan-type` PHPDoc annotations) for both request and
-    response objects, instead of typed DTO classes — this overrides the general "use enums"
-    guideline above for PHP specifically: closed value sets are also expressed as string-literal
-    unions in the array shape (e.g. `'newest'|'oldest'|...`), not as enum classes
-  - request shapes use optional keys (`key?: type`) to mean "omit to leave unchanged / no filter",
-    matching what the API expects; `Transport::normalize()` recursively strips any literal nulls
-    that slip through as a safety net
+
+### OpenAPI
+
+- All clients should be generated from OpenAPI specs (./openapi/*.json).
+- Use metadata (descriptions, etc.) from OpenAPI spec to generate doc comments in the SDK. Avoid adding extra comments that are not in the OpenAPI spec.
+- Org-level endpoints have a `org-endpoint` tag.
+
+### PHP
+
+Folder structure:
+
+```
+src/
+  Auth/ (for token provider, etc.)
+  Exceptions/ (for custom exceptions)
+  Http/ (transport)
+  Product/ (for each product namespace)
+    Post/
+      Dto/ (for response DTOs)
+      Newsletter/ (newsletter-level resources)
+      Org/ (org-level resources)
+      NewsletterClient
+      PostClient (one method: newsletter(newsletterId, apiKey?): NewsletterClient)
+    Talk/
+      Dto/
+      Website/
+      Org/
+      WebsiteClient
+      TalkClient
+    Blogs/
+    ...
+```
+
+- for inputs, use typed array inputs (phpstan-friendly array shapes). e.g. `$client->talk->websites->create(['name' => 'My Blog']);`.
+  - if inputs have enums, use string-literal unions in the array shape (e.g. `'newest'|'oldest'|...`), not enum classes
+- for outputs, use DTO classes.
+  - in outputs, use enums for closed value sets.

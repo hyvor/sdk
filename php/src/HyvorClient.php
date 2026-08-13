@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk;
 
+use Http\Discovery\Psr17FactoryDiscovery;
+use Http\Discovery\Psr18ClientDiscovery;
 use Hyvor\Sdk\Auth\CloudApiKeyTokenProvider;
 use Hyvor\Sdk\Auth\TokenProviderInterface;
 use Hyvor\Sdk\Http\ProductBaseUrl;
 use Hyvor\Sdk\Http\Transport;
-use Hyvor\Sdk\Post\PostClient;
-use Hyvor\Sdk\Talk\TalkClient;
-use Http\Discovery\Psr17FactoryDiscovery;
-use Http\Discovery\Psr18ClientDiscovery;
+use Hyvor\Sdk\Product\Post\PostClient;
+use Hyvor\Sdk\Product\Talk\TalkClient;
+use Hyvor\Sdk\Serialization\SerializerFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -71,7 +72,9 @@ final class HyvorClient
             );
         }
 
-        $transport = fn(string $product) => new Transport(
+        $serializer = SerializerFactory::create();
+
+        $transport = fn (string $product) => new Transport(
             httpClient: $httpClient,
             requestFactory: $requestFactory,
             streamFactory: $streamFactory,
@@ -81,6 +84,7 @@ final class HyvorClient
             defaultRetryMaxAttempts: $retryMaxAttempts,
             defaultRetryBackoffFactor: $retryBackoffFactor,
             userAgent: 'hyvor/sdk-php/' . Version::VERSION,
+            serializer: $serializer,
         );
 
         $this->talk = new TalkClient($transport('talk'));

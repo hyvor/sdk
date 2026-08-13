@@ -9,7 +9,6 @@ use Hyvor\Sdk\Exceptions\AuthenticationException;
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Exceptions\NetworkException;
 use Hyvor\Sdk\RequestOptions;
-use Hyvor\Sdk\Serialization\SerializerFactory;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -31,8 +30,6 @@ final class Transport
 {
     private const BASE_RETRY_DELAY_MS = 200;
 
-    private readonly Serializer $serializer;
-
     public function __construct(
         private readonly ClientInterface $httpClient,
         private readonly RequestFactoryInterface $requestFactory,
@@ -43,8 +40,8 @@ final class Transport
         private readonly int $defaultRetryMaxAttempts,
         private readonly float $defaultRetryBackoffFactor,
         private readonly string $userAgent,
+        private readonly Serializer $serializer,
     ) {
-        $this->serializer = SerializerFactory::create();
     }
 
     /**

@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Shared helpers for Talk resource tests: a preconfigured client and sample
  * JSON payloads for objects that are nested inside many endpoint responses
- * (User, Page, ...), so each test file doesn't have to redefine them.
+ * (AuthUser, Domain, ...), so each test file doesn't have to redefine them.
  */
 abstract class TalkTestCase extends TestCase
 {
@@ -49,51 +49,18 @@ abstract class TalkTestCase extends TestCase
      * @param array<string, mixed> $overrides
      * @return array<string, mixed>
      */
-    protected function sampleGuestUser(array $overrides = []): array
+    protected function sampleAuthUser(array $overrides = []): array
     {
         return array_merge([
-            'type' => null,
-            'name' => 'Guest',
-            'email' => null,
-            'picture_url' => null,
-        ], $overrides);
-    }
-
-    /**
-     * @param array<string, mixed> $overrides
-     * @return array<string, mixed>
-     */
-    protected function sampleLoggedInUser(array $overrides = []): array
-    {
-        return array_merge([
-            'type' => 'hyvor',
             'id' => 1,
-            'htid' => 'hyvor_1',
-            'sso_id' => '',
-            'name' => 'Bob',
-            'title' => null,
             'username' => 'bob',
-            'email' => null,
+            'name' => 'Bob',
+            'email' => 'bob@example.com',
             'picture_url' => null,
-            'bio' => null,
             'location' => null,
+            'bio' => null,
             'website_url' => null,
-            'created_at' => 1700000000,
-            'last_commented_at' => null,
-            'comments_count' => 0,
-            'state' => 'default',
-            'state_ends_at' => null,
-            'note' => null,
-            'ban_reason' => null,
-            'reputation' => 0,
-            'badge_ids' => [],
-            'register_ip' => null,
-            'last_ip' => null,
-            'days_visited' => 0,
-            'last_seen_at' => null,
-            'emails_sent' => 0,
-            'last_emailed_at' => null,
-            'role' => null,
+            'oidc_sub' => null,
         ], $overrides);
     }
 
@@ -101,71 +68,15 @@ abstract class TalkTestCase extends TestCase
      * @param array<string, mixed> $overrides
      * @return array<string, mixed>
      */
-    protected function sampleUserMini(array $overrides = []): array
+    protected function sampleDomain(array $overrides = []): array
     {
         return array_merge([
             'id' => 1,
-            'type' => 'hyvor',
-            'htid' => 'hyvor_1',
-            'name' => 'Bob',
-            'username' => 'bob',
-            'picture_url' => null,
-        ], $overrides);
-    }
-
-    /**
-     * @param array<string, mixed> $overrides
-     * @return array<string, mixed>
-     */
-    protected function samplePage(array $overrides = []): array
-    {
-        return array_merge([
-            'id' => 1,
-            'created_at' => 1700000000,
-            'last_commented_at' => null,
-            'title' => 'My Post',
-            'identifier' => 'post-1',
-            'url' => 'https://example.com/post-1',
-            'is_closed' => false,
-            'is_premoderation_on' => false,
-            'author_email' => null,
-            'comments_count' => 0,
-            'ratings' => ['average' => 0, 'count' => 0],
-            'reactions' => ['superb' => 0, 'love' => 0, 'wow' => 0, 'sad' => 0, 'laugh' => 0, 'angry' => 0],
-        ], $overrides);
-    }
-
-    /**
-     * @param array<string, mixed> $overrides
-     * @return array<string, mixed>
-     */
-    protected function sampleComment(array $overrides = []): array
-    {
-        return array_merge([
-            'id' => 5,
-            'created_at' => 1700000000,
-            'user' => $this->sampleGuestUser(),
-            'page' => $this->samplePage(),
-            'body' => 'Hello',
-            'body_html' => '<p>Hello</p>',
-            'status' => 'published',
-            'parent' => null,
-            'ip_address' => null,
-            'has_mod_seen' => true,
-            'has_mod_replied' => false,
-            'is_featured' => false,
-            'is_loved' => false,
-            'is_edited' => false,
-            'has_questions' => false,
-            'has_links' => false,
-            'has_media' => false,
-            'is_automatic_spam' => false,
-            'flags_count' => 0,
-            'last_flag_at' => null,
-            'upvotes' => 0,
-            'downvotes' => 0,
-            'user_vote' => null,
-            'history' => [],
+            'websiteId' => self::WEBSITE_ID,
+            'website' => null,
+            'domain' => 'example.com',
+            'createdAt' => '2023-11-14T22:13:20+00:00',
+            'updatedAt' => '2023-11-14T22:13:20+00:00',
         ], $overrides);
     }
 }
