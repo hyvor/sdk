@@ -2,6 +2,17 @@ How to write an SDK:
 
 ## Client
 
+The general model below is one unified client (`HyvorClient`) with a namespace per product
+(`client.talk`, `client.post`, ...). **PHP deviates from this**: instead of one `hyvor/sdk`
+package with a `HyvorClient` facade, PHP ships one Composer package per product
+(`hyvor/sdk-talk`, `hyvor/sdk-post`, ...) plus an internal `hyvor/sdk-core` package for shared
+transport/auth/serialization, so installing one product doesn't pull in every other product's
+DTOs. Each product's client (`TalkClient`, `PostClient`, ...) is constructed directly - there is
+no `HyvorClient`. See the PHP section under Rules below for the concrete package layout. Whether
+JS/Python follow the same per-product-package split (vs. this doc's unified-client model) is not
+decided here - npm and PyPI have different packaging norms than Packagist, and that call should be
+made explicitly when those SDKs are started, not inherited silently from the PHP precedent.
+
 First, we have a client:
 
 ```ts
@@ -136,14 +147,14 @@ const sends = client.relay.project(projectId, "your-product-api-key").sends.list
 
 ### General
 
-- set SDK name to `hyvor/sdk-{language}` (@hyvor for npm, and adjust for others)
+- set SDK name to `hyvor/sdk-{language}` (@hyvor for npm, and adjust for others), or `hyvor/sdk-{product}-{language}` per product package when the SDK is split that way (see PHP below)
 - Github Actions based CI.
 - All inputs and outputs should be typed.
 - use typed DTOs for request and response objects.
   - when a field supports multiple types, prefer using the object type (ex: use an Address object instead of a string email address).
   - if the language supports it, use enums
 - use list() for list endpoints, get() for single resource endpoints, create() for POST endpoints, update() for PUT/PATCH endpoints, delete() for DELETE endpoints.
-- set the User-Agent header in API requests to hyvor/sdk-{language}/{version} (ex: hyvor/sdk-php/1.0.0)
+- set the User-Agent header in API requests to hyvor/sdk-{language}/{version} (ex: hyvor/sdk-php/1.0.0), or hyvor/sdk-{product}-{language}/{version} when the SDK is split into per-product packages (ex: hyvor/sdk-talk-php/1.0.0)
 - support injecting a logger and HTTP client for testing, mocking, and debugging.
 - return (ex: Rust) or throw (ex: PHP) custom errors (ValidationFailedError, ServerError, RateLimits) that can be used to handle errors gracefully.
 - resource should be a resource name, like `comments`, `posts`, `users`, etc. Always plural, even if the API uses singular.
@@ -161,31 +172,60 @@ const sends = client.relay.project(projectId, "your-product-api-key").sends.list
 
 ### PHP
 
-Folder structure:
+The PHP SDK is split into one Composer package per product, plus a shared internal core package -
+not one monolithic `hyvor/sdk` package. This keeps installs small: a consumer who only uses Talk
+never pulls in Post's DTOs (or Blogs'/Relay's, once those exist).
+
+Packages (each `php/packages/<dir>` in the monorepo):
+
+- `hyvor/sdk-core` (`packages/core/`) - Auth, Exceptions, Http (incl. `TransportBuilder`,
+  `Transport`, `ProductBaseUrl`), Serialization, `RequestOptions`, `Version`, and the shipped
+  test-mocking helpers under `Testing/` (`FakeHttpClient`, `FakeHttpTransportException`). No
+  product knowledge. Installed transitively as a dependency of every product package - never
+  required directly by consumers.
+- `hyvor/sdk-talk` (`packages/talk/`), `hyvor/sdk-post` (`packages/post/`), and (once
+  implemented) `hyvor/sdk-blogs`, `hyvor/sdk-relay` - one per product, each requiring
+  `hyvor/sdk-core`.
+
+Folder structure, per product package (`packages/talk/` shown; `packages/post/` mirrors it):
 
 ```
-src/
-  Auth/ (for token provider, etc.)
-  Exceptions/ (for custom exceptions)
-  Http/ (transport)
-  Product/ (for each product namespace)
-    Post/
-      Dto/ (for response DTOs)
-      Newsletter/ (newsletter-level resources)
-      Org/ (org-level resources)
-      NewsletterClient
-      PostClient (one method: newsletter(newsletterId, apiKey?): NewsletterClient)
-    Talk/
-      Dto/
-      Website/
-      Org/
-      WebsiteClient
-      TalkClient
-    Blogs/
-    ...
+packages/talk/
+  composer.json       # hyvor/sdk-talk, requires hyvor/sdk-core
+  src/Talk/
+    Dto/               (for response DTOs)
+    Website/           (website-level resources)
+    Org/                (org-level resources)
+    WebsiteClient
+    TalkClient          (constructed directly: new TalkClient(cloudApiKey: ...))
+  tests/Talk/
 ```
 
-- for inputs, use typed array inputs (phpstan-friendly array shapes). e.g. `$client->talk->websites->create(['name' => 'My Blog']);`.
+And the shared core package:
+
+```
+packages/core/
+  composer.json       # hyvor/sdk-core
+  src/
+    Auth/ (for token provider, etc.)
+    Exceptions/ (for custom exceptions)
+    Http/ (transport, incl. TransportBuilder - the wiring every product client's
+           constructor delegates to)
+    Serialization/
+    Testing/ (FakeHttpClient, etc. - shipped so product packages' own test suites can use them)
+    RequestOptions
+    Version
+  tests/
+```
+
+There is no `HyvorClient` facade and no `Product/` namespace segment - each product's client is
+the top-level entry point for that package (`Hyvor\Sdk\Talk\TalkClient`, not
+`Hyvor\Sdk\Product\Talk\TalkClient`), constructed directly with the same config parameters
+(`cloudApiKey`, `tokenProvider`, `cloudInstance`, `logger`, `httpClient`, ...). The root
+`php/composer.json` is a dev-only aggregator (using Composer path repositories) that installs all
+packages from disk for whole-monorepo testing - it is not published.
+
+- for inputs, use typed array inputs (phpstan-friendly array shapes). e.g. `$talk->websites->create(['name' => 'My Blog']);`.
   - if inputs have enums, use string-literal unions in the array shape (e.g. `'newest'|'oldest'|...`), not enum classes
 - for outputs, use DTO classes.
   - in outputs, use enums for closed value sets.

@@ -1,20 +1,13 @@
 {
-    "name": "hyvor/sdk",
-    "description": "Official PHP SDK for HYVOR products",
+    "name": "hyvor/sdk-dev",
+    "description": "Dev-only aggregator for the hyvor/sdk-* PHP packages. Not published - installs packages/{core,talk,post} from disk via path repositories so the whole monorepo can be tested in one command.",
     "type": "library",
     "license": "MIT",
     "require": {
         "php": ">=8.4",
-        "ext-json": "*",
-        "psr/log": "^3.0",
-        "psr/http-client": "^1.0",
-        "psr/http-factory": "^1.1",
-        "psr/http-message": "^1.1 || ^2.0",
-        "php-http/discovery": "^1.20",
-        "symfony/serializer": "^8.1",
-        "symfony/property-info": "^8.1",
-        "symfony/property-access": "^8.1",
-        "phpdocumentor/reflection-docblock": "^6.0"
+        "hyvor/sdk-core": "*",
+        "hyvor/sdk-talk": "*",
+        "hyvor/sdk-post": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5",
@@ -23,14 +16,27 @@
         "phpstan/phpstan": "^2.2",
         "friendsofphp/php-cs-fixer": "^3.95"
     },
-    "autoload": {
-        "psr-4": {
-            "Hyvor\\Sdk\\": "src/"
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/core"
+        },
+        {
+            "type": "path",
+            "url": "packages/talk"
+        },
+        {
+            "type": "path",
+            "url": "packages/post"
         }
-    },
+    ],
     "autoload-dev": {
         "psr-4": {
-            "Hyvor\\Sdk\\Tests\\": "tests/"
+            "Hyvor\\Sdk\\Tests\\": [
+                "packages/core/tests/",
+                "packages/talk/tests/",
+                "packages/post/tests/"
+            ]
         }
     },
     "minimum-stability": "stable",
