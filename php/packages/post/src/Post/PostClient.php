@@ -6,7 +6,6 @@ namespace Hyvor\Sdk\Post;
 
 use Hyvor\Sdk\Auth\TokenProviderInterface;
 use Hyvor\Sdk\HyvorBaseClientAbstract;
-use Hyvor\Sdk\Post\Org\OrgNewslettersResource;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -17,15 +16,15 @@ use Psr\Log\LoggerInterface;
  *
  * ```php
  * // org-level access, via a cloud API key
- * $post = new PostClient(cloudApiKey: '...');
- * $newsletter = $post->newsletters->create(new CreateNewsletterRequest(...));
+ * $client = new PostClient(cloudApiKey: '...');
+ * $client->org->domain->create(...);
  *
  * // resource-level access, via a per-product API key, no client-level auth needed
- * $post = new PostClient();
- * $newsletter = $post->newsletter($newsletterId, 'your-product-api-key')->get();
+ * $client = new PostClient();
+ * $newsletter = $client->newsletter($newsletterId, 'your-product-api-key');
  *
  * // self-hosted: point directly at your own instance instead of *.hyvor.com
- * $post = new PostClient(tokenProvider: $yourTokenProvider, productUrl: 'https://post.example.com');
+ * $client = new PostClient(tokenProvider: $yourTokenProvider, productUrl: 'https://post.example.com');
  * ```
  *
  * See {@see HyvorBaseClientAbstract} for the full constructor parameter docs.
@@ -33,9 +32,9 @@ use Psr\Log\LoggerInterface;
 final class PostClient extends HyvorBaseClientAbstract
 {
     /**
-     * Org-level access to newsletters, accessible via `$post->newsletters`.
+     * Org-level access to Post resources, accessible via `$client->org`.
      */
-    public readonly OrgNewslettersResource $newsletters;
+    public readonly Org $org;
 
     public function __construct(
         ?string $cloudApiKey = null,
@@ -61,7 +60,7 @@ final class PostClient extends HyvorBaseClientAbstract
             retryBackoffFactor: $retryBackoffFactor,
             cloudInstance: $cloudInstance,
         );
-        $this->newsletters = new OrgNewslettersResource($this->transport);
+        $this->org = new Org($this->transport);
     }
 
     protected function product(): string
@@ -80,8 +79,8 @@ final class PostClient extends HyvorBaseClientAbstract
      *  sub-resources). Can be overridden per-call via
      *  `RequestOptions::$headers`.
      */
-    public function newsletter(int|string $newsletterId, ?string $apiKey = null, array $headers = []): NewsletterClient
+    public function newsletter(int|string $newsletterId, ?string $apiKey = null, array $headers = []): Newsletter
     {
-        return new NewsletterClient($this->transport, $newsletterId, $apiKey, $headers);
+        return new Newsletter($this->transport, $newsletterId, $apiKey, $headers);
     }
 }

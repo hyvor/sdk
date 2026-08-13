@@ -6,10 +6,12 @@ import { buildDtoImportMap, generateDtoFiles } from './php/dto.ts';
 import { generateOrgFiles, generateResourceFiles } from './php/resources.ts';
 import { generateProductClientFile } from './php/clientTemplate.ts';
 
-export function generatePhp(outputRoot: string = 'tmp') {
+export function generatePhp(outputRoot: string = 'tmp', products?: Product[]) {
     const schemas = getSchemas();
+    const entries = (Object.entries(schemas) as [Product, typeof schemas[Product]][])
+        .filter(([product]) => !products || products.includes(product));
 
-    for (const [product, processed] of Object.entries(schemas) as [Product, typeof schemas[Product]][]) {
+    for (const [product, processed] of entries) {
         const productNamespace = pascalCase(product);
         const namespaceBase = `Hyvor\\Sdk\\${productNamespace}`;
         const outDir = path.join(outputRoot, productNamespace);
