@@ -1,45 +1,54 @@
-# hyvor/sdk-php
+# hyvor/sdk-{product}-php
 
-Official PHP SDK for HYVOR Products.
+Official PHP SDKs for HYVOR Products, published as one Composer package per product so you only
+install what you use.
 
 ## Install
 
 ```bash
-composer require hyvor/sdk
+composer require hyvor/sdk-talk   # Hyvor Talk
+composer require hyvor/sdk-post   # Hyvor Post
 ```
 
-Requires PHP >= 8.4. The SDK talks HTTP through [PSR-18](https://www.php-fig.org/psr/psr-18/) /
-[PSR-17](https://www.php-fig.org/psr/psr-17/) and does not ship its own HTTP client. If your
+Both packages depend on `hyvor/sdk-core` (installed automatically) for shared HTTP transport,
+auth, and serialization - you never require `hyvor/sdk-core` yourself.
+
+Requires PHP >= 8.4. The SDKs talk HTTP through [PSR-18](https://www.php-fig.org/psr/psr-18/) /
+[PSR-17](https://www.php-fig.org/psr/psr-17/) and don't ship their own HTTP client. If your
 project already has one installed (Guzzle, Symfony HttpClient, Nyholm, etc.), it's discovered
 automatically via [php-http/discovery](https://github.com/php-http/discovery) - no extra wiring
 needed.
 
 ## Usage
 
+### Hyvor Talk
+
 ```php
-use Hyvor\Sdk\HyvorClient;use Hyvor\Sdk\Product\Talk\Dto\Comment\ListCommentsRequest;use Hyvor\Sdk\Product\Talk\Dto\Website\CreateWebsiteRequest;
+use Hyvor\Sdk\Talk\TalkClient;
+use Hyvor\Sdk\Talk\Dto\Comment\ListCommentsRequest;
+use Hyvor\Sdk\Talk\Dto\Website\CreateWebsiteRequest;
 
 // org-level access, via a cloud API key
-$client = new HyvorClient(
+$talk = new TalkClient(
     cloudApiKey: 'your-cloud-api-key', // or tokenProvider: new SomeTokenProviderInterface()
 );
 
 // GET /api/console/v1/{id}/website — resource-level access to a specific website.
 // The cloud API key/token provider must have access to this website.
-$website = $client->talk->website($websiteId)->get();
+$website = $talk->website($websiteId)->get();
 
 // POST /api/console/v1/websites — org-level endpoint, not scoped to one website
-$website = $client->talk->websites->create(
+$website = $talk->websites->create(
     new CreateWebsiteRequest(name: 'My Blog', domain: 'blog.example.com')
 );
 
 // every Console API resource hangs off the website client, e.g.:
-$comments = $client->talk->website($websiteId)->comments->list(new ListCommentsRequest(limit: 10));
-$pages = $client->talk->website($websiteId)->pages->list();
-$moderators = $client->talk->website($websiteId)->moderators->list();
+$comments = $talk->website($websiteId)->comments->list(new ListCommentsRequest(limit: 10));
+$pages = $talk->website($websiteId)->pages->list();
+$moderators = $talk->website($websiteId)->moderators->list();
 ```
 
-`$client->talk->website($websiteId)` exposes: `comments`, `reactions`, `ratings`, `pages`, `users`,
+`$talk->website($websiteId)` exposes: `comments`, `reactions`, `ratings`, `pages`, `users`,
 `analytics`, `moderators`, `emailDomain`, `rules`, `emailLogs`, `ips`, `domains`, `badges`, `sso`,
 `jobs`, `webhooks`, `integrations` (`->slack`), and `media` — matching the
 [Console API](https://talk.hyvor.com/docs/api-console) one-to-one, plus `get()`/`update()` for the
@@ -48,18 +57,20 @@ website itself.
 ### Hyvor Post
 
 ```php
-$client = new HyvorClient(cloudApiKey: 'your-cloud-api-key');
+use Hyvor\Sdk\Post\PostClient;
+
+$post = new PostClient(cloudApiKey: 'your-cloud-api-key');
 
 // resource-level access to a specific newsletter (the cloud API key/token
 // provider must have access to it)
-$newsletter = $client->post->newsletter($newsletterId)->get();
-$newsletter = $client->post->newsletter($newsletterId)->update(['name' => 'My Newsletter']);
+$newsletter = $post->newsletter($newsletterId)->get();
+$newsletter = $post->newsletter($newsletterId)->update(['name' => 'My Newsletter']);
 
-$issues = $client->post->newsletter($newsletterId)->issues->list(['limit' => 10]);
-$subscribers = $client->post->newsletter($newsletterId)->subscribers->list();
+$issues = $post->newsletter($newsletterId)->issues->list(['limit' => 10]);
+$subscribers = $post->newsletter($newsletterId)->subscribers->list();
 ```
 
-`$client->post->newsletter($newsletterId)` exposes: `issues`, `lists`, `subscribers`,
+`$post->newsletter($newsletterId)` exposes: `issues`, `lists`, `subscribers`,
 `subscriberMetadataDefinitions`, `sendingProfiles`, `templates`, `users`, `invites`, `media`, and
 `exports` — matching the [Console API](https://post.hyvor.com/docs/api-console) one-to-one, plus
 `get()`/`update()` for the newsletter itself.
@@ -70,38 +81,77 @@ newsletter's ID in the URL — every request instead carries an `X-Newsletter-Id
 how an org-level cloud API key (otherwise valid for every newsletter the org can access) resolves
 to one specific newsletter.
 
+### Using both products together
+
+`TalkClient` and `PostClient` are fully independent — each builds its own token provider (and thus
+does its own JWT exchange) when constructed with `cloudApiKey`. If you use both products and want
+a single shared token/JWT instead of one per client, build a `TokenProviderInterface` once and pass
+it to both:
+
+```php
+use Hyvor\Sdk\Auth\CloudApiKeyTokenProvider;
+use Hyvor\Sdk\Post\PostClient;
+use Hyvor\Sdk\Talk\TalkClient;
+
+$tokenProvider = new CloudApiKeyTokenProvider('your-cloud-api-key', ...);
+
+$talk = new TalkClient(tokenProvider: $tokenProvider);
+$post = new PostClient(tokenProvider: $tokenProvider);
+```
+
 ### Resource-level API keys
 
 Resource-level API keys are generated in the Console of each product and are scoped to a
 single resource (e.g. one website). They can be used without any client-level auth:
 
 ```php
-$client = new HyvorClient();
+$talk = new TalkClient();
 
-$website = $client->talk->website($websiteId, 'your-product-api-key')->get();
+$website = $talk->website($websiteId, 'your-product-api-key')->get();
 
-// org-level endpoints (like $client->talk->websites->create()) are not supported
+// org-level endpoints (like $talk->websites->create()) are not supported
 // this way, since resource-level API keys are scoped to a single resource.
 ```
 
 ### Configuration
 
 ```php
-$client = new HyvorClient(
+$talk = new TalkClient(
     cloudApiKey: '...',                          // or tokenProvider: ...
-    cloudInstance: 'https://hyvor.com',          // default
+    productUrl: null,                            // self-hosted override, see below
     logger: $psrLogger,                          // PSR-3 logger, default NullLogger
     httpClient: $psr18Client,                    // Psr\Http\Client\ClientInterface, default: auto-discovered
     requestFactory: $psr17Factory,               // Psr\Http\Message\RequestFactoryInterface, default: auto-discovered
     streamFactory: $psr17Factory,                // Psr\Http\Message\StreamFactoryInterface, default: auto-discovered
     retryMaxAttempts: 3,
     retryBackoffFactor: 2.0,
+    cloudInstance: 'https://hyvor.com',          // default; hyvor.com-hosted (cloud) use only, see below
 );
 ```
 
+`PostClient` accepts the same parameters.
+
+### Self-hosted instances
+
+By default, requests go to `https://{product}.hyvor.com` (derived from `cloudInstance`, which you
+normally never need to set — it only matters for hyvor.com-hosted/cloud usage). If you run a
+self-hosted instance, set `productUrl` instead to point the client directly at it, bypassing the
+`cloudInstance`-derived URL entirely:
+
+```php
+$talk = new TalkClient(
+    tokenProvider: new StaticTokenProvider('your-jwt'), // cloudApiKey/cloud token exchange isn't available self-hosted
+    productUrl: 'https://talk.example.com',
+);
+```
+
+`cloudApiKey` isn't supported for self-hosted instances (it depends on hyvor.com for the JWT
+exchange) — use `tokenProvider` instead.
+
 ### Authentication
 
-`HyvorClient` accepts at most one of (both are optional — see resource-level API keys above):
+`TalkClient`/`PostClient` accept at most one of (both are optional — see resource-level API keys
+above):
 
 - `cloudApiKey` — a Cloud API key created at `https://hyvor.com/account/org/api-keys`. The SDK
   exchanges it for a short-lived JWT internally (and refreshes it as needed).
@@ -112,7 +162,7 @@ $client = new HyvorClient(
 ```php
 use Hyvor\Sdk\Auth\StaticTokenProvider;
 
-$client = new HyvorClient(
+$talk = new TalkClient(
     tokenProvider: new StaticTokenProvider('your-jwt'),
 );
 ```
@@ -124,7 +174,7 @@ Per-request overrides (retries, extra headers):
 ```php
 use Hyvor\Sdk\RequestOptions;
 
-$client->talk->websites->create(
+$talk->websites->create(
     new CreateWebsiteRequest(name: 'My Blog', domain: 'blog.example.com'),
     new RequestOptions(retryMaxAttempts: 1),
 );
@@ -138,7 +188,7 @@ moderator (see the Console API's "User Authentication" docs), set `X-AUTH-USER-E
 sub-resources:
 
 ```php
-$website = $client->talk->website($websiteId, headers: ['X-AUTH-USER-EMAIL' => 'mod@example.com']);
+$website = $talk->website($websiteId, headers: ['X-AUTH-USER-EMAIL' => 'mod@example.com']);
 $website->comments->reply($commentId, new ReplyToCommentRequest(body: 'Thanks!'));
 ```
 
@@ -174,12 +224,13 @@ See [DEV.md](../DEV.md) at the repo root for running tests (with or without Dock
 
 - Talk requests are sent directly to the product's own instance, derived from `cloudInstance` by
   prefixing its host with the product name — e.g. `cloudInstance: 'https://hyvor.com'` (the
-  default) resolves to `https://talk.hyvor.com`. Both org-level endpoints (like
-  `$client->talk->websites->create()`) and resource-level ones (everything under
-  `$client->talk->website($id)`) go through this same per-product instance.
+  default) resolves to `https://talk.hyvor.com` — unless `productUrl` is set, which is used as-is
+  instead (see Self-hosted instances above). Both org-level endpoints (like
+  `$talk->websites->create()`) and resource-level ones (everything under
+  `$talk->website($id)`) go through this same per-product instance.
 - A `cloudApiKey` is exchanged for a short-lived JWT via `POST {cloudInstance}/api/cloud/token`,
   then sent as `Authorization: Bearer <jwt>` on Talk requests. A resource-level API key (passed to
-  `$client->talk->website($id, $apiKey)`) is sent the same way, as a bearer token, without any
+  `$talk->website($id, $apiKey)`) is sent the same way, as a bearer token, without any
   token exchange — even though the public Console API docs only document `X-API-KEY` auth for
   resource-level keys.
 
@@ -191,7 +242,7 @@ property set) rather than sending a literal JSON `null` — the one documented e
 so it's always sent verbatim.
 
 - Post's Console API paths (unlike Talk's) don't embed any resource ID — `GET /issues`, not
-  `GET /{newsletterId}/issues`. `$client->post->newsletter($id)` instead sends `X-Newsletter-Id: $id`
+  `GET /{newsletterId}/issues`. `$post->newsletter($id)` instead sends `X-Newsletter-Id: $id`
   as a default header on every request made through it and its sub-resources, which is what lets an
   org-level cloud API key (otherwise valid for every newsletter the org can access) resolve to one
   specific newsletter. DTO fields otherwise mirror the publicly documented

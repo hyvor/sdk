@@ -1,12 +1,14 @@
 name: PHP SDK Publish
 
-# Publishes the contents of ./php to the standalone hyvor/sdk-php repo and
-# creates a tagged GitHub release there. Packagist is configured to pick up
-# new releases from that repo automatically via its release webhook.
+# Publishes each php/packages/<dir> subdirectory to its own standalone repo
+# and creates a tagged GitHub release there. Packagist is configured to pick
+# up new releases from each of those repos automatically via a release
+# webhook. All packages are released together under the same version tag,
+# since they're developed and reviewed as one monorepo.
 #
 # Requires a repo secret PHP_SDK_PUBLISH_TOKEN: a GitHub personal access
 # token (or fine-grained token) with contents + workflows write access to
-# hyvor/sdk-php.
+# hyvor/sdk-php-core, hyvor/sdk-php-talk, and hyvor/sdk-php-post.
 
 on:
   push:
@@ -21,6 +23,15 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - dir: core
+            repo: hyvor/sdk-php-core
+          - dir: talk
+            repo: hyvor/sdk-php-talk
+          - dir: post
+            repo: hyvor/sdk-php-post
     steps:
       - name: Determine version
         id: version
@@ -36,18 +47,24 @@ jobs:
         with:
           path: monorepo
 
-      - name: Checkout hyvor/sdk-php
+      - name: Checkout ${{ matrix.repo }}
         uses: actions/checkout@v4
         with:
-          repository: hyvor/sdk-php
+          repository: ${{ matrix.repo }}
           token: ${{ secrets.PHP_SDK_PUBLISH_TOKEN }}
-          path: sdk-php
+          path: package
 
-      - name: Sync PHP SDK code
-        run: rsync -a --delete --exclude='.git' monorepo/php/ sdk-php/
+      - name: Sync package code
+        run: rsync -a --delete --exclude='.git' monorepo/php/packages/${{ matrix.dir }}/ package/
+
+      - name: Strip monorepo-only composer.json fields
+        working-directory: package
+        run: |
+          jq 'del(.version, .repositories)' composer.json > composer.json.tmp
+          mv composer.json.tmp composer.json
 
       - name: Commit and push
-        working-directory: sdk-php
+        working-directory: package
         run: |
           git config user.name "hyvor-chef"
           git config user.email "chef@hyvor.com"
@@ -57,11 +74,11 @@ jobs:
           git push
 
       - name: Tag and release
-        working-directory: sdk-php
+        working-directory: package
         env:
           GH_TOKEN: ${{ secrets.PHP_SDK_PUBLISH_TOKEN }}
         run: |
           gh release create "${{ steps.version.outputs.version }}" \
-            --repo hyvor/sdk-php \
+            --repo ${{ matrix.repo }} \
             --title "${{ steps.version.outputs.version }}" \
             --generate-notes

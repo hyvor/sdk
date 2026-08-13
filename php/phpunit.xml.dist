@@ -5,12 +5,12 @@
          colors="true">
     <testsuites>
         <testsuite name="Hyvor SDK Test Suite">
-            <directory>tests</directory>
+            <directory>packages/*/tests</directory>
         </testsuite>
     </testsuites>
     <source>
         <include>
-            <directory>src</directory>
+            <directory>packages/*/src</directory>
         </include>
     </source>
 </phpunit>

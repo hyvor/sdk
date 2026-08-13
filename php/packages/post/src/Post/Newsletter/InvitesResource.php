@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Hyvor\Sdk\Post\Newsletter;
+
+use Hyvor\Sdk\Exceptions\HyvorApiException;
+use Hyvor\Sdk\Post\Dto\User\UserInvite;
+use Hyvor\Sdk\RequestOptions;
+
+/**
+ * `$client->post->newsletter($newsletterId)->invites`
+ */
+final class InvitesResource extends NewsletterScopedResource
+{
+    /**
+     * GET /invites
+     *
+     * @return UserInvite[]
+     * @throws HyvorApiException
+     */
+    public function list(?RequestOptions $options = null): array
+    {
+        $data = $this->request('GET', $this->path('/invites'), null, $options);
+
+        return $this->transport->denormalizeList($data, UserInvite::class);
+    }
+
+    /**
+     * POST /invites
+     *
+     * The invitee must already have a HYVOR account. Either `username` or
+     * `email` of the invitee's HYVOR account is required.
+     *
+     * @param array{
+     *     username?: string,
+     *     email?: string,
+     * } $data
+     * @throws HyvorApiException
+     */
+    public function create(array $data, ?RequestOptions $options = null): UserInvite
+    {
+        $result = $this->request('POST', $this->path('/invites'), $data, $options);
+
+        return $this->transport->denormalize($result, UserInvite::class);
+    }
+
+    /**
+     * DELETE /invites/{id}
+     *
+     * @throws HyvorApiException
+     */
+    public function delete(int $id, ?RequestOptions $options = null): void
+    {
+        $this->request('DELETE', $this->path("/invites/{$id}"), null, $options);
+    }
+}

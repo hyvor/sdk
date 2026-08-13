@@ -9,9 +9,7 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-COPY composer.json ./
-RUN composer install --prefer-dist --no-progress --no-interaction
-
 COPY . .
+RUN composer install --prefer-dist --no-progress --no-interaction
 
 CMD ["tail", "-f", "/dev/null"]

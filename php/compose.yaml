@@ -6,3 +6,6 @@ services:
     volumes:
       - .:/app
       - /app/vendor
+      - /app/packages/core/vendor
+      - /app/packages/talk/vendor
+      - /app/packages/post/vendor
