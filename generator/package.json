@@ -1,0 +1,19 @@
+{
+  "name": "generator",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^26.2.0"
+  },
+  "dependencies": {
+    "@types/json-schema": "^7.0.15",
+    "openapi-types": "^12.1.3"
+  }
+}
