@@ -1,0 +1,3703 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Hyvor Post",
+    "description": "Privacy-first, simple newsletter platform",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/console/api-keys": {
+      "get": {
+        "tags": [
+          "method:list",
+          "group:api_key"
+        ],
+        "summary": "Get all API keys for a newsletter",
+        "description": "Returns all API keys of the newsletter. The raw key is not returned; only its metadata is.",
+        "operationId": "get_api_console_app_api_console_apikey_list",
+        "responses": {
+          "200": {
+            "description": "List of API keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApiKeyObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "method:create",
+          "group:api_key"
+        ],
+        "summary": "Create a new API key",
+        "description": "Creates a new API key for the specified newsletter. The API key will be returned in the response, and it is important to store it securely as it will not be retrievable again.",
+        "operationId": "post_api_console_app_api_console_apikey_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApiKeyInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns the created API key object. The `key` property is the raw key, which is only returned once.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/api-keys/{id}": {
+      "post": {
+        "tags": [
+          "method:regenerate",
+          "group:api_key"
+        ],
+        "summary": "Regenerate an API key",
+        "description": "Regenerates the raw key of an API key. The previous key is invalidated immediately, and the new raw key is returned once.",
+        "operationId": "post_api_console_app_api_console_apikey_regenerate",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the API key object with the newly generated raw key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:api_key"
+        ],
+        "summary": "Delete an API key",
+        "description": "Permanently deletes an API key. Requests made with the deleted key will be rejected immediately.",
+        "operationId": "delete_api_console_app_api_console_apikey_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "method:update",
+          "group:api_key"
+        ],
+        "summary": "Update an API key",
+        "description": "Updates the name, scopes, or enabled status of an API key.",
+        "operationId": "patch_api_console_app_api_console_apikey_update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateApiKeyInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated API key object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/export": {
+      "get": {
+        "tags": [
+          "method:list",
+          "group:export"
+        ],
+        "summary": "Get subscriber exports",
+        "description": "Get all subscriber exports of the newsletter.",
+        "operationId": "get_api_console_app_api_console_export_list",
+        "responses": {
+          "200": {
+            "description": "List of subscriber exports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubscriberExportObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "method:create",
+          "group:export"
+        ],
+        "summary": "Export subscribers",
+        "description": "Starts a new export of all subscribers of the newsletter.",
+        "operationId": "post_api_console_app_api_console_export_create",
+        "responses": {
+          "200": {
+            "description": "Returns the created subscriber export object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberExportObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/imports/upload": {
+      "post": {
+        "tags": [
+          "method:upload",
+          "group:import"
+        ],
+        "summary": "Upload a subscriber import file",
+        "description": "Uploads a CSV file of subscribers to import. Returns the parsed fields and row count so that the fields can be mapped before starting the import.",
+        "operationId": "post_api_console_app_api_console_import_upload",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadImportInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the created subscriber import object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberImportObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/imports/{id}": {
+      "post": {
+        "tags": [
+          "method:start",
+          "group:import"
+        ],
+        "summary": "Start a subscriber import",
+        "description": "Starts an import using the field mapping provided for a previously uploaded subscriber import file.",
+        "operationId": "post_api_console_app_api_console_import_start",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated subscriber import object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberImportObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/imports": {
+      "get": {
+        "tags": [
+          "method:list",
+          "group:import"
+        ],
+        "summary": "Get subscriber imports",
+        "description": "Get all subscriber imports of the newsletter.",
+        "operationId": "get_api_console_app_api_console_import_list",
+        "responses": {
+          "200": {
+            "description": "List of subscriber imports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubscriberImportObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/imports/limits": {
+      "get": {
+        "tags": [
+          "method:getlimits",
+          "group:import"
+        ],
+        "summary": "Get subscriber import limits",
+        "description": "Get whether the newsletter has reached its daily or monthly subscriber import limits.",
+        "operationId": "get_api_console_app_api_console_import_getlimits",
+        "responses": {
+          "200": {
+            "description": "Returns whether the daily and monthly import limits have been exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "daily_limit_exceeded": {
+                      "type": "boolean"
+                    },
+                    "monthly_limit_exceeded": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/issues": {
+      "get": {
+        "tags": [
+          "method:list",
+          "group:issue"
+        ],
+        "summary": "Get issues",
+        "description": "Get issues of the newsletter, paginated and ordered by most recently created.",
+        "operationId": "get_api_console_app_api_console_issue_list",
+        "responses": {
+          "200": {
+            "description": "List of issues",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IssueObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "method:create",
+          "group:issue"
+        ],
+        "summary": "Create an issue",
+        "description": "Creates a new draft issue for the newsletter.",
+        "operationId": "post_api_console_app_api_console_issue_create",
+        "responses": {
+          "200": {
+            "description": "Returns the created issue object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/issues/{id}": {
+      "get": {
+        "tags": [
+          "method:get",
+          "group:issue"
+        ],
+        "summary": "Get an issue",
+        "description": "Get an issue by ID.",
+        "operationId": "get_api_console_app_api_console_issue_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the issue object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:issue"
+        ],
+        "summary": "Delete an issue",
+        "description": "Deletes a draft issue. Issues that are not in draft status cannot be deleted.",
+        "operationId": "delete_api_console_app_api_console_issue_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "method:update",
+          "group:issue"
+        ],
+        "summary": "Update an issue",
+        "description": "Updates a draft issue: its subject, content, sending profile, or lists.",
+        "operationId": "patch_api_console_app_api_console_issue_update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIssueInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated issue object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/issues/{id}/send": {
+      "post": {
+        "tags": [
+          "method:send",
+          "group:issue"
+        ],
+        "summary": "Send an issue",
+        "description": "Sends a draft issue to its subscribers. Validates the issue, license, and monthly email limits before queuing the send.",
+        "operationId": "post_api_console_app_api_console_issue_send",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the updated issue object, now in sending status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueObject"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Returned when sending the issue would exceed the organization's monthly email limit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "would_exceed_limit"
+                    },
+                    "data": {
+                      "properties": {
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "exceed_amount": {
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/issues/{id}/test": {
+      "get": {
+        "tags": [
+          "method:gettestdata",
+          "group:issue"
+        ],
+        "summary": "Get issue test data",
+        "description": "Get data useful for sending a test email of an issue: verified domains, and suggested and previously used test email addresses.",
+        "operationId": "get_api_console_app_api_console_issue_gettestdata",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the test email data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "verified_domains": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggested_emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "test_sent_emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "method:sendtest",
+          "group:issue"
+        ],
+        "summary": "Send a test issue email",
+        "description": "Sends a test email of a draft issue to the given email addresses. Test emails can only be sent to verified domains or emails of newsletter users.",
+        "operationId": "post_api_console_app_api_console_issue_sendtest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTestInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the number of test emails successfully sent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success_count": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/issues/{id}/preview": {
+      "get": {
+        "tags": [
+          "method:preview",
+          "group:issue"
+        ],
+        "summary": "Preview an issue",
+        "description": "Renders the HTML preview of an issue, and returns the number of subscribers it would be sendable to.",
+        "operationId": "get_api_console_app_api_console_issue_preview",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the rendered HTML and sendable subscribers count.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "html": {
+                      "type": "string"
+                    },
+                    "sendable_subscribers_count": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/issues/{id}/progress": {
+      "get": {
+        "tags": [
+          "method:getprogress",
+          "group:issue"
+        ],
+        "summary": "Get issue sending progress",
+        "description": "Get the sending progress of an issue that is currently being sent.",
+        "operationId": "get_api_console_app_api_console_issue_getprogress",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the issue sending progress.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/issues/{id}/sends": {
+      "get": {
+        "tags": [
+          "method:listsends",
+          "group:issue"
+        ],
+        "summary": "Get issue sends",
+        "description": "Get individual sends of an issue, paginated and optionally filtered by search term or send type.",
+        "operationId": "get_api_console_app_api_console_issue_listsends",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of sends",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SendObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/issues/{id}/report": {
+      "get": {
+        "tags": [
+          "method:getreport",
+          "group:issue"
+        ],
+        "summary": "Get issue report",
+        "description": "Get the delivery, open, click, bounce, and complaint counts of an issue.",
+        "operationId": "get_api_console_app_api_console_issue_getreport",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the issue report counts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "counts": {
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/lists": {
+      "post": {
+        "tags": [
+          "method:create",
+          "group:list"
+        ],
+        "summary": "Create a list",
+        "description": "Creates a new subscriber list for the newsletter.",
+        "operationId": "post_api_console_app_api_console_list_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateListInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the created list object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/lists/{id}": {
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:list"
+        ],
+        "summary": "Delete a list",
+        "description": "Deletes a subscriber list. Subscribers on the list are not deleted, only unlinked from it.",
+        "operationId": "delete_api_console_app_api_console_list_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "method:update",
+          "group:list"
+        ],
+        "summary": "Update a list",
+        "description": "Updates the name or description of a subscriber list.",
+        "operationId": "patch_api_console_app_api_console_list_update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateListInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated list object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/media": {
+      "post": {
+        "tags": [
+          "method:upload",
+          "group:media"
+        ],
+        "summary": "Upload media",
+        "description": "Uploads a media file to the given folder. Allowed extensions and size limits depend on the folder.",
+        "operationId": "post_api_console_app_api_console_media_upload",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaUploadInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the uploaded media object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/newsletter": {
+      "get": {
+        "tags": [
+          "method:get",
+          "group:newsletter"
+        ],
+        "summary": "Get the current newsletter",
+        "description": "Get the current newsletter, as resolved from the API key used to authenticate the request.",
+        "operationId": "get_api_console_app_api_console_newsletter_get",
+        "responses": {
+          "200": {
+            "description": "Returns the newsletter object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsletterObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:newsletter"
+        ],
+        "summary": "Delete the current newsletter",
+        "description": "Deletes the current newsletter, as resolved from the API key used to authenticate the request.",
+        "operationId": "delete_api_console_app_api_console_newsletter_delete",
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "method:update",
+          "group:newsletter"
+        ],
+        "summary": "Update the current newsletter",
+        "description": "Updates the current newsletter, as resolved from the API key used to authenticate the request.",
+        "operationId": "patch_api_console_app_api_console_newsletter_update",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNewsletterInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated newsletter object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsletterObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/domains": {
+      "get": {
+        "tags": [
+          "method:list",
+          "group:domain",
+          "org-endpoint"
+        ],
+        "summary": "Get domains of the current organization",
+        "description": "Get all sending domains registered by the current organization.",
+        "operationId": "get_api_console_app_api_console_org_domain_list",
+        "responses": {
+          "200": {
+            "description": "List of domains",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DomainObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "method:create",
+          "group:domain",
+          "org-endpoint"
+        ],
+        "summary": "Create a domain",
+        "description": "Registers a new sending domain for the current organization. The domain must be verified before it can be used to send emails.",
+        "operationId": "post_api_console_app_api_console_org_domain_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDomainInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the created domain object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/domains/{id}/verify": {
+      "post": {
+        "tags": [
+          "method:verify",
+          "group:domain",
+          "org-endpoint"
+        ],
+        "summary": "Verify a domain",
+        "description": "Verifies the DNS records of a domain owned by the current organization.",
+        "operationId": "post_api_console_app_api_console_org_domain_verify",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the verification result and the domain object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    },
+                    "domain": {
+                      "$ref": "#/components/schemas/DomainObject"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/domains/{id}": {
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:domain",
+          "org-endpoint"
+        ],
+        "summary": "Delete a domain",
+        "description": "Deletes a domain owned by the current organization.",
+        "operationId": "delete_api_console_app_api_console_org_domain_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/newsletters": {
+      "post": {
+        "tags": [
+          "method:create",
+          "group:newsletters",
+          "org-endpoint"
+        ],
+        "summary": "Create a newsletter",
+        "description": "Creates a new newsletter in the current organization.",
+        "operationId": "post_api_console_app_api_console_org_newsletters_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNewsletterInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the created newsletter object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsletterObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/sending-profiles": {
+      "get": {
+        "tags": [
+          "method:list",
+          "group:sending_profile"
+        ],
+        "summary": "Get sending profiles",
+        "description": "Get all sending profiles of the newsletter.",
+        "operationId": "get_api_console_app_api_console_sendingprofile_list",
+        "responses": {
+          "200": {
+            "description": "List of sending profiles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SendingProfileObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "method:create",
+          "group:sending_profile"
+        ],
+        "summary": "Create a sending profile",
+        "description": "Creates a new sending profile for the newsletter. The from email's domain must be a verified domain.",
+        "operationId": "post_api_console_app_api_console_sendingprofile_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSendingProfileInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sending profile created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendingProfileObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/sending-profiles/{id}": {
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:sending_profile"
+        ],
+        "summary": "Delete a sending profile",
+        "description": "Deletes a non-system sending profile of the newsletter. The system sending profile cannot be deleted.",
+        "operationId": "delete_api_console_app_api_console_sendingprofile_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the remaining sending profiles of the newsletter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SendingProfileObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "method:update",
+          "group:sending_profile"
+        ],
+        "summary": "Update a sending profile",
+        "description": "Updates a sending profile of the newsletter.",
+        "operationId": "patch_api_console_app_api_console_sendingprofile_update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSendingProfileInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sending profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendingProfileObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscribers": {
+      "get": {
+        "tags": [
+          "method:list",
+          "group:subscriber"
+        ],
+        "summary": "Get subscribers",
+        "description": "Get subscribers of the newsletter, paginated and optionally filtered by status, list, or search term.",
+        "operationId": "get_api_console_app_api_console_subscriber_list",
+        "responses": {
+          "200": {
+            "description": "List of subscribers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubscriberObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "method:create",
+          "group:subscriber"
+        ],
+        "summary": "Create or update a subscriber",
+        "description": "Creates a new subscriber, or updates the existing subscriber if one already exists with the given email.",
+        "operationId": "post_api_console_app_api_console_subscriber_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriberInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the created or updated subscriber object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscribers/email/{email}": {
+      "get": {
+        "tags": [
+          "method:getbyemail",
+          "group:subscriber"
+        ],
+        "summary": "Get a subscriber by email",
+        "description": "Get a subscriber of the newsletter by email address.",
+        "operationId": "get_api_console_app_api_console_subscriber_getbyemail",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the subscriber object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when no subscriber exists with the given email.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Subscriber not found"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscribers/{id}/resend-opt-in": {
+      "post": {
+        "tags": [
+          "method:resendoptin",
+          "group:subscriber"
+        ],
+        "summary": "Resend opt-in confirmation email",
+        "description": "Resends the opt-in confirmation email to a pending subscriber.",
+        "operationId": "post_api_console_app_api_console_subscriber_resendoptin",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscribers/{id}": {
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:subscriber"
+        ],
+        "summary": "Delete a subscriber",
+        "description": "Deletes a subscriber.",
+        "operationId": "delete_api_console_app_api_console_subscriber_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscribers/bulk": {
+      "post": {
+        "tags": [
+          "method:bulk",
+          "group:subscriber"
+        ],
+        "summary": "Bulk update subscribers",
+        "description": "Performs a bulk action (delete, status change, or metadata update) on a set of subscribers.",
+        "operationId": "post_api_console_app_api_console_subscriber_bulk",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkActionSubscriberInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the result of the bulk action.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "subscribers": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SubscriberObject"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscriber-metadata-definitions": {
+      "post": {
+        "tags": [
+          "method:create",
+          "group:subscriber_metadata"
+        ],
+        "summary": "Create a subscriber metadata definition",
+        "description": "Creates a new subscriber metadata definition for the newsletter.",
+        "operationId": "post_api_console_app_api_console_subscribermetadata_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriberMetadataDefinitionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the created subscriber metadata definition object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberMetadataDefinitionObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscriber-metadata-definitions/{id}": {
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:subscriber_metadata"
+        ],
+        "summary": "Delete a subscriber metadata definition",
+        "description": "Deletes a subscriber metadata definition. Subscriber metadata values for this key are also removed.",
+        "operationId": "delete_api_console_app_api_console_subscribermetadata_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "method:update",
+          "group:subscriber_metadata"
+        ],
+        "summary": "Update a subscriber metadata definition",
+        "description": "Updates the name of a subscriber metadata definition.",
+        "operationId": "patch_api_console_app_api_console_subscribermetadata_update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubscriberMetadataDefinitionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated subscriber metadata definition object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberMetadataDefinitionObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/templates": {
+      "get": {
+        "tags": [
+          "method:get",
+          "group:template"
+        ],
+        "summary": "Get the newsletter template",
+        "description": "Get the email template of the newsletter. If the newsletter has not customized its template yet, returns the default template string instead of a template object.",
+        "operationId": "get_api_console_app_api_console_template_get",
+        "responses": {
+          "200": {
+            "description": "Returns the template object. If the newsletter has not customized its template, only the `template` property (the default template string) is present.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "method:update",
+          "group:template"
+        ],
+        "summary": "Update the newsletter template",
+        "description": "Updates (or creates, if none exists) the email template of the newsletter.",
+        "operationId": "patch_api_console_app_api_console_template_update",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTemplateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated template object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/templates/render": {
+      "post": {
+        "tags": [
+          "method:preview",
+          "group:template"
+        ],
+        "summary": "Render a template preview",
+        "description": "Renders the given (or the newsletter's current) email template to HTML, using sample content.",
+        "operationId": "post_api_console_app_api_console_template_preview",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenderTemplateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the rendered HTML.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "html": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/users": {
+      "get": {
+        "tags": [
+          "method:list",
+          "group:user"
+        ],
+        "summary": "Get newsletter users",
+        "description": "Get all users of the newsletter.",
+        "operationId": "get_api_console_app_api_console_user_list",
+        "responses": {
+          "200": {
+            "description": "List of newsletter users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "method:create",
+          "group:user"
+        ],
+        "summary": "Add a newsletter user",
+        "description": "Adds a HYVOR user (identified by `user_id`) who is already a member of the organization to the newsletter.",
+        "operationId": "post_api_console_app_api_console_user_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the added (or already-existing, if `on_duplicate` is `ignore`) newsletter user object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:user"
+        ],
+        "summary": "Remove a newsletter user",
+        "description": "Removes a user from the newsletter, identified by either its `id` or `user_id` (HYVOR user ID).",
+        "operationId": "delete_api_console_app_api_console_user_delete",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteUserInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateApiKeyInput": {
+        "required": [
+          "name",
+          "scopes"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "UpdateApiKeyInput": {
+        "required": [
+          "name",
+          "is_enabled",
+          "scopes"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "is_enabled": {
+            "type": "boolean"
+          },
+          "scopes": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "UploadImportInput": {
+        "required": [
+          "source"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        },
+        "type": "object"
+      },
+      "ImportInput": {
+        "required": [
+          "mapping"
+        ],
+        "properties": {
+          "mapping": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "nullable": true
+            }
+          }
+        },
+        "type": "object"
+      },
+      "UpdateIssueInput": {
+        "required": [
+          "lists",
+          "sending_profile_id"
+        ],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "nullable": true
+          },
+          "lists": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              }
+            ],
+            "minItems": 1
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "sending_profile_id": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SendTestInput": {
+        "required": [
+          "emails"
+        ],
+        "properties": {
+          "emails": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ],
+            "minItems": 1
+          }
+        },
+        "type": "object"
+      },
+      "CreateListInput": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "UpdateListInput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "MediaFolder": {
+        "type": "string",
+        "enum": [
+          "issue_images",
+          "newsletter_images",
+          "import",
+          "export"
+        ]
+      },
+      "MediaUploadInput": {
+        "required": [
+          "folder"
+        ],
+        "properties": {
+          "folder": {
+            "$ref": "#/components/schemas/MediaFolder"
+          }
+        },
+        "type": "object"
+      },
+      "NewsletterFormDefaultColorPalette": {
+        "type": "string",
+        "enum": [
+          "light",
+          "dark",
+          "os"
+        ]
+      },
+      "UpdateNewsletterInput": {
+        "required": [
+          "name",
+          "subdomain",
+          "id",
+          "created_at",
+          "is_rtl",
+          "metadata"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "subdomain": {
+            "type": "string"
+          },
+          "setProperties": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ],
+            "default": []
+          },
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "language_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_rtl": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "unsubscribe_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "branding": {
+            "type": "boolean",
+            "default": true
+          },
+          "template_color_accent": {
+            "title": "Template variables",
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_accent_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_background": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_background_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_box": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_box_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_box_shadow": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_box_radius": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_box_border": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_family": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_size": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_weight": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_weight_heading": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_line_height": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_title": {
+            "title": "Signup Form",
+            "type": "string",
+            "nullable": true
+          },
+          "form_description": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_footer_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_button_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_success_message": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_width": {
+            "type": "integer",
+            "nullable": true,
+            "default": 425
+          },
+          "form_custom_css": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_text_light": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_accent": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_accent_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_input": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_input_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_light_input_box_shadow": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_light_input_border": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_light_border_radius": {
+            "type": "integer",
+            "nullable": true
+          },
+          "form_color_dark_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_text_light": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_accent": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_accent_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_input": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_input_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_dark_input_box_shadow": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_dark_input_border": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_dark_border_radius": {
+            "type": "integer",
+            "nullable": true
+          },
+          "form_default_color_palette": {
+            "$ref": "#/components/schemas/NewsletterFormDefaultColorPalette"
+          },
+          "form_input_border_radius": {
+            "type": "integer",
+            "default": 20
+          }
+        },
+        "type": "object"
+      },
+      "CreateDomainInput": {
+        "required": [
+          "domain"
+        ],
+        "properties": {
+          "domain": {
+            "type": "string",
+            "pattern": "(?!://)([a-zA-Z0-9-_]+\\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\\.[a-zA-Z]{2,11}?"
+          }
+        },
+        "type": "object"
+      },
+      "CreateNewsletterInput": {
+        "required": [
+          "name",
+          "subdomain"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "subdomain": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1
+          },
+          "autogenerate_subdomain_on_duplicate": {
+            "type": "boolean",
+            "default": false
+          },
+          "metadata": {
+            "type": "object",
+            "default": [],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "start_trial": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "type": "object"
+      },
+      "CreateSendingProfileInput": {
+        "required": [
+          "from_email"
+        ],
+        "properties": {
+          "from_email": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "from_name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          },
+          "reply_to_email": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          },
+          "brand_name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          },
+          "brand_logo": {
+            "type": "string",
+            "nullable": true
+          },
+          "brand_url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "UpdateSendingProfileInput": {
+        "required": [
+          "from_email",
+          "is_default"
+        ],
+        "properties": {
+          "from_email": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "from_name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          },
+          "reply_to_email": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          },
+          "brand_name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          },
+          "brand_logo": {
+            "type": "string",
+            "nullable": true
+          },
+          "brand_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_default": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "SubscriberStatus": {
+        "type": "string",
+        "enum": [
+          "subscribed",
+          "pending"
+        ]
+      },
+      "SubscriberSource": {
+        "type": "string",
+        "enum": [
+          "console",
+          "form",
+          "import"
+        ]
+      },
+      "ListsStrategy": {
+        "type": "string",
+        "enum": [
+          "merge",
+          "overwrite",
+          "remove"
+        ]
+      },
+      "ListRemovalReason": {
+        "type": "string",
+        "enum": [
+          "unsubscribe",
+          "bounce",
+          "complaint",
+          "other"
+        ]
+      },
+      "MetadataStrategy": {
+        "type": "string",
+        "enum": [
+          "overwrite",
+          "merge"
+        ]
+      },
+      "CreateSubscriberInput": {
+        "required": [
+          "email",
+          "listSkipResubscribeOn",
+          "listResubscribeOnValues"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "lists": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SubscriberStatus"
+              }
+            ]
+          },
+          "source": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SubscriberSource"
+              }
+            ]
+          },
+          "subscribe_ip": {
+            "type": "string",
+            "nullable": true
+          },
+          "subscribed_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "number",
+                  "format": "float"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "lists_strategy": {
+            "$ref": "#/components/schemas/ListsStrategy"
+          },
+          "list_skip_resubscribe_on": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ],
+            "default": [
+              "unsubscribe",
+              "bounce",
+              "complaint"
+            ]
+          },
+          "list_removal_reason": {
+            "$ref": "#/components/schemas/ListRemovalReason"
+          },
+          "metadata_strategy": {
+            "$ref": "#/components/schemas/MetadataStrategy"
+          },
+          "send_pending_confirmation_email": {
+            "type": "boolean",
+            "default": false
+          },
+          "subscribeIp": {
+            "type": "string",
+            "nullable": true
+          },
+          "subscribedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "listSkipResubscribeOn": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ListRemovalReason"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/ListRemovalReason"
+                }
+              }
+            ]
+          },
+          "listResubscribeOnValues": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "BulkActionSubscriberInput": {
+        "required": [
+          "subscribers_ids",
+          "action",
+          "metadata"
+        ],
+        "properties": {
+          "subscribers_ids": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              }
+            ]
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "delete",
+              "metadata_update",
+              "status_change"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "CreateSubscriberMetadataDefinitionInput": {
+        "required": [
+          "key",
+          "name"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "[a-zA-Z0-9_]+",
+            "maxLength": 255
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          }
+        },
+        "type": "object"
+      },
+      "UpdateSubscriberMetadataDefinitionInput": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateTemplateInput": {
+        "properties": {
+          "template": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "RenderTemplateInput": {
+        "properties": {
+          "template": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "DeleteUserInput": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "id": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "type": "object"
+      },
+      "CreateUserInput": {
+        "required": [
+          "user_id"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "on_duplicate": {
+            "type": "string",
+            "default": "throw",
+            "enum": [
+              "throw",
+              "ignore"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "ApiKeyObject": {
+        "required": [
+          "id",
+          "name",
+          "scopes",
+          "created_at",
+          "is_enabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scopes": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "is_enabled": {
+            "type": "boolean"
+          },
+          "last_accessed_at": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "SubscriberExportStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "completed",
+          "failed"
+        ]
+      },
+      "SubscriberExportObject": {
+        "required": [
+          "id",
+          "created_at",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SubscriberExportStatus"
+          },
+          "error_message": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "SubscriberImportStatus": {
+        "type": "string",
+        "enum": [
+          "requires_input",
+          "pending_approval",
+          "importing",
+          "failed",
+          "completed"
+        ]
+      },
+      "SubscriberImportObject": {
+        "required": [
+          "id",
+          "created_at",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SubscriberImportStatus"
+          },
+          "fields": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "csv_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "imported_subscribers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "warnings": {
+            "type": "string",
+            "nullable": true
+          },
+          "error_message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "IssueStatus": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "scheduled",
+          "sending",
+          "sent"
+        ]
+      },
+      "IssueObject": {
+        "required": [
+          "id",
+          "uuid",
+          "created_at",
+          "sending_profile_id",
+          "status",
+          "lists"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "uuid": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "subject": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "sending_profile_id": {
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/IssueStatus"
+          },
+          "lists": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              }
+            ]
+          },
+          "scheduled_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sending_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sent_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "total_sends": {
+            "type": "integer",
+            "default": 0
+          },
+          "from_email": {
+            "type": "string",
+            "nullable": true
+          },
+          "from_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "reply_to_email": {
+            "type": "string",
+            "nullable": true
+          },
+          "sendable_subscribers_count": {
+            "type": "integer",
+            "default": 0
+          }
+        },
+        "type": "object"
+      },
+      "SubscriberObject": {
+        "required": [
+          "id",
+          "email",
+          "source",
+          "status",
+          "list_ids",
+          "lists",
+          "metadata"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "email": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SubscriberSource"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SubscriberStatus"
+          },
+          "list_ids": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              }
+            ]
+          },
+          "lists": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "subscribe_ip": {
+            "type": "string",
+            "nullable": true
+          },
+          "subscribed_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "number",
+                  "format": "float"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        "type": "object"
+      },
+      "SendStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "sent",
+          "failed"
+        ]
+      },
+      "SendObject": {
+        "required": [
+          "id",
+          "created_at",
+          "email",
+          "status",
+          "hard_bounce"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "subscriber": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SubscriberObject"
+              }
+            ]
+          },
+          "email": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SendStatus"
+          },
+          "sent_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "failed_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "delivered_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "unsubscribed_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "bounced_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "hard_bounce": {
+            "type": "boolean"
+          },
+          "complained_at": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "ListObject": {
+        "required": [
+          "id",
+          "created_at",
+          "name",
+          "subscribers_count"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "subscribers_count": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "MediaObject": {
+        "required": [
+          "id",
+          "created_at",
+          "folder",
+          "url",
+          "size",
+          "extension"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "folder": {
+            "$ref": "#/components/schemas/MediaFolder"
+          },
+          "url": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "extension": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "NewsletterObject": {
+        "required": [
+          "id",
+          "subdomain",
+          "created_at",
+          "name",
+          "is_rtl",
+          "metadata"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "subdomain": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "language_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_rtl": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "unsubscribe_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "branding": {
+            "type": "boolean",
+            "default": true
+          },
+          "template_color_accent": {
+            "title": "Template variables",
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_accent_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_background": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_background_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_box": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_color_box_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_box_shadow": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_box_radius": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_box_border": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_family": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_size": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_weight": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_weight_heading": {
+            "type": "string",
+            "nullable": true
+          },
+          "template_font_line_height": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_title": {
+            "title": "Signup Form",
+            "type": "string",
+            "nullable": true
+          },
+          "form_description": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_footer_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_button_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_success_message": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_width": {
+            "type": "integer",
+            "nullable": true,
+            "default": 425
+          },
+          "form_custom_css": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_text_light": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_accent": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_accent_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_input": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_light_input_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_light_input_box_shadow": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_light_input_border": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_light_border_radius": {
+            "type": "integer",
+            "nullable": true
+          },
+          "form_color_dark_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_text_light": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_accent": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_accent_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_input": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_color_dark_input_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_dark_input_box_shadow": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_dark_input_border": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_dark_border_radius": {
+            "type": "integer",
+            "nullable": true
+          },
+          "form_default_color_palette": {
+            "$ref": "#/components/schemas/NewsletterFormDefaultColorPalette"
+          },
+          "form_input_border_radius": {
+            "type": "integer",
+            "default": 20
+          }
+        },
+        "type": "object"
+      },
+      "RelayDomainStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "active",
+          "warning",
+          "suspended"
+        ]
+      },
+      "DomainObject": {
+        "required": [
+          "id",
+          "created_at",
+          "domain",
+          "dkim_public_key",
+          "dkim_txt_name",
+          "dkim_txt_value",
+          "relay_status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "dkim_public_key": {
+            "type": "string"
+          },
+          "dkim_txt_name": {
+            "type": "string"
+          },
+          "dkim_txt_value": {
+            "type": "string"
+          },
+          "relay_status": {
+            "$ref": "#/components/schemas/RelayDomainStatus"
+          },
+          "relay_last_checked_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "relay_error_message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "SendingProfileObject": {
+        "required": [
+          "id",
+          "created_at",
+          "from_email",
+          "is_default",
+          "is_system"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "from_email": {
+            "type": "string"
+          },
+          "from_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "reply_to_email": {
+            "type": "string",
+            "nullable": true
+          },
+          "brand_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "brand_logo": {
+            "type": "string",
+            "nullable": true
+          },
+          "brand_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_default": {
+            "type": "boolean"
+          },
+          "is_system": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "SubscriberMetadataDefinitionType": {
+        "type": "string",
+        "enum": [
+          "text"
+        ]
+      },
+      "SubscriberMetadataDefinitionObject": {
+        "required": [
+          "id",
+          "created_at",
+          "key",
+          "name",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/SubscriberMetadataDefinitionType"
+          }
+        },
+        "type": "object"
+      },
+      "TemplateObject": {
+        "required": [
+          "template"
+        ],
+        "properties": {
+          "template": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "owner",
+          "admin"
+        ]
+      },
+      "UserMiniObject": {
+        "required": [
+          "name",
+          "email"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "picture_url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "UserObject": {
+        "required": [
+          "id",
+          "role",
+          "created_at",
+          "user"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          },
+          "created_at": {
+            "type": "integer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserMiniObject"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "method:list",
+      "description": "method:list"
+    },
+    {
+      "name": "group:api_key",
+      "description": "group:api_key"
+    },
+    {
+      "name": "method:create",
+      "description": "method:create"
+    },
+    {
+      "name": "method:regenerate",
+      "description": "method:regenerate"
+    },
+    {
+      "name": "method:delete",
+      "description": "method:delete"
+    },
+    {
+      "name": "method:update",
+      "description": "method:update"
+    },
+    {
+      "name": "group:export",
+      "description": "group:export"
+    },
+    {
+      "name": "method:upload",
+      "description": "method:upload"
+    },
+    {
+      "name": "group:import",
+      "description": "group:import"
+    },
+    {
+      "name": "method:start",
+      "description": "method:start"
+    },
+    {
+      "name": "method:getlimits",
+      "description": "method:getlimits"
+    },
+    {
+      "name": "group:issue",
+      "description": "group:issue"
+    },
+    {
+      "name": "method:get",
+      "description": "method:get"
+    },
+    {
+      "name": "method:send",
+      "description": "method:send"
+    },
+    {
+      "name": "method:gettestdata",
+      "description": "method:gettestdata"
+    },
+    {
+      "name": "method:sendtest",
+      "description": "method:sendtest"
+    },
+    {
+      "name": "method:preview",
+      "description": "method:preview"
+    },
+    {
+      "name": "method:getprogress",
+      "description": "method:getprogress"
+    },
+    {
+      "name": "method:listsends",
+      "description": "method:listsends"
+    },
+    {
+      "name": "method:getreport",
+      "description": "method:getreport"
+    },
+    {
+      "name": "group:list",
+      "description": "group:list"
+    },
+    {
+      "name": "group:media",
+      "description": "group:media"
+    },
+    {
+      "name": "group:newsletter",
+      "description": "group:newsletter"
+    },
+    {
+      "name": "group:domain",
+      "description": "group:domain"
+    },
+    {
+      "name": "org-endpoint",
+      "description": "org-endpoint"
+    },
+    {
+      "name": "method:verify",
+      "description": "method:verify"
+    },
+    {
+      "name": "group:newsletters",
+      "description": "group:newsletters"
+    },
+    {
+      "name": "group:sending_profile",
+      "description": "group:sending_profile"
+    },
+    {
+      "name": "group:subscriber",
+      "description": "group:subscriber"
+    },
+    {
+      "name": "method:getbyemail",
+      "description": "method:getbyemail"
+    },
+    {
+      "name": "method:resendoptin",
+      "description": "method:resendoptin"
+    },
+    {
+      "name": "method:bulk",
+      "description": "method:bulk"
+    },
+    {
+      "name": "group:subscriber_metadata",
+      "description": "group:subscriber_metadata"
+    },
+    {
+      "name": "group:template",
+      "description": "group:template"
+    },
+    {
+      "name": "group:user",
+      "description": "group:user"
+    }
+  ]
+}

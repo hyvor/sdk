@@ -4,39 +4,63 @@
 // same-namespace classes.
 export class PhpFile {
 
-    private uses = new Map<string, string>(); // shortName => FQCN
+    private uses = new Map<string, string>(); // alias (usually the short name) => FQCN
+    private declaredClassName: string | null = null;
 
     constructor(public readonly namespace: string) {
     }
 
     /**
-     * Registers `fqcn` for use in this file and returns the short name to
-     * reference it by in code.
+     * Registers the name of the class/enum this file declares, so `use()`
+     * can tell an import apart from a name collision with it (ex: a
+     * `Newsletter` resource client importing the unrelated `Newsletter` DTO
+     * that shares its short name).
+     */
+    declareClass(name: string): void {
+        this.declaredClassName = name;
+    }
+
+    /**
+     * Registers `fqcn` for use in this file and returns the name to
+     * reference it by in code - normally its short name, but an
+     * automatically disambiguated alias if that short name is already taken
+     * by this file's own class or a different, already-imported FQCN.
      */
     use(fqcn: string): string {
-        const shortName = fqcn.split('\\').pop()!;
+        const parts = fqcn.split('\\');
+        const shortName = parts[parts.length - 1];
         const ownFqcn = `${this.namespace}\\${shortName}`;
 
         if (fqcn === ownFqcn) {
             return shortName;
         }
 
-        const existing = this.uses.get(shortName);
-        if (existing !== undefined && existing !== fqcn) {
-            throw new Error(
-                `Import collision in namespace ${this.namespace}: ` +
-                `"${shortName}" refers to both ${existing} and ${fqcn}`,
-            );
+        for (const [alias, existingFqcn] of this.uses) {
+            if (existingFqcn === fqcn) {
+                return alias;
+            }
         }
 
-        this.uses.set(shortName, fqcn);
-        return shortName;
+        const parentNamespace = parts[parts.length - 2] ?? '';
+        let alias = shortName;
+        let suffix = 2;
+
+        while (alias === this.declaredClassName || this.uses.has(alias)) {
+            alias = suffix === 2 ? `${parentNamespace}${shortName}` : `${parentNamespace}${shortName}${suffix}`;
+            suffix++;
+        }
+
+        this.uses.set(alias, fqcn);
+        return alias;
     }
 
     private renderUses(): string {
-        return Array.from(this.uses.values())
-            .sort((a, b) => a.localeCompare(b))
-            .map(fqcn => `use ${fqcn};`)
+        return Array.from(this.uses.entries())
+            .sort(([, a], [, b]) => a.localeCompare(b))
+            .map(([alias, fqcn]) => {
+                const shortName = fqcn.split('\\').pop()!;
+                return alias === shortName ? `use ${fqcn};` : `use ${fqcn} as ${alias};`;
+            })
             .join('\n');
     }
 

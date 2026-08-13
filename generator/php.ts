@@ -1,18 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 import { pascalCase } from './helpers.ts';
-import { getSchemas } from './schema.ts';
+import { getSchemas, PRODUCT_CONFIG, Product } from './schema.ts';
 import { buildDtoImportMap, generateDtoFiles } from './php/dto.ts';
-import { generateOrgFiles, generateWebsiteFiles } from './php/resources.ts';
+import { generateOrgFiles, generateResourceFiles } from './php/resources.ts';
 import { generateProductClientFile } from './php/clientTemplate.ts';
 
 export function generatePhp(outputRoot: string = 'tmp') {
     const schemas = getSchemas();
 
-    for (const [product, processed] of Object.entries(schemas)) {
+    for (const [product, processed] of Object.entries(schemas) as [Product, typeof schemas[Product]][]) {
         const productNamespace = pascalCase(product);
         const namespaceBase = `Hyvor\\Sdk\\${productNamespace}`;
         const outDir = path.join(outputRoot, productNamespace);
+        const config = PRODUCT_CONFIG[product];
 
         fs.rmSync(outDir, { recursive: true, force: true });
         fs.mkdirSync(outDir, { recursive: true });
@@ -22,7 +23,7 @@ export function generatePhp(outputRoot: string = 'tmp') {
         const files = [
             ...generateDtoFiles(processed.responses, dtoImports, namespaceBase),
             ...generateOrgFiles(processed, namespaceBase, dtoImports),
-            ...generateWebsiteFiles(processed, namespaceBase, dtoImports),
+            ...generateResourceFiles(processed, namespaceBase, dtoImports, config),
             generateProductClientFile(product, namespaceBase, processed.selfGroupName, processed.endpoints.org[0]?.name ?? null),
         ];
 

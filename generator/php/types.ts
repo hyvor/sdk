@@ -36,7 +36,16 @@ function resolveBaseType(schema: Schema, file: PhpFile, dtoImports: DtoImportMap
         }
 
         const parts = schema.oneOf.map(member => resolveBaseType(member, file, dtoImports));
-        return { hint: parts.map(part => part.hint).join('|') };
+
+        // PHP rejects a union with a type repeated verbatim (`array|array`,
+        // which two differently-shaped oneOf members can both map to, ex.
+        // "list of X" vs "map of X" both being native `array`) - so the
+        // native hint is deduped, while the phpdoc keeps every member's
+        // fuller type for precision.
+        const hint = Array.from(new Set(parts.map(part => part.hint))).join('|');
+        const docJoined = parts.map(part => part.docType ?? part.hint).join('|');
+
+        return docJoined === hint ? { hint } : { hint, docType: docJoined };
     }
 
     switch (schema.type) {

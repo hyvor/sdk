@@ -27,6 +27,7 @@ export function generateProductClientFile(
     const resourceClientClassName = resourcePascal;
 
     const file = new PhpFile(namespaceBase);
+    file.declareClass(clientClassName);
     const tokenProviderShort = file.use(TOKEN_PROVIDER_FQCN);
     const baseClientShort = file.use(BASE_CLIENT_FQCN);
     const httpClientShort = file.use(HTTP_CLIENT_FQCN);

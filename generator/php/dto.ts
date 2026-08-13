@@ -26,6 +26,10 @@ export function generateDtoFiles(
     return Object.entries(responses).map(([name, schema]) => generateDtoFile(name, schema, dtoImports, namespaceBase));
 }
 
+function isEnumSchema(schema: OpenAPIV3.SchemaObject): boolean {
+    return schema.type === 'string' && Array.isArray(schema.enum);
+}
+
 function generateDtoFile(
     schemaName: string,
     schema: OpenAPIV3.SchemaObject,
@@ -35,6 +39,11 @@ function generateDtoFile(
     const className = dtoClassName(schemaName);
     const namespace = `${namespaceBase}\\Dto`;
     const file = new PhpFile(namespace);
+    file.declareClass(className);
+
+    if (isEnumSchema(schema)) {
+        return generateEnumFile(className, schema, file);
+    }
 
     const paramLines: string[] = [];
     for (const [propName, propSchema] of Object.entries(schema.properties ?? {})) {
@@ -55,6 +64,16 @@ function generateDtoFile(
         '    }',
         '}',
     ].join('\n');
+
+    return {
+        relativePath: `Dto/${className}.php`,
+        content: file.render(body),
+    };
+}
+
+function generateEnumFile(className: string, schema: OpenAPIV3.SchemaObject, file: PhpFile): GeneratedFile {
+    const cases = (schema.enum as string[]).map(value => `    case ${value.toUpperCase()} = '${value}';`);
+    const body = [`enum ${className}: string`, '{', ...cases, '}'].join('\n');
 
     return {
         relativePath: `Dto/${className}.php`,
