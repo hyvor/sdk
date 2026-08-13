@@ -38,5 +38,4 @@ final class OrgNewslettersResource
 
         return $this->transport->denormalize($data, Newsletter::class);
     }
-
 }

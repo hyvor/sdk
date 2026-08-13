@@ -62,7 +62,6 @@ final readonly class Newsletter
         public ?int $form_dark_border_radius,
         public FormColorPalette $form_default_color_palette,
         public int $form_input_border_radius,
-
         /**
          * @var array<string, string>
          */

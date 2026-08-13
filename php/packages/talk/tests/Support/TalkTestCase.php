@@ -64,20 +64,4 @@ abstract class TalkTestCase extends TestCase
             'oidc_sub' => null,
         ], $overrides);
     }
-
-    /**
-     * @param array<string, mixed> $overrides
-     * @return array<string, mixed>
-     */
-    protected function sampleDomain(array $overrides = []): array
-    {
-        return array_merge([
-            'id' => 1,
-            'websiteId' => self::WEBSITE_ID,
-            'website' => null,
-            'domain' => 'example.com',
-            'createdAt' => '2023-11-14T22:13:20+00:00',
-            'updatedAt' => '2023-11-14T22:13:20+00:00',
-        ], $overrides);
-    }
 }

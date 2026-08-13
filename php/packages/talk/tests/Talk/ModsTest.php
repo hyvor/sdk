@@ -9,7 +9,7 @@ use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 use Nyholm\Psr7\Response;
 
-final class ModeratorsTest extends TalkTestCase
+final class ModsTest extends TalkTestCase
 {
     public function testCreate(): void
     {
@@ -22,7 +22,7 @@ final class ModeratorsTest extends TalkTestCase
             'user' => $this->sampleAuthUser(),
         ], 201);
 
-        $mod = $this->client($http)->website(self::WEBSITE_ID)->moderators->create([
+        $mod = $this->client($http)->website(self::WEBSITE_ID)->mods->create([
             'user_id' => 5,
         ]);
 
@@ -48,7 +48,7 @@ final class ModeratorsTest extends TalkTestCase
             'user' => $this->sampleAuthUser(),
         ], 200);
 
-        $mod = $this->client($http)->website(self::WEBSITE_ID)->moderators->create([
+        $mod = $this->client($http)->website(self::WEBSITE_ID)->mods->create([
             'user_id' => 5,
             'on_duplicate' => 'ignore',
         ]);
@@ -67,7 +67,7 @@ final class ModeratorsTest extends TalkTestCase
         $client = $this->client($http);
 
         try {
-            $client->website(self::WEBSITE_ID)->moderators->create(['user_id' => 999999]);
+            $client->website(self::WEBSITE_ID)->mods->create(['user_id' => 999999]);
             self::fail('Expected ValidationFailedException to be thrown.');
         } catch (ValidationFailedException $e) {
             self::assertSame(422, $e->statusCode);
@@ -80,7 +80,7 @@ final class ModeratorsTest extends TalkTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->website(self::WEBSITE_ID)->moderators->delete(['user_id' => 5]);
+        $this->client($http)->website(self::WEBSITE_ID)->mods->delete(['user_id' => 5]);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());
@@ -93,7 +93,7 @@ final class ModeratorsTest extends TalkTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->website(self::WEBSITE_ID)->moderators->delete(['mod_id' => 9]);
+        $this->client($http)->website(self::WEBSITE_ID)->mods->delete(['mod_id' => 9]);
 
         $request = $http->requests[0];
         self::assertSame(['mod_id' => 9], json_decode((string) $request->getBody(), true));

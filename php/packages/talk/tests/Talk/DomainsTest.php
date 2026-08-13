@@ -9,25 +9,21 @@ use Hyvor\Sdk\Tests\Support\TalkTestCase;
 
 final class DomainsTest extends TalkTestCase
 {
-    public function testCreate(): void
+    public function testUpdate(): void
     {
         $http = new FakeHttpClient();
         $this->queueJson($http, [
-            [
-                'id' => 1,
-                'domain' => $this->sampleDomain(['domain' => 'blog.example.com']),
-            ],
+            ['id' => 1, 'domain' => 'blog.example.com'],
         ]);
 
-        $domains = $this->client($http)->website(self::WEBSITE_ID)->domains->create([
+        $domains = $this->client($http)->website(self::WEBSITE_ID)->domains->update([
             'domains' => ['blog.example.com'],
             'operation' => 'add',
         ]);
 
         self::assertCount(1, $domains);
         self::assertSame(1, $domains[0]->id);
-        self::assertSame('blog.example.com', $domains[0]->domain->domain);
-        self::assertNull($domains[0]->domain->website);
+        self::assertSame('blog.example.com', $domains[0]->domain);
 
         $request = $http->requests[0];
         self::assertSame('POST', $request->getMethod());
@@ -39,14 +35,14 @@ final class DomainsTest extends TalkTestCase
         self::assertSame('Bearer test-jwt-token', $request->getHeaderLine('Authorization'));
     }
 
-    public function testCreateWithResourceApiKeyOverridesAuth(): void
+    public function testUpdateWithResourceApiKeyOverridesAuth(): void
     {
         $http = new FakeHttpClient();
         $this->queueJson($http, [
-            ['id' => 1, 'domain' => $this->sampleDomain()],
+            ['id' => 1, 'domain' => 'example.com'],
         ]);
 
-        $this->client($http)->website(self::WEBSITE_ID, 'resource-api-key')->domains->create([
+        $this->client($http)->website(self::WEBSITE_ID, 'resource-api-key')->domains->update([
             'domains' => ['example.com'],
         ]);
 

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<ruleset name="Hyvor SDK">
+    <description>Coding standard for the hyvor/sdk-* PHP packages.</description>
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg value="np"/>
+
+    <file>packages/core/src</file>
+    <file>packages/core/tests</file>
+    <file>packages/talk/src</file>
+    <file>packages/talk/tests</file>
+    <file>packages/post/src</file>
+    <file>packages/post/tests</file>
+
+    <rule ref="PSR12"/>
+</ruleset>
