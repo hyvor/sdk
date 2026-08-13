@@ -24,6 +24,9 @@ use Psr\Log\LoggerInterface;
  * // resource-level access, via a per-product API key, no client-level auth needed
  * $talk = new TalkClient();
  * $website = $talk->website($websiteId, 'your-product-api-key')->get();
+ *
+ * // self-hosted: point directly at your own instance instead of *.hyvor.com
+ * $talk = new TalkClient(tokenProvider: $yourTokenProvider, productUrl: 'https://talk.example.com');
  * ```
  *
  * If `httpClient`/`requestFactory`/`streamFactory` are not given, they are
@@ -42,25 +45,35 @@ final class TalkClient
     public function __construct(
         ?string $cloudApiKey = null,
         ?TokenProviderInterface $tokenProvider = null,
-        string $cloudInstance = 'https://hyvor.com',
+        /**
+         * Overrides the product URL derived from `cloudInstance` - set this
+         * for a self-hosted instance (e.g. `https://talk.example.com`).
+         */
+        ?string $productUrl = null,
         ?LoggerInterface $logger = null,
         ?ClientInterface $httpClient = null,
         ?RequestFactoryInterface $requestFactory = null,
         ?StreamFactoryInterface $streamFactory = null,
         int $retryMaxAttempts = 3,
         float $retryBackoffFactor = 2.0,
+        /**
+         * Only relevant for hyvor.com-hosted (cloud) usage - self-hosted
+         * users should set `productUrl` instead.
+         */
+        string $cloudInstance = 'https://hyvor.com',
     ) {
         $this->transport = TransportBuilder::build(
             product: 'talk',
             cloudApiKey: $cloudApiKey,
             tokenProvider: $tokenProvider,
-            cloudInstance: $cloudInstance,
+            productUrl: $productUrl,
             logger: $logger,
             httpClient: $httpClient,
             requestFactory: $requestFactory,
             streamFactory: $streamFactory,
             retryMaxAttempts: $retryMaxAttempts,
             retryBackoffFactor: $retryBackoffFactor,
+            cloudInstance: $cloudInstance,
         );
         $this->websites = new OrgWebsitesResource($this->transport);
     }

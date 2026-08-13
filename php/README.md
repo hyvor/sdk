@@ -118,17 +118,35 @@ $website = $talk->website($websiteId, 'your-product-api-key')->get();
 ```php
 $talk = new TalkClient(
     cloudApiKey: '...',                          // or tokenProvider: ...
-    cloudInstance: 'https://hyvor.com',          // default
+    productUrl: null,                            // self-hosted override, see below
     logger: $psrLogger,                          // PSR-3 logger, default NullLogger
     httpClient: $psr18Client,                    // Psr\Http\Client\ClientInterface, default: auto-discovered
     requestFactory: $psr17Factory,               // Psr\Http\Message\RequestFactoryInterface, default: auto-discovered
     streamFactory: $psr17Factory,                // Psr\Http\Message\StreamFactoryInterface, default: auto-discovered
     retryMaxAttempts: 3,
     retryBackoffFactor: 2.0,
+    cloudInstance: 'https://hyvor.com',          // default; hyvor.com-hosted (cloud) use only, see below
 );
 ```
 
 `PostClient` accepts the same parameters.
+
+### Self-hosted instances
+
+By default, requests go to `https://{product}.hyvor.com` (derived from `cloudInstance`, which you
+normally never need to set — it only matters for hyvor.com-hosted/cloud usage). If you run a
+self-hosted instance, set `productUrl` instead to point the client directly at it, bypassing the
+`cloudInstance`-derived URL entirely:
+
+```php
+$talk = new TalkClient(
+    tokenProvider: new StaticTokenProvider('your-jwt'), // cloudApiKey/cloud token exchange isn't available self-hosted
+    productUrl: 'https://talk.example.com',
+);
+```
+
+`cloudApiKey` isn't supported for self-hosted instances (it depends on hyvor.com for the JWT
+exchange) — use `tokenProvider` instead.
 
 ### Authentication
 
@@ -206,7 +224,8 @@ See [DEV.md](../DEV.md) at the repo root for running tests (with or without Dock
 
 - Talk requests are sent directly to the product's own instance, derived from `cloudInstance` by
   prefixing its host with the product name — e.g. `cloudInstance: 'https://hyvor.com'` (the
-  default) resolves to `https://talk.hyvor.com`. Both org-level endpoints (like
+  default) resolves to `https://talk.hyvor.com` — unless `productUrl` is set, which is used as-is
+  instead (see Self-hosted instances above). Both org-level endpoints (like
   `$talk->websites->create()`) and resource-level ones (everything under
   `$talk->website($id)`) go through this same per-product instance.
 - A `cloudApiKey` is exchanged for a short-lived JWT via `POST {cloudInstance}/api/cloud/token`,

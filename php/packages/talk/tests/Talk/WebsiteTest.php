@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Talk;
 
+use Hyvor\Sdk\Auth\StaticTokenProvider;
 use Hyvor\Sdk\Exceptions\ValidationFailedException;
+use Hyvor\Sdk\Talk\TalkClient;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 
 final class WebsiteTest extends TalkTestCase
@@ -87,5 +90,28 @@ final class WebsiteTest extends TalkTestCase
 
         $request = $http->requests[0];
         self::assertSame('Bearer resource-api-key', $request->getHeaderLine('Authorization'));
+    }
+
+    public function testProductUrlOverridesCloudInstanceDerivedUrl(): void
+    {
+        $http = new FakeHttpClient();
+        $this->queueJson($http, []);
+
+        $factory = new Psr17Factory();
+        $talk = new TalkClient(
+            httpClient: $http,
+            requestFactory: $factory,
+            streamFactory: $factory,
+            tokenProvider: new StaticTokenProvider('test-jwt-token'),
+            productUrl: 'https://talk.example.com',
+        );
+
+        $talk->website(self::WEBSITE_ID)->delete();
+
+        $request = $http->requests[0];
+        self::assertSame(
+            'https://talk.example.com/api/console/v1/' . self::WEBSITE_ID . '/website',
+            (string) $request->getUri(),
+        );
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
+use Hyvor\Sdk\Auth\StaticTokenProvider;
 use Hyvor\Sdk\Exceptions\ValidationFailedException;
 use Hyvor\Sdk\Post\PostClient;
 use Hyvor\Sdk\Testing\FakeHttpClient;
@@ -231,5 +232,25 @@ final class NewsletterTest extends PostTestCase
             self::assertSame(422, $e->statusCode);
             self::assertSame(['The subdomain has already been taken.'], $e->errors['subdomain']);
         }
+    }
+
+    public function testProductUrlOverridesCloudInstanceDerivedUrl(): void
+    {
+        $http = new FakeHttpClient();
+        $this->queueJson($http, []);
+
+        $factory = new Psr17Factory();
+        $post = new PostClient(
+            httpClient: $http,
+            requestFactory: $factory,
+            streamFactory: $factory,
+            tokenProvider: new StaticTokenProvider('test-jwt-token'),
+            productUrl: 'https://post.example.com',
+        );
+
+        $post->newsletter(self::NEWSLETTER_ID)->delete();
+
+        $request = $http->requests[0];
+        self::assertSame('https://post.example.com/api/console/newsletter', (string) $request->getUri());
     }
 }

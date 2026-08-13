@@ -32,13 +32,14 @@ final class TransportBuilder
         string $product,
         ?string $cloudApiKey = null,
         ?TokenProviderInterface $tokenProvider = null,
-        string $cloudInstance = 'https://hyvor.com',
+        ?string $productUrl = null,
         ?LoggerInterface $logger = null,
         ?ClientInterface $httpClient = null,
         ?RequestFactoryInterface $requestFactory = null,
         ?StreamFactoryInterface $streamFactory = null,
         int $retryMaxAttempts = 3,
         float $retryBackoffFactor = 2.0,
+        string $cloudInstance = 'https://hyvor.com',
         ?Serializer $serializer = null,
     ): Transport {
         if ($cloudApiKey !== null && $tokenProvider !== null) {
@@ -69,10 +70,10 @@ final class TransportBuilder
             streamFactory: $streamFactory,
             logger: $logger,
             tokenProvider: $tokenProvider,
-            baseUrl: ProductBaseUrl::resolve($cloudInstance, $product),
+            baseUrl: $productUrl ?? ProductBaseUrl::resolve($cloudInstance, $product),
             defaultRetryMaxAttempts: $retryMaxAttempts,
             defaultRetryBackoffFactor: $retryBackoffFactor,
-            userAgent: 'hyvor/sdk-' . $product . '-php/' . Version::VERSION,
+            userAgent: 'hyvor/sdk-php-' . $product . '/' . Version::VERSION,
             serializer: $serializer,
         );
     }
