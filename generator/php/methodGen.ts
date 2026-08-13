@@ -1,20 +1,8 @@
 import { OpenAPIV3 } from 'openapi-types';
-import { Endpoint } from '../helpers.ts';
+import { Endpoint } from '../schema.ts';
 import { PhpFile } from './write.ts';
 import { DtoImportMap } from './types.ts';
 import { renderRequestArrayShapeLines } from './requestShape.ts';
-
-const HTTP_METHOD_TO_NAME: Record<string, string> = {
-    POST: 'create',
-    PUT: 'update',
-    PATCH: 'update',
-    DELETE: 'delete',
-    GET: 'get',
-};
-
-function methodName(httpMethod: string): string {
-    return HTTP_METHOD_TO_NAME[httpMethod] ?? httpMethod.toLowerCase();
-}
 
 /**
  * Where a method sends its request through and denormalizes its response
@@ -56,7 +44,7 @@ export function renderMethod(
     dtoImports: DtoImportMap,
     requestSchemas: Record<string, OpenAPIV3.SchemaObject>,
 ): string {
-    const name = methodName(endpoint.method);
+    const name = endpoint.methodName;
     const hasData = endpoint.requestSchemaName !== null;
     const dataExpr = hasData ? '$data' : 'null';
 
@@ -76,7 +64,7 @@ export function renderMethod(
         returnDoc = `${itemType}[]`;
     }
 
-    const docLines = [`     * ${endpoint.method} ${docPath}`];
+    const docLines = [`     * ${endpoint.httpMethod} ${docPath}`];
 
     if (hasData) {
         const schema = requestSchemas[endpoint.requestSchemaName!];
@@ -96,7 +84,7 @@ export function renderMethod(
     docLines.push('     *');
     docLines.push('     * @throws HyvorApiException');
 
-    const requestCall = `${caller.requestReceiver}->request('${endpoint.method}', ${pathExpr}, ${dataExpr}, $options)`;
+    const requestCall = `${caller.requestReceiver}->request('${endpoint.httpMethod}', ${pathExpr}, ${dataExpr}, $options)`;
 
     const bodyLines: string[] = [];
     if (endpoint.response.shape === 'void') {

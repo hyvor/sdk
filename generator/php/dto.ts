@@ -1,4 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
+import { dtoClassName } from '../schema.ts';
 import { PhpFile } from './write.ts';
 import { DtoImportMap, resolveSchemaType } from './types.ts';
 
@@ -7,17 +8,11 @@ export interface GeneratedFile {
     content: string;
 }
 
-// pairs like Website/WebsiteObject or Domain/DomainObject share a folder,
-// keyed off the name with any "Object" suffix stripped
-function dtoBase(name: string): string {
-    return name.endsWith('Object') ? name.slice(0, -'Object'.length) : name;
-}
-
 export function buildDtoImportMap(responses: Record<string, OpenAPIV3.SchemaObject>, namespaceBase: string): DtoImportMap {
     const map: DtoImportMap = {};
 
-    for (const name of Object.keys(responses)) {
-        map[name] = `${namespaceBase}\\Dto\\${dtoBase(name)}\\${name}`;
+    for (const schemaName of Object.keys(responses)) {
+        map[schemaName] = `${namespaceBase}\\Dto\\${dtoClassName(schemaName)}`;
     }
 
     return map;
@@ -32,13 +27,13 @@ export function generateDtoFiles(
 }
 
 function generateDtoFile(
-    name: string,
+    schemaName: string,
     schema: OpenAPIV3.SchemaObject,
     dtoImports: DtoImportMap,
     namespaceBase: string,
 ): GeneratedFile {
-    const base = dtoBase(name);
-    const namespace = `${namespaceBase}\\Dto\\${base}`;
+    const className = dtoClassName(schemaName);
+    const namespace = `${namespaceBase}\\Dto`;
     const file = new PhpFile(namespace);
 
     const paramLines: string[] = [];
@@ -52,7 +47,7 @@ function generateDtoFile(
     }
 
     const body = [
-        `final class ${name}`,
+        `final class ${className}`,
         '{',
         '    public function __construct(',
         ...paramLines,
@@ -62,7 +57,7 @@ function generateDtoFile(
     ].join('\n');
 
     return {
-        relativePath: `Dto/${base}/${name}.php`,
+        relativePath: `Dto/${className}.php`,
         content: file.render(body),
     };
 }

@@ -1,5 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
-import { EndpointsGroup, pascalCase, ProcessedSchema } from '../helpers.ts';
+import { pascalCase } from '../helpers.ts';
+import { EndpointsGroup, ProcessedSchema } from '../schema.ts';
 import { PhpFile } from './write.ts';
 import { DtoImportMap } from './types.ts';
 import { CLIENT_CALLER, renderMethod, SELF_CALLER, TRANSPORT_CALLER } from './methodGen.ts';
@@ -109,10 +110,10 @@ export function generateWebsiteFiles(
     dtoImports: DtoImportMap,
 ): GeneratedFile[] {
     const files: GeneratedFile[] = [];
-    const resourceName = processed.selfGroupKey;
+    const resourceName = processed.selfGroupName;
     const allGroups = processed.endpoints.resource;
-    const selfGroup = allGroups.find(group => group.key === resourceName) ?? null;
-    const subGroups = allGroups.filter(group => group.key !== resourceName);
+    const selfGroup = allGroups.find(group => group.name === resourceName) ?? null;
+    const subGroups = allGroups.filter(group => group.name !== resourceName);
 
     const clientClassName = `${pascalCase(resourceName)}Client`;
     const clientFqcn = `${namespaceBase}\\${clientClassName}`;

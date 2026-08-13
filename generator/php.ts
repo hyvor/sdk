@@ -1,8 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { getSchemas, pascalCase } from './helpers.ts';
+import { pascalCase } from './helpers.ts';
+import { getSchemas } from './schema.ts';
 import { buildDtoImportMap, generateDtoFiles } from './php/dto.ts';
 import { generateOrgFiles, generateWebsiteFiles } from './php/resources.ts';
+import { generateProductClientFile } from './php/clientTemplate.ts';
 
 const OUTPUT_ROOT = 'tmp';
 
@@ -23,6 +25,7 @@ export function generatePhp() {
             ...generateDtoFiles(processed.responses, dtoImports, namespaceBase),
             ...generateOrgFiles(processed, namespaceBase, dtoImports),
             ...generateWebsiteFiles(processed, namespaceBase, dtoImports),
+            generateProductClientFile(product, namespaceBase, processed.selfGroupName),
         ];
 
         for (const file of files) {
