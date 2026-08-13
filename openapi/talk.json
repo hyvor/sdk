@@ -146,11 +146,10 @@
     "/api/console/v1/websites": {
       "post": {
         "tags": [
-          "org-endpoint",
           "method:create",
-          "group:website"
+          "group:websites"
         ],
-        "operationId": "post_api_console_app_api_console_website_create",
+        "operationId": "post_api_console_app_api_console_org_websites_create",
         "requestBody": {
           "required": true,
           "content": {
@@ -162,15 +161,8 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Returns the created website object.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WebsiteObject"
-                }
-              }
-            }
+          "default": {
+            "description": ""
           }
         }
       }
@@ -408,66 +400,10 @@
           }
         },
         "type": "object"
-      },
-      "WebsiteObject": {
-        "required": [
-          "id",
-          "name",
-          "organization_id",
-          "owner_id",
-          "created_at",
-          "is_blocked",
-          "is_deleted",
-          "domains"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "organization_id": {
-            "type": "integer"
-          },
-          "owner_id": {
-            "type": "integer"
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "is_blocked": {
-            "type": "boolean"
-          },
-          "is_deleted": {
-            "type": "boolean"
-          },
-          "metadata": {
-            "type": "object",
-            "nullable": true,
-            "additionalProperties": {
-              "nullable": true
-            }
-          },
-          "created_by_source": {
-            "type": "string",
-            "nullable": true
-          },
-          "domains": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DomainObject"
-            }
-          }
-        },
-        "type": "object"
       }
     }
   },
   "tags": [
-    {
-      "name": "org-endpoint"
-    },
     {
       "name": "method:update",
       "description": "method:update"
@@ -487,6 +423,10 @@
     {
       "name": "method:delete",
       "description": "method:delete"
+    },
+    {
+      "name": "group:websites",
+      "description": "group:websites"
     },
     {
       "name": "group:website",
