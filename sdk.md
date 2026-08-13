@@ -206,7 +206,8 @@ never pulls in Post's DTOs (or Blogs'/Relay's, once those exist).
 Packages (each `php/packages/<dir>` in the monorepo):
 
 - `hyvor/sdk-core` (`packages/core/`) - Auth, Exceptions, Http (incl. `TransportBuilder`,
-  `Transport`, `ProductBaseUrl`), Serialization, `RequestOptions`, `Version`, and the shipped
+  `Transport`, `ProductBaseUrl`), Serialization, `RequestOptions`, `Version`,
+  `HyvorBaseClientAbstract` (the shared base class every product client extends), and the shipped
   test-mocking helpers under `Testing/` (`FakeHttpClient`, `FakeHttpTransportException`). No
   product knowledge. Installed transitively as a dependency of every product package - never
   required directly by consumers. Published as the standalone repo `hyvor/sdk-php-core`.
@@ -225,7 +226,8 @@ packages/talk/
     Website/           (website-level resources)
     Org/                (org-level resources)
     WebsiteClient
-    TalkClient          (constructed directly: new TalkClient(cloudApiKey: ..., productUrl: ...))
+    TalkClient          (extends HyvorBaseClientAbstract; constructed directly:
+                          new TalkClient(cloudApiKey: ..., productUrl: ...))
   tests/Talk/
 ```
 
@@ -241,6 +243,7 @@ packages/core/
            constructor delegates to)
     Serialization/
     Testing/ (FakeHttpClient, etc. - shipped so product packages' own test suites can use them)
+    HyvorBaseClientAbstract (shared base class for every product client - see below)
     RequestOptions
     Version
   tests/
@@ -250,9 +253,14 @@ There is no `HyvorClient` facade and no `Product/` namespace segment - each prod
 the top-level entry point for that package (`Hyvor\Sdk\Talk\TalkClient`, not
 `Hyvor\Sdk\Product\Talk\TalkClient`), constructed directly with the same config parameters
 (`cloudApiKey`, `tokenProvider`, `productUrl`, `logger`, `httpClient`, ..., `cloudInstance` last -
-matching the general parameter ordering above). The root `php/composer.json` is a dev-only
-aggregator (using Composer path repositories) that installs all packages from disk for
-whole-monorepo testing - it is not published.
+matching the general parameter ordering above). Every product client extends
+`Hyvor\Sdk\HyvorBaseClientAbstract` (in core), which owns the actual `TransportBuilder::build()`
+wiring behind that shared constructor shape - each concrete client's own constructor just forwards
+its params to `parent::__construct()` and then sets up its own org-level resource property (e.g.
+`$talk->websites`), since PHP readonly properties can only be assigned from the class that
+declares them. Only `product(): string` (e.g. `'talk'`) needs implementing per product. The root
+`php/composer.json` is a dev-only aggregator (using Composer path repositories) that installs all
+packages from disk for whole-monorepo testing - it is not published.
 
 - for inputs, use typed array inputs (phpstan-friendly array shapes). e.g. `$talk->websites->create(['name' => 'My Blog']);`.
   - if inputs have enums, use string-literal unions in the array shape (e.g. `'newest'|'oldest'|...`), not enum classes

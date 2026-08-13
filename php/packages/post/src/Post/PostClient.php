@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post;
 
 use Hyvor\Sdk\Auth\TokenProviderInterface;
-use Hyvor\Sdk\Http\Transport;
-use Hyvor\Sdk\Http\TransportBuilder;
+use Hyvor\Sdk\HyvorBaseClientAbstract;
 use Hyvor\Sdk\Post\Org\OrgNewslettersResource;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -29,26 +28,18 @@ use Psr\Log\LoggerInterface;
  * $post = new PostClient(tokenProvider: $yourTokenProvider, productUrl: 'https://post.example.com');
  * ```
  *
- * If `httpClient`/`requestFactory`/`streamFactory` are not given, they are
- * auto-discovered via php-http/discovery from whatever PSR-18/17
- * implementation is installed (e.g. guzzlehttp/guzzle, nyholm/psr7).
+ * See {@see HyvorBaseClientAbstract} for the full constructor parameter docs.
  */
-final class PostClient
+final class PostClient extends HyvorBaseClientAbstract
 {
     /**
      * Org-level access to newsletters, accessible via `$post->newsletters`.
      */
     public readonly OrgNewslettersResource $newsletters;
 
-    private readonly Transport $transport;
-
     public function __construct(
         ?string $cloudApiKey = null,
         ?TokenProviderInterface $tokenProvider = null,
-        /**
-         * Overrides the product URL derived from `cloudInstance` - set this
-         * for a self-hosted instance (e.g. `https://post.example.com`).
-         */
         ?string $productUrl = null,
         ?LoggerInterface $logger = null,
         ?ClientInterface $httpClient = null,
@@ -56,14 +47,9 @@ final class PostClient
         ?StreamFactoryInterface $streamFactory = null,
         int $retryMaxAttempts = 3,
         float $retryBackoffFactor = 2.0,
-        /**
-         * Only relevant for hyvor.com-hosted (cloud) usage - self-hosted
-         * users should set `productUrl` instead.
-         */
         string $cloudInstance = 'https://hyvor.com',
     ) {
-        $this->transport = TransportBuilder::build(
-            product: 'post',
+        parent::__construct(
             cloudApiKey: $cloudApiKey,
             tokenProvider: $tokenProvider,
             productUrl: $productUrl,
@@ -76,6 +62,11 @@ final class PostClient
             cloudInstance: $cloudInstance,
         );
         $this->newsletters = new OrgNewslettersResource($this->transport);
+    }
+
+    protected function product(): string
+    {
+        return 'post';
     }
 
     /**
