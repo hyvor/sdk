@@ -5,30 +5,35 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Talk\Website;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
-use Hyvor\Sdk\Talk\Dto\Domain\DomainObject;
 use Hyvor\Sdk\RequestOptions;
+use Hyvor\Sdk\Talk\Dto\Domain;
+use Hyvor\Sdk\Talk\Website;
 
 /**
- * `$client->talk->website($websiteId)->domains`
+ * `$client->website($websiteId)->domains`
  */
-final class DomainsResource extends WebsiteScopedResource
+final class DomainsResource
 {
+    public function __construct(private readonly Website $client)
+    {
+    }
+
     /**
      * POST /domains
      *
-     * Adds to, or replaces, the website's domains, depending on `operation`.
-     *
      * @param array{
-     *     domains?: list<string>|array<string, string>,
+     *     domains?: list<string>,
      *     operation?: 'add'|'set',
      * } $data
-     * @return DomainObject[]
+     *
+     * @return Domain[]
+     *
      * @throws HyvorApiException
      */
-    public function create(array $data, ?RequestOptions $options = null): array
+    public function update(array $data, ?RequestOptions $options = null): array
     {
-        $result = $this->request('POST', $this->path('/domains'), $data, $options);
+        $result = $this->client->request('POST', $this->client->path('/domains'), $data, $options);
 
-        return $this->transport->denormalizeList($result, DomainObject::class);
+        return $this->client->transport->denormalizeList($result, Domain::class);
     }
 }

@@ -2,12 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Hyvor\Sdk\Talk\Dto\User;
+namespace Hyvor\Sdk\Talk\Dto;
 
-/**
- * The Hyvor account user embedded in a `ModObject` (see
- * https://talk.hyvor.com/docs/api-console#mod-object).
- */
 final class AuthUser
 {
     public function __construct(

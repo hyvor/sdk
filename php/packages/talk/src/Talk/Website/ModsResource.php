@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Talk\Website;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
-use Hyvor\Sdk\Talk\Dto\Moderator\ModObject;
 use Hyvor\Sdk\RequestOptions;
+use Hyvor\Sdk\Talk\Dto\Mod;
+use Hyvor\Sdk\Talk\Website;
 
 /**
- * `$client->talk->website($websiteId)->moderators`
+ * `$client->website($websiteId)->mods`
  */
-final class ModeratorsResource extends WebsiteScopedResource
+final class ModsResource
 {
+    public function __construct(private readonly Website $client)
+    {
+    }
+
     /**
      * POST /mods
      *
@@ -21,13 +26,14 @@ final class ModeratorsResource extends WebsiteScopedResource
      *     role?: 'mod'|'admin',
      *     on_duplicate?: 'throw'|'ignore',
      * } $data
+     *
      * @throws HyvorApiException
      */
-    public function create(array $data, ?RequestOptions $options = null): ModObject
+    public function create(array $data, ?RequestOptions $options = null): Mod
     {
-        $result = $this->request('POST', $this->path('/mods'), $data, $options);
+        $result = $this->client->request('POST', $this->client->path('/mods'), $data, $options);
 
-        return $this->transport->denormalize($result, ModObject::class);
+        return $this->client->transport->denormalize($result, Mod::class);
     }
 
     /**
@@ -37,10 +43,11 @@ final class ModeratorsResource extends WebsiteScopedResource
      *     user_id?: int|null,
      *     mod_id?: int|null,
      * } $data
+     *
      * @throws HyvorApiException
      */
     public function delete(array $data, ?RequestOptions $options = null): void
     {
-        $this->request('DELETE', $this->path('/mods'), $data, $options);
+        $this->client->request('DELETE', $this->client->path('/mods'), $data, $options);
     }
 }

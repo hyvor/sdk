@@ -147,7 +147,8 @@
       "post": {
         "tags": [
           "method:create",
-          "group:websites"
+          "group:websites",
+          "org-endpoint"
         ],
         "operationId": "post_api_console_app_api_console_org_websites_create",
         "requestBody": {
@@ -205,20 +206,10 @@
       "UpdateDomainsInput": {
         "properties": {
           "domains": {
-            "oneOf": [
-              {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "default": []
           },
           "operation": {
@@ -427,6 +418,10 @@
     {
       "name": "group:websites",
       "description": "group:websites"
+    },
+    {
+      "name": "org-endpoint",
+      "description": "org-endpoint"
     },
     {
       "name": "group:website",

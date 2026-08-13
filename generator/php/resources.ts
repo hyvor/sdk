@@ -97,9 +97,9 @@ function generateOrgResourceFile(
 }
 
 /**
- * Generates `{Resource}Client.php` (ex: `WebsiteClient.php`) - the entry
- * point returned by `$client->{resource}($id)`. It owns `path()`/`request()`
- * (so headers/apiKey don't need to be threaded through every sub-resource),
+ * Generates `{Resource}.php` (ex: `Website.php`) - the entry point returned
+ * by `$client->{resource}($id)`. It owns `path()`/`request()` (so
+ * headers/apiKey don't need to be threaded through every sub-resource),
  * exposes the "self" group's endpoints (ex: `delete()`) directly, and holds
  * one property per remaining resource group, each generated into
  * `{Resource}/{Name}Resource.php`.
@@ -115,7 +115,7 @@ export function generateWebsiteFiles(
     const selfGroup = allGroups.find(group => group.name === resourceName) ?? null;
     const subGroups = allGroups.filter(group => group.name !== resourceName);
 
-    const clientClassName = `${pascalCase(resourceName)}Client`;
+    const clientClassName = pascalCase(resourceName);
     const clientFqcn = `${namespaceBase}\\${clientClassName}`;
     const idParam = `${resourceName}Id`;
 

@@ -15,11 +15,16 @@ const LOGGER_FQCN = 'Psr\\Log\\LoggerInterface';
  * plus an `$org` property and a `{resourceName}()` factory for the resource
  * client - both fixed regardless of what the OpenAPI spec's endpoints are.
  */
-export function generateProductClientFile(product: string, namespaceBase: string, resourceName: string): GeneratedFile {
+export function generateProductClientFile(
+    product: string,
+    namespaceBase: string,
+    resourceName: string,
+    orgExampleGroup: string | null,
+): GeneratedFile {
     const productPascal = pascalCase(product);
     const resourcePascal = pascalCase(resourceName);
     const clientClassName = `${productPascal}Client`;
-    const resourceClientClassName = `${resourcePascal}Client`;
+    const resourceClientClassName = resourcePascal;
 
     const file = new PhpFile(namespaceBase);
     const tokenProviderShort = file.use(TOKEN_PROVIDER_FQCN);
@@ -38,7 +43,7 @@ export function generateProductClientFile(product: string, namespaceBase: string
         ' * ```php',
         ' * // org-level access, via a cloud API key',
         ` * $client = new ${clientClassName}(cloudApiKey: '...');`,
-        ` * $${resourceName} = $client->org->${resourceName}->create(...);`,
+        ...(orgExampleGroup ? [` * $client->org->${orgExampleGroup}->create(...);`] : []),
         ' *',
         ' * // resource-level access, via a per-product API key, no client-level auth needed',
         ` * $client = new ${clientClassName}();`,

@@ -1,3 +1,3 @@
 import { generatePhp } from './php.ts';
 
-generatePhp();
+generatePhp(process.argv[2]);

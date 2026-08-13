@@ -6,7 +6,6 @@ namespace Hyvor\Sdk\Talk;
 
 use Hyvor\Sdk\Auth\TokenProviderInterface;
 use Hyvor\Sdk\HyvorBaseClientAbstract;
-use Hyvor\Sdk\Talk\Org\OrgWebsitesResource;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -17,15 +16,15 @@ use Psr\Log\LoggerInterface;
  *
  * ```php
  * // org-level access, via a cloud API key
- * $talk = new TalkClient(cloudApiKey: '...');
- * $website = $talk->websites->create(new CreateWebsiteRequest(...));
+ * $client = new TalkClient(cloudApiKey: '...');
+ * $client->org->websites->create(...);
  *
  * // resource-level access, via a per-product API key, no client-level auth needed
- * $talk = new TalkClient();
- * $website = $talk->website($websiteId, 'your-product-api-key')->get();
+ * $client = new TalkClient();
+ * $website = $client->website($websiteId, 'your-product-api-key');
  *
  * // self-hosted: point directly at your own instance instead of *.hyvor.com
- * $talk = new TalkClient(tokenProvider: $yourTokenProvider, productUrl: 'https://talk.example.com');
+ * $client = new TalkClient(tokenProvider: $yourTokenProvider, productUrl: 'https://talk.example.com');
  * ```
  *
  * See {@see HyvorBaseClientAbstract} for the full constructor parameter docs.
@@ -33,9 +32,9 @@ use Psr\Log\LoggerInterface;
 final class TalkClient extends HyvorBaseClientAbstract
 {
     /**
-     * Org-level access to all websites, accessible via `$talk->websites`.
+     * Org-level access to Talk resources, accessible via `$client->org`.
      */
-    public readonly OrgWebsitesResource $websites;
+    public readonly Org $org;
 
     public function __construct(
         ?string $cloudApiKey = null,
@@ -61,7 +60,7 @@ final class TalkClient extends HyvorBaseClientAbstract
             retryBackoffFactor: $retryBackoffFactor,
             cloudInstance: $cloudInstance,
         );
-        $this->websites = new OrgWebsitesResource($this->transport);
+        $this->org = new Org($this->transport);
     }
 
     protected function product(): string
@@ -80,8 +79,8 @@ final class TalkClient extends HyvorBaseClientAbstract
      *  sub-resources). Can be overridden per-call via
      *  `RequestOptions::$headers`.
      */
-    public function website(int|string $websiteId, ?string $apiKey = null, array $headers = []): WebsiteClient
+    public function website(int|string $websiteId, ?string $apiKey = null, array $headers = []): Website
     {
-        return new WebsiteClient($this->transport, $websiteId, $apiKey, $headers);
+        return new Website($this->transport, $websiteId, $apiKey, $headers);
     }
 }
