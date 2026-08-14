@@ -190,6 +190,9 @@ const talk = new TalkClient({
 - testing
   - all endpoints should be tested with mock HTTP responses
   - abstract commonly used methods into a base test class or helper functions
+- testability
+  - every SDK may provide helper classes to facilitate testing, such as a mock HTTP client (if such thing does not exist available commonly in the language) or helpers to generate mock Dtos.
+  - should document in README how to test the SDK with a mock HTTP client
 
 ### OpenAPI
 
