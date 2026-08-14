@@ -144,7 +144,7 @@ final class NewsletterTest extends PostTestCase
 
         $client = $this->client($http);
         $newsletter = $client->newsletter(self::NEWSLETTER_ID)->update(
-            ['name' => 'Renamed'],
+            ['name' => 'Renamed'], // @phpstan-ignore-line
         );
 
         self::assertSame('Renamed', $newsletter->name);
@@ -166,7 +166,7 @@ final class NewsletterTest extends PostTestCase
         $client = $this->client($http);
 
         try {
-            $client->newsletter(self::NEWSLETTER_ID)->update(['name' => '']);
+            $client->newsletter(self::NEWSLETTER_ID)->update(['name' => '']);  // @phpstan-ignore-line
             self::fail('Expected ValidationFailedException to be thrown.');
         } catch (ValidationFailedException $e) {
             self::assertSame(422, $e->statusCode);

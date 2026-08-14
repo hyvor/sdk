@@ -13,10 +13,10 @@ cd php
 docker compose up -d --build
 
 # run tests (across all packages)
-docker compose exec php ./vendor/bin/phpunit
+docker compose run --rm php ./vendor/bin/phpunit
 
 # run phpstan (across all packages)
-docker compose exec php ./vendor/bin/phpstan
+docker compose run --rm php ./vendor/bin/phpstan
 ```
 
 To verify a single product package installs and tests standalone (with no dependency on the
