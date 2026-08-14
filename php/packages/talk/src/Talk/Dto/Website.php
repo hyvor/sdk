@@ -9,8 +9,6 @@ final class Website
     public function __construct(
         public readonly int $id,
         public readonly string $name,
-        public readonly int $organization_id,
-        public readonly int $owner_id,
         public readonly string $created_at,
         public readonly bool $is_blocked,
         public readonly bool $is_deleted,

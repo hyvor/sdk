@@ -11,7 +11,7 @@ final class Mod
         public readonly int $created_at,
         public readonly string $role,
         public readonly int $website_id,
-        public readonly AuthUser $user,
+        public readonly UserMini $user,
     ) {
     }
 }

@@ -299,12 +299,6 @@
           "start_trial": {
             "type": "boolean",
             "default": true
-          },
-          "owner_user_id": {
-            "type": "integer",
-            "nullable": true,
-            "minimum": 0,
-            "exclusiveMinimum": true
           }
         },
         "type": "object"
@@ -324,50 +318,25 @@
         },
         "type": "object"
       },
-      "AuthUser": {
+      "UserMiniObject": {
         "required": [
           "id",
-          "username",
           "name",
-          "email"
+          "username"
         ],
         "properties": {
           "id": {
             "type": "integer"
           },
-          "username": {
-            "type": "string"
-          },
           "name": {
             "type": "string"
           },
-          "email": {
+          "username": {
             "type": "string"
           },
           "picture_url": {
             "type": "string",
-            "nullable": true,
-            "default": null
-          },
-          "location": {
-            "type": "string",
-            "nullable": true,
-            "default": null
-          },
-          "bio": {
-            "type": "string",
-            "nullable": true,
-            "default": null
-          },
-          "website_url": {
-            "type": "string",
-            "nullable": true,
-            "default": null
-          },
-          "oidc_sub": {
-            "type": "string",
-            "nullable": true,
-            "default": null
+            "nullable": true
           }
         },
         "type": "object"
@@ -394,7 +363,7 @@
             "type": "integer"
           },
           "user": {
-            "$ref": "#/components/schemas/AuthUser"
+            "$ref": "#/components/schemas/UserMiniObject"
           }
         },
         "type": "object"
@@ -403,8 +372,6 @@
         "required": [
           "id",
           "name",
-          "organization_id",
-          "owner_id",
           "created_at",
           "is_blocked",
           "is_deleted",
@@ -416,12 +383,6 @@
           },
           "name": {
             "type": "string"
-          },
-          "organization_id": {
-            "type": "integer"
-          },
-          "owner_id": {
-            "type": "integer"
           },
           "created_at": {
             "type": "string"

@@ -26,7 +26,6 @@ final class WebsitesResource
      *     domain: string,
      *     metadata?: array<string, mixed>,
      *     start_trial?: bool,
-     *     owner_user_id?: int|null,
      * } $data
      *
      * @throws HyvorApiException

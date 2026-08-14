@@ -1,15 +1,3 @@
-export interface AuthUser {
-    id: number;
-    username: string;
-    name: string;
-    email: string;
-    picture_url: string | null;
-    location: string | null;
-    bio: string | null;
-    website_url: string | null;
-    oidc_sub: string | null;
-}
-
 export interface Domain {
     id: number;
     domain: string;
@@ -20,14 +8,19 @@ export interface Mod {
     created_at: number;
     role: string;
     website_id: number;
-    user: AuthUser;
+    user: UserMini;
+}
+
+export interface UserMini {
+    id: number;
+    name: string;
+    username: string;
+    picture_url: string | null;
 }
 
 export interface Website {
     id: number;
     name: string;
-    organization_id: number;
-    owner_id: number;
     created_at: string;
     is_blocked: boolean;
     is_deleted: boolean;
@@ -47,7 +40,6 @@ export interface CreateWebsiteInput {
     domain: string;
     metadata?: Record<string, Record<string, unknown> | null>;
     start_trial?: boolean;
-    owner_user_id?: number | null;
 }
 
 export interface DeleteModInput {
