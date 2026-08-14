@@ -7,7 +7,7 @@ namespace Hyvor\Sdk\Tests\Post;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
-final class SendingProfilesTest extends PostTestCase
+final class SendingProfileTest extends PostTestCase
 {
     /**
      * @param array<string, mixed> $overrides
@@ -34,7 +34,7 @@ final class SendingProfilesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, [$this->sampleSendingProfile()]);
 
-        $profiles = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sendingProfiles->list();
+        $profiles = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profile->list();
 
         self::assertCount(1, $profiles);
         self::assertSame('news@example.com', $profiles[0]->from_email);
@@ -46,7 +46,7 @@ final class SendingProfilesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleSendingProfile(), 201);
 
-        $profile = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sendingProfiles->create(
+        $profile = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profile->create(
             ['from_email' => 'news@example.com', 'from_name' => 'My Newsletter'],
         );
 
@@ -66,9 +66,9 @@ final class SendingProfilesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleSendingProfile(['is_default' => true]));
 
-        $profile = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sendingProfiles->update(
+        $profile = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profile->update(
             1,
-            ['is_default' => true],
+            ['from_email' => 'news@example.com', 'is_default' => true],
         );
 
         self::assertTrue($profile->is_default);
@@ -76,15 +76,21 @@ final class SendingProfilesTest extends PostTestCase
         $request = $http->requests[0];
         self::assertSame('PATCH', $request->getMethod());
         self::assertSame($this->baseUrl() . '/sending-profiles/1', (string) $request->getUri());
-        self::assertSame(['is_default' => true], json_decode((string) $request->getBody(), true));
+        self::assertSame(
+            ['from_email' => 'news@example.com', 'is_default' => true],
+            json_decode((string) $request->getBody(), true),
+        );
     }
 
     public function testDelete(): void
     {
         $http = new FakeHttpClient();
-        $this->queueJson($http, []);
+        $this->queueJson($http, [$this->sampleSendingProfile(['id' => 2])]);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->sendingProfiles->delete(1);
+        $remaining = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profile->delete(1);
+
+        self::assertCount(1, $remaining);
+        self::assertSame(2, $remaining[0]->id);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());

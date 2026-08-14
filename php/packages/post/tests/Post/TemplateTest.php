@@ -7,14 +7,14 @@ namespace Hyvor\Sdk\Tests\Post;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
-final class TemplatesTest extends PostTestCase
+final class TemplateTest extends PostTestCase
 {
     public function testGet(): void
     {
         $http = new FakeHttpClient();
         $this->queueJson($http, ['template' => '<html>{{ content }}</html>']);
 
-        $template = $this->client($http)->newsletter(self::NEWSLETTER_ID)->templates->get();
+        $template = $this->client($http)->newsletter(self::NEWSLETTER_ID)->template->get();
 
         self::assertSame('<html>{{ content }}</html>', $template->template);
         self::assertSame($this->baseUrl() . '/templates', (string) $http->requests[0]->getUri());
@@ -25,7 +25,7 @@ final class TemplatesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, ['template' => '<html>new</html>']);
 
-        $template = $this->client($http)->newsletter(self::NEWSLETTER_ID)->templates->update(
+        $template = $this->client($http)->newsletter(self::NEWSLETTER_ID)->template->update(
             ['template' => '<html>new</html>'],
         );
 
@@ -37,16 +37,21 @@ final class TemplatesTest extends PostTestCase
         self::assertSame(['template' => '<html>new</html>'], json_decode((string) $request->getBody(), true));
     }
 
-    public function testRender(): void
+    /**
+     * `/templates/render`'s response is an inline `{html}` shape (not a
+     * named schema), so `preview()` returns the decoded body as a raw array
+     * instead of a typed DTO.
+     */
+    public function testPreview(): void
     {
         $http = new FakeHttpClient();
         $this->queueJson($http, ['html' => '<html>rendered</html>']);
 
-        $response = $this->client($http)->newsletter(self::NEWSLETTER_ID)->templates->render(
+        $response = $this->client($http)->newsletter(self::NEWSLETTER_ID)->template->preview(
             ['template' => '<html>{{ content }}</html>'],
         );
 
-        self::assertSame('<html>rendered</html>', $response->html);
+        self::assertSame('<html>rendered</html>', $response['html']);
 
         $request = $http->requests[0];
         self::assertSame('POST', $request->getMethod());

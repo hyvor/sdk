@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\User\UserRole;
+use Hyvor\Sdk\Post\Dto\UserRole;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
-final class UsersTest extends PostTestCase
+final class UserTest extends PostTestCase
 {
     public function testList(): void
     {
@@ -22,7 +22,7 @@ final class UsersTest extends PostTestCase
             ],
         ]);
 
-        $users = $this->client($http)->newsletter(self::NEWSLETTER_ID)->users->list();
+        $users = $this->client($http)->newsletter(self::NEWSLETTER_ID)->user->list();
 
         self::assertCount(1, $users);
         self::assertSame(UserRole::OWNER, $users[0]->role);
@@ -40,7 +40,7 @@ final class UsersTest extends PostTestCase
             'user' => $this->sampleUserMini(),
         ], 201);
 
-        $user = $this->client($http)->newsletter(self::NEWSLETTER_ID)->users->create(
+        $user = $this->client($http)->newsletter(self::NEWSLETTER_ID)->user->create(
             ['user_id' => 5, 'on_duplicate' => 'ignore'],
         );
 
@@ -60,7 +60,7 @@ final class UsersTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->users->delete(['user_id' => 5]);
+        $this->client($http)->newsletter(self::NEWSLETTER_ID)->user->delete(['user_id' => 5]);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());

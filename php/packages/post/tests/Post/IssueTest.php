@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\Issue\IssueStatus;
-use Hyvor\Sdk\Post\Dto\Issue\SendStatus;
+use Hyvor\Sdk\Post\Dto\IssueStatus;
+use Hyvor\Sdk\Post\Dto\SendStatus;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
-final class IssuesTest extends PostTestCase
+final class IssueTest extends PostTestCase
 {
     /**
      * @param array<string, mixed> $overrides
@@ -42,14 +42,11 @@ final class IssuesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, [$this->sampleIssue()]);
 
-        $issues = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->list(
-            ['limit' => 10],
-        );
+        $issues = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->list();
 
         self::assertCount(1, $issues);
         self::assertSame(IssueStatus::DRAFT, $issues[0]->status);
         self::assertSame($this->baseUrl() . '/issues', (string) $http->requests[0]->getUri());
-        self::assertSame(['limit' => 10], json_decode((string) $http->requests[0]->getBody(), true));
     }
 
     public function testCreate(): void
@@ -57,7 +54,7 @@ final class IssuesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleIssue(), 201);
 
-        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->create();
+        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->create();
 
         self::assertSame(1, $issue->id);
 
@@ -72,7 +69,7 @@ final class IssuesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleIssue());
 
-        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->get(1);
+        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->get(1);
 
         self::assertSame(1, $issue->id);
         self::assertSame($this->baseUrl() . '/issues/1', (string) $http->requests[0]->getUri());
@@ -83,9 +80,9 @@ final class IssuesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleIssue(['subject' => 'Updated']));
 
-        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->update(
+        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->update(
             1,
-            ['subject' => 'Updated', 'lists' => [1, 2]],
+            ['subject' => 'Updated', 'lists' => [1, 2], 'sending_profile_id' => 1],
         );
 
         self::assertSame('Updated', $issue->subject);
@@ -94,7 +91,7 @@ final class IssuesTest extends PostTestCase
         self::assertSame('PATCH', $request->getMethod());
         self::assertSame($this->baseUrl() . '/issues/1', (string) $request->getUri());
         self::assertSame(
-            ['subject' => 'Updated', 'lists' => [1, 2]],
+            ['subject' => 'Updated', 'lists' => [1, 2], 'sending_profile_id' => 1],
             json_decode((string) $request->getBody(), true),
         );
     }
@@ -104,7 +101,7 @@ final class IssuesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->delete(1);
+        $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->delete(1);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());
@@ -116,7 +113,7 @@ final class IssuesTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleIssue(['status' => 'sending']));
 
-        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->send(1);
+        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->send(1);
 
         self::assertSame(IssueStatus::SENDING, $issue->status);
 
@@ -125,7 +122,7 @@ final class IssuesTest extends PostTestCase
         self::assertSame($this->baseUrl() . '/issues/1/send', (string) $request->getUri());
     }
 
-    public function testSends(): void
+    public function testListsends(): void
     {
         $http = new FakeHttpClient();
         $this->queueJson($http, [
@@ -145,7 +142,7 @@ final class IssuesTest extends PostTestCase
             ],
         ]);
 
-        $sends = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->sends(1);
+        $sends = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->listsends(1);
 
         self::assertCount(1, $sends);
         self::assertSame(SendStatus::SENT, $sends[0]->status);

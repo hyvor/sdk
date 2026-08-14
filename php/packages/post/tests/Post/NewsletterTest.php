@@ -25,6 +25,8 @@ final class NewsletterTest extends PostTestCase
             'subdomain' => 'my-newsletter',
             'created_at' => 1700000000,
             'name' => 'My Newsletter',
+            'language_code' => null,
+            'is_rtl' => false,
 
             'address' => null,
             'unsubscribe_text' => null,
@@ -93,7 +95,7 @@ final class NewsletterTest extends PostTestCase
         self::assertSame(42, $newsletter->id);
         self::assertSame('My Newsletter', $newsletter->name);
         self::assertSame(
-            \Hyvor\Sdk\Post\Dto\Newsletter\FormColorPalette::OS,
+            \Hyvor\Sdk\Post\Dto\NewsletterFormDefaultColorPalette::OS,
             $newsletter->form_default_color_palette,
         );
 
@@ -182,7 +184,7 @@ final class NewsletterTest extends PostTestCase
         ]), 201);
 
         $client = $this->client($http);
-        $newsletter = $client->newsletters->create([
+        $newsletter = $client->org->newsletters->create([
             'name' => 'New Newsletter',
             'subdomain' => 'new-newsletter',
         ]);
@@ -226,7 +228,7 @@ final class NewsletterTest extends PostTestCase
         $client = $this->client($http);
 
         try {
-            $client->newsletters->create(['name' => 'X', 'subdomain' => 'taken']);
+            $client->org->newsletters->create(['name' => 'X', 'subdomain' => 'taken']);
             self::fail('Expected ValidationFailedException to be thrown.');
         } catch (ValidationFailedException $e) {
             self::assertSame(422, $e->statusCode);

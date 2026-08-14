@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Post\Dto\Export\SubscriberExportStatus;
+use Hyvor\Sdk\Post\Dto\SubscriberExportStatus;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
-final class ExportsTest extends PostTestCase
+final class ExportTest extends PostTestCase
 {
     public function testList(): void
     {
@@ -23,7 +23,7 @@ final class ExportsTest extends PostTestCase
             ],
         ]);
 
-        $exports = $this->client($http)->newsletter(self::NEWSLETTER_ID)->exports->list();
+        $exports = $this->client($http)->newsletter(self::NEWSLETTER_ID)->export->list();
 
         self::assertCount(1, $exports);
         self::assertSame(SubscriberExportStatus::COMPLETED, $exports[0]->status);
@@ -41,7 +41,7 @@ final class ExportsTest extends PostTestCase
             'url' => null,
         ], 201);
 
-        $export = $this->client($http)->newsletter(self::NEWSLETTER_ID)->exports->create();
+        $export = $this->client($http)->newsletter(self::NEWSLETTER_ID)->export->create();
 
         self::assertSame(SubscriberExportStatus::PENDING, $export->status);
 

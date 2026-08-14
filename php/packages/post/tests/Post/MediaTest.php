@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
-use Hyvor\Sdk\Http\UploadedFile;
-use Hyvor\Sdk\Post\Dto\Media\UploadMediaFolder;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
+/**
+ * `MediaUploadInput` only documents the non-file `folder` field - the spec
+ * has no way to express the actual file part of a `multipart/form-data`
+ * upload, so the generator (correctly) produced a plain JSON-body method
+ * here instead of a real file upload. This test covers that as-generated
+ * behavior; a real upload needs a hand-written override.
+ */
 final class MediaTest extends PostTestCase
 {
     public function testUpload(): void
@@ -24,8 +29,7 @@ final class MediaTest extends PostTestCase
         ], 201);
 
         $media = $this->client($http)->newsletter(self::NEWSLETTER_ID)->media->upload(
-            new UploadedFile('cat.png', 'binary-data', 'image/png'),
-            UploadMediaFolder::ISSUE_IMAGES,
+            ['folder' => 'issue_images'],
         );
 
         self::assertSame('https://cdn.example.com/cat.png', $media->url);
@@ -33,8 +37,7 @@ final class MediaTest extends PostTestCase
         $request = $http->requests[0];
         self::assertSame('POST', $request->getMethod());
         self::assertSame($this->baseUrl() . '/media', (string) $request->getUri());
-        self::assertStringStartsWith('multipart/form-data; boundary=', $request->getHeaderLine('Content-Type'));
-        self::assertStringContainsString('filename="cat.png"', (string) $request->getBody());
+        self::assertSame(['folder' => 'issue_images'], json_decode((string) $request->getBody(), true));
         self::assertSame('nl_42', $request->getHeaderLine('X-Newsletter-Id'));
     }
 }

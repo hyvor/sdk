@@ -7,7 +7,7 @@ namespace Hyvor\Sdk\Tests\Post;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
-final class ListsTest extends PostTestCase
+final class ListTest extends PostTestCase
 {
     public function testCreate(): void
     {
@@ -20,7 +20,7 @@ final class ListsTest extends PostTestCase
             'subscribers_count' => 0,
         ], 201);
 
-        $list = $this->client($http)->newsletter(self::NEWSLETTER_ID)->lists->create(
+        $list = $this->client($http)->newsletter(self::NEWSLETTER_ID)->list->create(
             ['name' => 'Default'],
         );
 
@@ -43,7 +43,7 @@ final class ListsTest extends PostTestCase
             'subscribers_count' => 5,
         ]);
 
-        $list = $this->client($http)->newsletter(self::NEWSLETTER_ID)->lists->update(
+        $list = $this->client($http)->newsletter(self::NEWSLETTER_ID)->list->update(
             1,
             ['name' => 'Renamed', 'description' => 'New description'],
         );
@@ -61,7 +61,7 @@ final class ListsTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->lists->delete(1);
+        $this->client($http)->newsletter(self::NEWSLETTER_ID)->list->delete(1);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());

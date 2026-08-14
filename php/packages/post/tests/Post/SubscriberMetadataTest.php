@@ -7,7 +7,7 @@ namespace Hyvor\Sdk\Tests\Post;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
-final class SubscriberMetadataDefinitionsTest extends PostTestCase
+final class SubscriberMetadataTest extends PostTestCase
 {
     public function testCreate(): void
     {
@@ -20,7 +20,7 @@ final class SubscriberMetadataDefinitionsTest extends PostTestCase
             'type' => 'text',
         ], 201);
 
-        $definition = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriberMetadataDefinitions->create(
+        $definition = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriber_metadata->create(
             ['key' => 'favorite_color', 'name' => 'Favorite Color'],
         );
 
@@ -46,7 +46,7 @@ final class SubscriberMetadataDefinitionsTest extends PostTestCase
             'type' => 'text',
         ]);
 
-        $definition = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriberMetadataDefinitions->update(
+        $definition = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriber_metadata->update(
             1,
             ['name' => 'Renamed'],
         );
@@ -60,7 +60,7 @@ final class SubscriberMetadataDefinitionsTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriberMetadataDefinitions->delete(1);
+        $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriber_metadata->delete(1);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());
