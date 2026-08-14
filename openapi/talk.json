@@ -162,8 +162,15 @@
           }
         },
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Returns the created website object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteObject"
+                }
+              }
+            }
           }
         }
       }
@@ -388,6 +395,59 @@
           },
           "user": {
             "$ref": "#/components/schemas/AuthUser"
+          }
+        },
+        "type": "object"
+      },
+      "WebsiteObject": {
+        "required": [
+          "id",
+          "name",
+          "organization_id",
+          "owner_id",
+          "created_at",
+          "is_blocked",
+          "is_deleted",
+          "domains"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "organization_id": {
+            "type": "integer"
+          },
+          "owner_id": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "is_blocked": {
+            "type": "boolean"
+          },
+          "is_deleted": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {
+              "nullable": true
+            }
+          },
+          "created_by_source": {
+            "type": "string",
+            "nullable": true
+          },
+          "domains": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DomainObject"
+            }
           }
         },
         "type": "object"

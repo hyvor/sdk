@@ -23,6 +23,19 @@ export interface Mod {
     user: AuthUser;
 }
 
+export interface Website {
+    id: number;
+    name: string;
+    organization_id: number;
+    owner_id: number;
+    created_at: string;
+    is_blocked: boolean;
+    is_deleted: boolean;
+    metadata: Record<string, Record<string, unknown> | null> | null;
+    created_by_source: string | null;
+    domains: Domain[];
+}
+
 export interface CreateModInput {
     user_id: number;
     role?: string;
