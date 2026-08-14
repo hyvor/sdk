@@ -126,7 +126,7 @@ const sends = relay.project(projectId).sends.list();
 /**
  * Calling an org-level endpoint
  */
-const newWebsite = talk.websites.create({
+const newWebsite = talk.org.websites.create({
     name: "My Blog",
     domain: "blog.example.com",
 });
@@ -197,72 +197,25 @@ const talk = new TalkClient({
 - Use metadata (descriptions, etc.) from OpenAPI spec to generate doc comments in the SDK. Avoid adding extra comments that are not in the OpenAPI spec.
 - Org-level endpoints have a `org-endpoint` tag.
 
-### PHP
+### Client Structure
 
-The PHP SDK is split into one Composer package per product, plus a shared internal core package -
-not one monolithic `hyvor/sdk` package. This keeps installs small: a consumer who only uses Talk
-never pulls in Post's DTOs (or Blogs'/Relay's, once those exist).
+```txt
+TalkClient
+    .website(websiteId, apiKey) // main resource
+        .comments.list() // sub-resource
+        .comments.get(commentId)
+        .comments.create(commentDto)
+        .comments.update(commentId, commentDto)
+        .comments.delete(commentId)
+    .org // org-level endpoints
+        .websites.list()
+        .websites.create(websiteDto);
 
-Packages (each `php/packages/<dir>` in the monorepo):
-
-- `hyvor/sdk-core` (`packages/core/`) - Auth, Exceptions, Http (incl. `TransportBuilder`,
-  `Transport`, `ProductBaseUrl`), Serialization, `RequestOptions`, `Version`,
-  `HyvorBaseClientAbstract` (the shared base class every product client extends), and the shipped
-  test-mocking helpers under `Testing/` (`FakeHttpClient`, `FakeHttpTransportException`). No
-  product knowledge. Installed transitively as a dependency of every product package - never
-  required directly by consumers. Published as the standalone repo `hyvor/sdk-php-core`.
-- `hyvor/sdk-talk` (`packages/talk/`), `hyvor/sdk-post` (`packages/post/`), and (once
-  implemented) `hyvor/sdk-blogs`, `hyvor/sdk-relay` - one per product, each requiring
-  `hyvor/sdk-core`. Published as the standalone repos `hyvor/sdk-php-talk`, `hyvor/sdk-php-post`,
-  etc.
-
-Folder structure, per product package (`packages/talk/` shown; `packages/post/` mirrors it):
-
+PostClient
+    .newsletter(newsletterId, apiKey) // main resource
+        .issues.list() // sub-resource
+        ...
+    .org // org-level endpoints
+        .newsletters.list()
+        .newsletters.create(newsletterDto);
 ```
-packages/talk/
-  composer.json       # hyvor/sdk-talk, requires hyvor/sdk-core
-  src/Talk/
-    Dto/               (for response DTOs)
-    Website/           (website-level resources)
-    Org/                (org-level resources)
-    WebsiteClient
-    TalkClient          (extends HyvorBaseClientAbstract; constructed directly:
-                          new TalkClient(cloudApiKey: ..., productUrl: ...))
-  tests/Talk/
-```
-
-And the shared core package:
-
-```
-packages/core/
-  composer.json       # hyvor/sdk-core
-  src/
-    Auth/ (for token provider, etc.)
-    Exceptions/ (for custom exceptions)
-    Http/ (transport, incl. TransportBuilder - the wiring every product client's
-           constructor delegates to)
-    Serialization/
-    Testing/ (FakeHttpClient, etc. - shipped so product packages' own test suites can use them)
-    HyvorBaseClientAbstract (shared base class for every product client - see below)
-    RequestOptions
-    Version
-  tests/
-```
-
-There is no `HyvorClient` facade and no `Product/` namespace segment - each product's client is
-the top-level entry point for that package (`Hyvor\Sdk\Talk\TalkClient`, not
-`Hyvor\Sdk\Product\Talk\TalkClient`), constructed directly with the same config parameters
-(`cloudApiKey`, `tokenProvider`, `productUrl`, `logger`, `httpClient`, ..., `cloudInstance` last -
-matching the general parameter ordering above). Every product client extends
-`Hyvor\Sdk\HyvorBaseClientAbstract` (in core), which owns the actual `TransportBuilder::build()`
-wiring behind that shared constructor shape - each concrete client's own constructor just forwards
-its params to `parent::__construct()` and then sets up its own org-level resource property (e.g.
-`$talk->websites`), since PHP readonly properties can only be assigned from the class that
-declares them. Only `product(): string` (e.g. `'talk'`) needs implementing per product. The root
-`php/composer.json` is a dev-only aggregator (using Composer path repositories) that installs all
-packages from disk for whole-monorepo testing - it is not published.
-
-- for inputs, use typed array inputs (phpstan-friendly array shapes). e.g. `$talk->websites->create(['name' => 'My Blog']);`.
-  - if inputs have enums, use string-literal unions in the array shape (e.g. `'newest'|'oldest'|...`), not enum classes
-- for outputs, use DTO classes.
-  - in outputs, use enums for closed value sets.

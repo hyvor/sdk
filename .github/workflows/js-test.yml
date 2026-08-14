@@ -1,0 +1,31 @@
+name: JS SDK Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'js/**'
+      - '.github/workflows/js-test.yml'
+  pull_request:
+    paths:
+      - 'js/**'
+      - '.github/workflows/js-test.yml'
+
+defaults:
+  run:
+    working-directory: js
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start container
+        run: docker compose up -d --build
+
+      - name: Build (typecheck + emit) every package
+        run: docker compose exec node npm run build
+
+      - name: Run tests
+        run: docker compose exec node npm run test

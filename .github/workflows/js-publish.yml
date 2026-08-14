@@ -1,0 +1,58 @@
+name: JS SDK Publish
+
+# Publishes each js/packages/<dir> subdirectory to npm, one package per
+# product plus the shared core package. All packages are released together
+# under the same version tag, since they're developed and reviewed as one
+# monorepo.
+#
+# Requires repo secret NPM_TOKEN: an npm automation token with publish
+# access to the @hyvor org.
+
+on:
+  push:
+    tags:
+      - 'js-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish, e.g. 1.0.0'
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir: [core, talk, post]
+    steps:
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF#refs/tags/js-v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install and build the monorepo workspace
+        working-directory: js
+        run: |
+          npm install
+          npm run build --workspaces --if-present
+
+      - name: Set package version
+        working-directory: js/packages/${{ matrix.dir }}
+        run: npm version "${{ steps.version.outputs.version }}" --no-git-tag-version --allow-same-version
+
+      - name: Publish to npm
+        working-directory: js/packages/${{ matrix.dir }}
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

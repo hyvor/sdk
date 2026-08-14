@@ -26,3 +26,64 @@ other product package or the aggregator):
 docker compose exec php sh -c "cd packages/talk && composer install && vendor/bin/phpunit"
 docker compose exec php sh -c "cd packages/post && composer install && vendor/bin/phpunit"
 ```
+
+## JavaScript/TypeScript (`js/`)
+
+`js/` is an npm workspaces monorepo, one package per publishable unit: `packages/core`
+(`@hyvor/sdk-core`, shared infra, not installed directly by consumers), `packages/talk`
+(`@hyvor/sdk-talk`), and `packages/post` (`@hyvor/sdk-post`). The root `js/package.json` is a
+dev-only aggregator (`"private": true`, no version) that links all three from disk (via npm
+workspaces) so the whole suite can be built and tested in one command:
+
+```bash
+cd js
+
+# first, run the container
+docker compose up -d --build
+
+# build (typecheck + emit) every package
+docker compose exec node npm run build
+
+# run tests (across all packages)
+docker compose exec node npm run test
+
+# typecheck only, no emit
+docker compose exec node npm run typecheck
+```
+
+To verify a single product package installs and tests standalone (with no dependency on the
+other product package or the aggregator):
+
+```bash
+docker compose exec node sh -c "cd packages/talk && npm install && npm test"
+docker compose exec node sh -c "cd packages/post && npm install && npm test"
+```
+
+## Generator (`generator/`)
+
+Both the PHP and JS SDKs' product packages (everything under `Dto/`, `Org/`, `{Resource}/`, plus
+the resource/product client classes) are generated from `openapi/*.json` by `generator/`, not
+hand-written - see `generator.md`/`tmp/generator.md` for how it was built. Hand-written code
+(`php/packages/core`, `js/packages/core`, and the product client's own doc comment/constructor
+shape) is never touched by the generator.
+
+```bash
+cd generator
+npm install
+
+# usage: tsx generate.ts <php|ts|all> [product,product,...] [--tmp]
+
+npm run generate:php            # regenerate every PHP product, in place (../php/packages/*/src)
+npm run generate:php -- talk    # ...just Talk
+npm run generate:php -- --tmp   # preview instead, under tmp/php/{Talk,Post}
+
+npm run generate:ts             # same, for TS (../js/packages/*/src, or tmp/js/{Talk,Post} with --tmp)
+
+npm run generate:all            # both languages, every product, in place
+```
+
+Output only ever goes to one of two places - there's no arbitrary output path: straight into the
+real package's `src/` (default), or `generator/tmp/{php,js}` (with `--tmp`, to review before
+touching a real package). Regenerating a package's `src/` overwrites it entirely (the generator
+`rm -rf`s the product's output directory first) - re-run it and commit the diff rather than
+hand-editing generated files.
