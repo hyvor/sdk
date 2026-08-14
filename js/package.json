@@ -1,0 +1,13 @@
+{
+  "name": "sdk-dev",
+  "private": true,
+  "description": "Dev-only aggregator for the @hyvor/sdk-* JS packages. Not published - npm workspaces links packages/{core,talk,post} together so the whole monorepo can be built and tested in one command.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}

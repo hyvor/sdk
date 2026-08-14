@@ -1,0 +1,11 @@
+services:
+  node:
+    build:
+      context: .
+      target: test
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/packages/core/node_modules
+      - /app/packages/talk/node_modules
+      - /app/packages/post/node_modules
