@@ -1,4 +1,5 @@
 name: PHP SDK Publish
+run-name: PHP SDK Publish ${{ inputs.version }}
 
 # Publishes each php/packages/<dir> subdirectory to its own standalone repo
 # and creates a tagged GitHub release there. Packagist is configured to pick
@@ -11,9 +12,6 @@ name: PHP SDK Publish
 # hyvor/sdk-php-core, hyvor/sdk-php-talk, and hyvor/sdk-php-post.
 
 on:
-  push:
-    tags:
-      - 'php-v*'
   workflow_dispatch:
     inputs:
       version:
@@ -35,12 +33,7 @@ jobs:
     steps:
       - name: Determine version
         id: version
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "version=${GITHUB_REF#refs/tags/php-}" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
 
       - name: Checkout monorepo
         uses: actions/checkout@v4

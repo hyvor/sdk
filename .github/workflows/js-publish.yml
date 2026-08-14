@@ -1,22 +1,25 @@
 name: JS SDK Publish
+run-name: JS SDK Publish ${{ inputs.version }}
 
 # Publishes each js/packages/<dir> subdirectory to npm, one package per
 # product plus the shared core package. All packages are released together
 # under the same version tag, since they're developed and reviewed as one
 # monorepo.
 #
-# Requires repo secret NPM_TOKEN: an npm automation token with publish
-# access to the @hyvor org.
+# Uses npm trusted publishing (OIDC) instead of a long-lived npm token: each
+# package must have this workflow (hyvor/sdk, js-publish.yml) added as a
+# trusted publisher in its npm package settings.
 
 on:
-  push:
-    tags:
-      - 'js-v*'
   workflow_dispatch:
     inputs:
       version:
         description: 'Version to publish, e.g. 1.0.0'
         required: true
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   publish:
@@ -27,12 +30,7 @@ jobs:
     steps:
       - name: Determine version
         id: version
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "version=${GITHUB_REF#refs/tags/js-v}" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v4
 
@@ -40,6 +38,9 @@ jobs:
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Update npm for trusted publishing (OIDC) support
+        run: npm install -g npm@latest
 
       - name: Install and build the monorepo workspace
         working-directory: js
@@ -54,5 +55,3 @@ jobs:
       - name: Publish to npm
         working-directory: js/packages/${{ matrix.dir }}
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
