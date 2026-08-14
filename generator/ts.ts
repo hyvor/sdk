@@ -1,19 +1,25 @@
 import fs from 'fs';
 import path from 'path';
 import { camelCase, pascalCase } from './helpers.ts';
+import { GenerateMode, resolveOutDir } from './outputRoot.ts';
 import { getSchemas, PRODUCT_CONFIG, Product } from './schema.ts';
 import { buildDtoImportMap, generateDtoFile } from './ts/dto.ts';
 import { generateOrgFiles, generateResourceFiles } from './ts/resources.ts';
 import { generateProductClientFile } from './ts/clientTemplate.ts';
 
-export function generateTs(outputRoot: string = 'tmp', products?: Product[]) {
+export function generateTs(mode: GenerateMode, products?: Product[]) {
     const schemas = getSchemas();
     const entries = (Object.entries(schemas) as [Product, typeof schemas[Product]][])
         .filter(([product]) => !products || products.includes(product));
 
     for (const [product, processed] of entries) {
         const productPascal = pascalCase(product);
-        const outDir = path.join(outputRoot, productPascal);
+        const productRoot = resolveOutDir('ts', product, mode);
+        // Unlike PHP, a real TS package (../js/packages/{product}/src) needs
+        // no extra product-name nesting - the npm package name already
+        // scopes it. The nesting only earns its keep under 'tmp', where
+        // every product in the language shares one scratch root.
+        const outDir = mode === 'tmp' ? path.join(productRoot, productPascal) : productRoot;
         const config = PRODUCT_CONFIG[product];
 
         fs.rmSync(outDir, { recursive: true, force: true });

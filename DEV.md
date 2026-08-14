@@ -71,12 +71,19 @@ shape) is never touched by the generator.
 cd generator
 npm install
 
-npm run generate              # PHP: writes to tmp/{Talk,Post} by default
-npm run generate -- ../php/packages/talk/src talk   # or straight into a package's src/
+# usage: tsx generate.ts <php|ts|all> [product,product,...] [--tmp]
 
-npm run generate:ts           # TS: writes to tmp/js/{Talk,Post} by default
-npm run generate:ts -- ../js/packages/talk/src talk # or straight into a package's src/
+npm run generate:php            # regenerate every PHP product, in place (../php/packages/*/src)
+npm run generate:php -- talk    # ...just Talk
+npm run generate:php -- --tmp   # preview instead, under tmp/php/{Talk,Post}
+
+npm run generate:ts             # same, for TS (../js/packages/*/src, or tmp/js/{Talk,Post} with --tmp)
+
+npm run generate:all            # both languages, every product, in place
 ```
 
-Regenerating into a package's `src/` overwrites it entirely (the generator `rm -rf`s the product's
-output directory first) - re-run it and commit the diff rather than hand-editing generated files.
+Output only ever goes to one of two places - there's no arbitrary output path: straight into the
+real package's `src/` (default), or `generator/tmp/{php,js}` (with `--tmp`, to review before
+touching a real package). Regenerating a package's `src/` overwrites it entirely (the generator
+`rm -rf`s the product's output directory first) - re-run it and commit the diff rather than
+hand-editing generated files.
