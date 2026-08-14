@@ -6,7 +6,9 @@ namespace Hyvor\Sdk\Tests\Talk;
 
 use Hyvor\Sdk\Auth\StaticTokenProvider;
 use Hyvor\Sdk\Exceptions\ValidationFailedException;
+use Hyvor\Sdk\Talk\Dto\Website;
 use Hyvor\Sdk\Talk\TalkClient;
+use Hyvor\Sdk\Testing\DtoFixtures;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\TalkTestCase;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -17,7 +19,7 @@ final class WebsiteTest extends TalkTestCase
     public function testCreateSendsNameAndDomain(): void
     {
         $http = new FakeHttpClient();
-        $this->queueJson($http, [], 201);
+        $this->queueJson($http, DtoFixtures::make(Website::class), 201);
 
         $this->client($http)->org->websites->create([
             'name' => 'My Blog',
