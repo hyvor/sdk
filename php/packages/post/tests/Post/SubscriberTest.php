@@ -14,7 +14,7 @@ final class SubscriberTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, [$this->sampleSubscriber()]);
 
-        $subscribers = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriber->list();
+        $subscribers = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscribers->list();
 
         self::assertCount(1, $subscribers);
         self::assertSame('jane@example.com', $subscribers[0]->email);
@@ -26,7 +26,7 @@ final class SubscriberTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleSubscriber());
 
-        $subscriber = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriber->getbyemail('jane@example.com');
+        $subscriber = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscribers->getbyemail('jane@example.com');
 
         self::assertSame('jane@example.com', $subscriber->email);
         self::assertSame($this->baseUrl() . '/subscribers/email/jane%40example.com', (string) $http->requests[0]->getUri());
@@ -37,7 +37,7 @@ final class SubscriberTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleSubscriber(), 201);
 
-        $subscriber = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriber->create(
+        $subscriber = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscribers->create(
             [
                 'email' => 'jane@example.com',
                 'lists' => ['Default'],
@@ -73,7 +73,7 @@ final class SubscriberTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriber->delete(1);
+        $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscribers->delete(1);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());
@@ -94,7 +94,7 @@ final class SubscriberTest extends PostTestCase
             'subscribers' => [$this->sampleSubscriber(), $this->sampleSubscriber(['id' => 2])],
         ]);
 
-        $response = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscriber->bulk(
+        $response = $this->client($http)->newsletter(self::NEWSLETTER_ID)->subscribers->bulk(
             [
                 'subscribers_ids' => [1, 2],
                 'action' => 'status_change',

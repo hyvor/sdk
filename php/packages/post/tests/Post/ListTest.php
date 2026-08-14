@@ -20,7 +20,7 @@ final class ListTest extends PostTestCase
             'subscribers_count' => 0,
         ], 201);
 
-        $list = $this->client($http)->newsletter(self::NEWSLETTER_ID)->list->create(
+        $list = $this->client($http)->newsletter(self::NEWSLETTER_ID)->lists->create(
             ['name' => 'Default'],
         );
 
@@ -43,7 +43,7 @@ final class ListTest extends PostTestCase
             'subscribers_count' => 5,
         ]);
 
-        $list = $this->client($http)->newsletter(self::NEWSLETTER_ID)->list->update(
+        $list = $this->client($http)->newsletter(self::NEWSLETTER_ID)->lists->update(
             1,
             ['name' => 'Renamed', 'description' => 'New description'],
         );
@@ -61,7 +61,7 @@ final class ListTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->list->delete(1);
+        $this->client($http)->newsletter(self::NEWSLETTER_ID)->lists->delete(1);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());

@@ -22,7 +22,7 @@ final class UserTest extends PostTestCase
             ],
         ]);
 
-        $users = $this->client($http)->newsletter(self::NEWSLETTER_ID)->user->list();
+        $users = $this->client($http)->newsletter(self::NEWSLETTER_ID)->users->list();
 
         self::assertCount(1, $users);
         self::assertSame(UserRole::OWNER, $users[0]->role);
@@ -40,7 +40,7 @@ final class UserTest extends PostTestCase
             'user' => $this->sampleUserMini(),
         ], 201);
 
-        $user = $this->client($http)->newsletter(self::NEWSLETTER_ID)->user->create(
+        $user = $this->client($http)->newsletter(self::NEWSLETTER_ID)->users->create(
             ['user_id' => 5, 'on_duplicate' => 'ignore'],
         );
 
@@ -60,7 +60,7 @@ final class UserTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->user->delete(['user_id' => 5]);
+        $this->client($http)->newsletter(self::NEWSLETTER_ID)->users->delete(['user_id' => 5]);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());

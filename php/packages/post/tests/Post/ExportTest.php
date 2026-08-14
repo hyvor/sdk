@@ -23,7 +23,7 @@ final class ExportTest extends PostTestCase
             ],
         ]);
 
-        $exports = $this->client($http)->newsletter(self::NEWSLETTER_ID)->export->list();
+        $exports = $this->client($http)->newsletter(self::NEWSLETTER_ID)->exports->list();
 
         self::assertCount(1, $exports);
         self::assertSame(SubscriberExportStatus::COMPLETED, $exports[0]->status);
@@ -41,7 +41,7 @@ final class ExportTest extends PostTestCase
             'url' => null,
         ], 201);
 
-        $export = $this->client($http)->newsletter(self::NEWSLETTER_ID)->export->create();
+        $export = $this->client($http)->newsletter(self::NEWSLETTER_ID)->exports->create();
 
         self::assertSame(SubscriberExportStatus::PENDING, $export->status);
 

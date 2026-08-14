@@ -34,7 +34,7 @@ final class SendingProfileTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, [$this->sampleSendingProfile()]);
 
-        $profiles = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profile->list();
+        $profiles = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profiles->list();
 
         self::assertCount(1, $profiles);
         self::assertSame('news@example.com', $profiles[0]->from_email);
@@ -46,7 +46,7 @@ final class SendingProfileTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleSendingProfile(), 201);
 
-        $profile = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profile->create(
+        $profile = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profiles->create(
             ['from_email' => 'news@example.com', 'from_name' => 'My Newsletter'],
         );
 
@@ -66,7 +66,7 @@ final class SendingProfileTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleSendingProfile(['is_default' => true]));
 
-        $profile = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profile->update(
+        $profile = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profiles->update(
             1,
             ['from_email' => 'news@example.com', 'is_default' => true],
         );
@@ -87,7 +87,7 @@ final class SendingProfileTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, [$this->sampleSendingProfile(['id' => 2])]);
 
-        $remaining = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profile->delete(1);
+        $remaining = $this->client($http)->newsletter(self::NEWSLETTER_ID)->sending_profiles->delete(1);
 
         self::assertCount(1, $remaining);
         self::assertSame(2, $remaining[0]->id);
