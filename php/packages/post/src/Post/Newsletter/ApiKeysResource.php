@@ -10,9 +10,9 @@ use Hyvor\Sdk\Post\Newsletter;
 use Hyvor\Sdk\RequestOptions;
 
 /**
- * `$client->newsletter($newsletterId)->api_key`
+ * `$client->newsletter($newsletterId)->api_keys`
  */
-final class ApiKeyResource
+final class ApiKeysResource
 {
     public function __construct(private readonly Newsletter $client)
     {

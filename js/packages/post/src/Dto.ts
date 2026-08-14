@@ -389,56 +389,6 @@ export interface UpdateListInput {
 export interface UpdateNewsletterInput {
     name: string;
     subdomain: string;
-    setProperties?: string[] | Record<string, string>;
-    id: number;
-    created_at: number;
-    language_code?: string | null;
-    is_rtl: boolean;
-    metadata: Record<string, string>;
-    address?: string | null;
-    unsubscribe_text?: string | null;
-    branding?: boolean;
-    template_color_accent?: string | null;
-    template_color_accent_text?: string | null;
-    template_color_background?: string | null;
-    template_color_background_text?: string | null;
-    template_color_box?: string | null;
-    template_color_box_text?: string | null;
-    template_box_shadow?: string | null;
-    template_box_radius?: string | null;
-    template_box_border?: string | null;
-    template_font_family?: string | null;
-    template_font_size?: string | null;
-    template_font_weight?: string | null;
-    template_font_weight_heading?: string | null;
-    template_font_line_height?: string | null;
-    form_title?: string | null;
-    form_description?: string | null;
-    form_footer_text?: string | null;
-    form_button_text?: string | null;
-    form_success_message?: string | null;
-    form_width?: number | null;
-    form_custom_css?: string | null;
-    form_color_light_text?: string | null;
-    form_color_light_text_light?: string | null;
-    form_color_light_accent?: string | null;
-    form_color_light_accent_text?: string | null;
-    form_color_light_input?: string | null;
-    form_color_light_input_text?: string | null;
-    form_light_input_box_shadow?: string | null;
-    form_light_input_border?: string | null;
-    form_light_border_radius?: number | null;
-    form_color_dark_text?: string | null;
-    form_color_dark_text_light?: string | null;
-    form_color_dark_accent?: string | null;
-    form_color_dark_accent_text?: string | null;
-    form_color_dark_input?: string | null;
-    form_color_dark_input_text?: string | null;
-    form_dark_input_box_shadow?: string | null;
-    form_dark_input_border?: string | null;
-    form_dark_border_radius?: number | null;
-    form_default_color_palette?: NewsletterFormDefaultColorPalette;
-    form_input_border_radius?: number;
 }
 
 export interface UpdateSendingProfileInput {

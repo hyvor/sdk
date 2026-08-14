@@ -1,15 +1,15 @@
 import type { Newsletter as Newsletter2, UpdateNewsletterInput } from './Dto.js';
-import { ApiKeyResource } from './Newsletter/ApiKeyResource.js';
-import { ExportResource } from './Newsletter/ExportResource.js';
-import { ImportResource } from './Newsletter/ImportResource.js';
-import { IssueResource } from './Newsletter/IssueResource.js';
-import { ListResource } from './Newsletter/ListResource.js';
+import { ApiKeysResource } from './Newsletter/ApiKeysResource.js';
+import { ExportsResource } from './Newsletter/ExportsResource.js';
+import { ImportsResource } from './Newsletter/ImportsResource.js';
+import { IssuesResource } from './Newsletter/IssuesResource.js';
+import { ListsResource } from './Newsletter/ListsResource.js';
 import { MediaResource } from './Newsletter/MediaResource.js';
-import { SendingProfileResource } from './Newsletter/SendingProfileResource.js';
+import { SendingProfilesResource } from './Newsletter/SendingProfilesResource.js';
 import { SubscriberMetadataResource } from './Newsletter/SubscriberMetadataResource.js';
-import { SubscriberResource } from './Newsletter/SubscriberResource.js';
-import { TemplateResource } from './Newsletter/TemplateResource.js';
-import { UserResource } from './Newsletter/UserResource.js';
+import { SubscribersResource } from './Newsletter/SubscribersResource.js';
+import { TemplatesResource } from './Newsletter/TemplatesResource.js';
+import { UsersResource } from './Newsletter/UsersResource.js';
 import type { RequestOptions, Transport } from '@hyvor/sdk-core';
 
 /**
@@ -21,17 +21,17 @@ import type { RequestOptions, Transport } from '@hyvor/sdk-core';
  * with a resource-level API key, passed as `apiKey`.
  */
 export class Newsletter {
-    readonly apiKeyResource: ApiKeyResource;
-    readonly export: ExportResource;
-    readonly import: ImportResource;
-    readonly issue: IssueResource;
-    readonly list: ListResource;
+    readonly apiKeys: ApiKeysResource;
+    readonly exports: ExportsResource;
+    readonly imports: ImportsResource;
+    readonly issues: IssuesResource;
+    readonly lists: ListsResource;
     readonly media: MediaResource;
-    readonly sendingProfile: SendingProfileResource;
-    readonly subscriber: SubscriberResource;
+    readonly sendingProfiles: SendingProfilesResource;
     readonly subscriberMetadata: SubscriberMetadataResource;
-    readonly template: TemplateResource;
-    readonly user: UserResource;
+    readonly subscribers: SubscribersResource;
+    readonly templates: TemplatesResource;
+    readonly users: UsersResource;
     private readonly resourceHeaders: Record<string, string>;
 
     constructor(
@@ -42,17 +42,17 @@ export class Newsletter {
     ) {
         this.resourceHeaders = { 'X-Newsletter-Id': String(newsletterId), ...headers };
 
-        this.apiKeyResource = new ApiKeyResource(this);
-        this.export = new ExportResource(this);
-        this.import = new ImportResource(this);
-        this.issue = new IssueResource(this);
-        this.list = new ListResource(this);
+        this.apiKeys = new ApiKeysResource(this);
+        this.exports = new ExportsResource(this);
+        this.imports = new ImportsResource(this);
+        this.issues = new IssuesResource(this);
+        this.lists = new ListsResource(this);
         this.media = new MediaResource(this);
-        this.sendingProfile = new SendingProfileResource(this);
-        this.subscriber = new SubscriberResource(this);
+        this.sendingProfiles = new SendingProfilesResource(this);
         this.subscriberMetadata = new SubscriberMetadataResource(this);
-        this.template = new TemplateResource(this);
-        this.user = new UserResource(this);
+        this.subscribers = new SubscribersResource(this);
+        this.templates = new TemplatesResource(this);
+        this.users = new UsersResource(this);
     }
 
     path(suffix: string = ''): string {

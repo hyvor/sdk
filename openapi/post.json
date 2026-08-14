@@ -10,11 +10,11 @@
       "get": {
         "tags": [
           "method:list",
-          "group:api_key"
+          "group:api_keys"
         ],
         "summary": "Get all API keys for a newsletter",
         "description": "Returns all API keys of the newsletter. The raw key is not returned; only its metadata is.",
-        "operationId": "get_api_console_app_api_console_apikey_list",
+        "operationId": "get_api_console_app_api_console_apikeys_list",
         "responses": {
           "200": {
             "description": "List of API keys",
@@ -34,11 +34,11 @@
       "post": {
         "tags": [
           "method:create",
-          "group:api_key"
+          "group:api_keys"
         ],
         "summary": "Create a new API key",
         "description": "Creates a new API key for the specified newsletter. The API key will be returned in the response, and it is important to store it securely as it will not be retrievable again.",
-        "operationId": "post_api_console_app_api_console_apikey_create",
+        "operationId": "post_api_console_app_api_console_apikeys_create",
         "requestBody": {
           "required": true,
           "content": {
@@ -67,11 +67,11 @@
       "post": {
         "tags": [
           "method:regenerate",
-          "group:api_key"
+          "group:api_keys"
         ],
         "summary": "Regenerate an API key",
         "description": "Regenerates the raw key of an API key. The previous key is invalidated immediately, and the new raw key is returned once.",
-        "operationId": "post_api_console_app_api_console_apikey_regenerate",
+        "operationId": "post_api_console_app_api_console_apikeys_regenerate",
         "parameters": [
           {
             "name": "id",
@@ -98,11 +98,11 @@
       "delete": {
         "tags": [
           "method:delete",
-          "group:api_key"
+          "group:api_keys"
         ],
         "summary": "Delete an API key",
         "description": "Permanently deletes an API key. Requests made with the deleted key will be rejected immediately.",
-        "operationId": "delete_api_console_app_api_console_apikey_delete",
+        "operationId": "delete_api_console_app_api_console_apikeys_delete",
         "parameters": [
           {
             "name": "id",
@@ -127,11 +127,11 @@
       "patch": {
         "tags": [
           "method:update",
-          "group:api_key"
+          "group:api_keys"
         ],
         "summary": "Update an API key",
         "description": "Updates the name, scopes, or enabled status of an API key.",
-        "operationId": "patch_api_console_app_api_console_apikey_update",
+        "operationId": "patch_api_console_app_api_console_apikeys_update",
         "parameters": [
           {
             "name": "id",
@@ -170,11 +170,11 @@
       "get": {
         "tags": [
           "method:list",
-          "group:export"
+          "group:exports"
         ],
         "summary": "Get subscriber exports",
         "description": "Get all subscriber exports of the newsletter.",
-        "operationId": "get_api_console_app_api_console_export_list",
+        "operationId": "get_api_console_app_api_console_exports_list",
         "responses": {
           "200": {
             "description": "List of subscriber exports",
@@ -194,11 +194,11 @@
       "post": {
         "tags": [
           "method:create",
-          "group:export"
+          "group:exports"
         ],
         "summary": "Export subscribers",
         "description": "Starts a new export of all subscribers of the newsletter.",
-        "operationId": "post_api_console_app_api_console_export_create",
+        "operationId": "post_api_console_app_api_console_exports_create",
         "responses": {
           "200": {
             "description": "Returns the created subscriber export object.",
@@ -217,11 +217,11 @@
       "post": {
         "tags": [
           "method:upload",
-          "group:import"
+          "group:imports"
         ],
         "summary": "Upload a subscriber import file",
         "description": "Uploads a CSV file of subscribers to import. Returns the parsed fields and row count so that the fields can be mapped before starting the import.",
-        "operationId": "post_api_console_app_api_console_import_upload",
+        "operationId": "post_api_console_app_api_console_imports_upload",
         "requestBody": {
           "required": true,
           "content": {
@@ -250,11 +250,11 @@
       "post": {
         "tags": [
           "method:start",
-          "group:import"
+          "group:imports"
         ],
         "summary": "Start a subscriber import",
         "description": "Starts an import using the field mapping provided for a previously uploaded subscriber import file.",
-        "operationId": "post_api_console_app_api_console_import_start",
+        "operationId": "post_api_console_app_api_console_imports_start",
         "parameters": [
           {
             "name": "id",
@@ -293,11 +293,11 @@
       "get": {
         "tags": [
           "method:list",
-          "group:import"
+          "group:imports"
         ],
         "summary": "Get subscriber imports",
         "description": "Get all subscriber imports of the newsletter.",
-        "operationId": "get_api_console_app_api_console_import_list",
+        "operationId": "get_api_console_app_api_console_imports_list",
         "responses": {
           "200": {
             "description": "List of subscriber imports",
@@ -319,11 +319,11 @@
       "get": {
         "tags": [
           "method:getlimits",
-          "group:import"
+          "group:imports"
         ],
         "summary": "Get subscriber import limits",
         "description": "Get whether the newsletter has reached its daily or monthly subscriber import limits.",
-        "operationId": "get_api_console_app_api_console_import_getlimits",
+        "operationId": "get_api_console_app_api_console_imports_getlimits",
         "responses": {
           "200": {
             "description": "Returns whether the daily and monthly import limits have been exceeded.",
@@ -350,11 +350,11 @@
       "get": {
         "tags": [
           "method:list",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Get issues",
         "description": "Get issues of the newsletter, paginated and ordered by most recently created.",
-        "operationId": "get_api_console_app_api_console_issue_list",
+        "operationId": "get_api_console_app_api_console_issues_list",
         "responses": {
           "200": {
             "description": "List of issues",
@@ -374,11 +374,11 @@
       "post": {
         "tags": [
           "method:create",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Create an issue",
         "description": "Creates a new draft issue for the newsletter.",
-        "operationId": "post_api_console_app_api_console_issue_create",
+        "operationId": "post_api_console_app_api_console_issues_create",
         "responses": {
           "200": {
             "description": "Returns the created issue object.",
@@ -397,11 +397,11 @@
       "get": {
         "tags": [
           "method:get",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Get an issue",
         "description": "Get an issue by ID.",
-        "operationId": "get_api_console_app_api_console_issue_get",
+        "operationId": "get_api_console_app_api_console_issues_get",
         "parameters": [
           {
             "name": "id",
@@ -428,11 +428,11 @@
       "delete": {
         "tags": [
           "method:delete",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Delete an issue",
         "description": "Deletes a draft issue. Issues that are not in draft status cannot be deleted.",
-        "operationId": "delete_api_console_app_api_console_issue_delete",
+        "operationId": "delete_api_console_app_api_console_issues_delete",
         "parameters": [
           {
             "name": "id",
@@ -457,11 +457,11 @@
       "patch": {
         "tags": [
           "method:update",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Update an issue",
         "description": "Updates a draft issue: its subject, content, sending profile, or lists.",
-        "operationId": "patch_api_console_app_api_console_issue_update",
+        "operationId": "patch_api_console_app_api_console_issues_update",
         "parameters": [
           {
             "name": "id",
@@ -500,11 +500,11 @@
       "post": {
         "tags": [
           "method:send",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Send an issue",
         "description": "Sends a draft issue to its subscribers. Validates the issue, license, and monthly email limits before queuing the send.",
-        "operationId": "post_api_console_app_api_console_issue_send",
+        "operationId": "post_api_console_app_api_console_issues_send",
         "parameters": [
           {
             "name": "id",
@@ -560,11 +560,11 @@
       "get": {
         "tags": [
           "method:gettestdata",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Get issue test data",
         "description": "Get data useful for sending a test email of an issue: verified domains, and suggested and previously used test email addresses.",
-        "operationId": "get_api_console_app_api_console_issue_gettestdata",
+        "operationId": "get_api_console_app_api_console_issues_gettestdata",
         "parameters": [
           {
             "name": "id",
@@ -611,11 +611,11 @@
       "post": {
         "tags": [
           "method:sendtest",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Send a test issue email",
         "description": "Sends a test email of a draft issue to the given email addresses. Test emails can only be sent to verified domains or emails of newsletter users.",
-        "operationId": "post_api_console_app_api_console_issue_sendtest",
+        "operationId": "post_api_console_app_api_console_issues_sendtest",
         "parameters": [
           {
             "name": "id",
@@ -659,11 +659,11 @@
       "get": {
         "tags": [
           "method:preview",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Preview an issue",
         "description": "Renders the HTML preview of an issue, and returns the number of subscribers it would be sendable to.",
-        "operationId": "get_api_console_app_api_console_issue_preview",
+        "operationId": "get_api_console_app_api_console_issues_preview",
         "parameters": [
           {
             "name": "id",
@@ -700,11 +700,11 @@
       "get": {
         "tags": [
           "method:getprogress",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Get issue sending progress",
         "description": "Get the sending progress of an issue that is currently being sent.",
-        "operationId": "get_api_console_app_api_console_issue_getprogress",
+        "operationId": "get_api_console_app_api_console_issues_getprogress",
         "parameters": [
           {
             "name": "id",
@@ -733,11 +733,11 @@
       "get": {
         "tags": [
           "method:listsends",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Get issue sends",
         "description": "Get individual sends of an issue, paginated and optionally filtered by search term or send type.",
-        "operationId": "get_api_console_app_api_console_issue_listsends",
+        "operationId": "get_api_console_app_api_console_issues_listsends",
         "parameters": [
           {
             "name": "id",
@@ -769,11 +769,11 @@
       "get": {
         "tags": [
           "method:getreport",
-          "group:issue"
+          "group:issues"
         ],
         "summary": "Get issue report",
         "description": "Get the delivery, open, click, bounce, and complaint counts of an issue.",
-        "operationId": "get_api_console_app_api_console_issue_getreport",
+        "operationId": "get_api_console_app_api_console_issues_getreport",
         "parameters": [
           {
             "name": "id",
@@ -807,11 +807,11 @@
       "post": {
         "tags": [
           "method:create",
-          "group:list"
+          "group:lists"
         ],
         "summary": "Create a list",
         "description": "Creates a new subscriber list for the newsletter.",
-        "operationId": "post_api_console_app_api_console_list_create",
+        "operationId": "post_api_console_app_api_console_lists_create",
         "requestBody": {
           "required": true,
           "content": {
@@ -840,11 +840,11 @@
       "delete": {
         "tags": [
           "method:delete",
-          "group:list"
+          "group:lists"
         ],
         "summary": "Delete a list",
         "description": "Deletes a subscriber list. Subscribers on the list are not deleted, only unlinked from it.",
-        "operationId": "delete_api_console_app_api_console_list_delete",
+        "operationId": "delete_api_console_app_api_console_lists_delete",
         "parameters": [
           {
             "name": "id",
@@ -869,11 +869,11 @@
       "patch": {
         "tags": [
           "method:update",
-          "group:list"
+          "group:lists"
         ],
         "summary": "Update a list",
         "description": "Updates the name or description of a subscriber list.",
-        "operationId": "patch_api_console_app_api_console_list_update",
+        "operationId": "patch_api_console_app_api_console_lists_update",
         "parameters": [
           {
             "name": "id",
@@ -1185,11 +1185,11 @@
       "get": {
         "tags": [
           "method:list",
-          "group:sending_profile"
+          "group:sending_profiles"
         ],
         "summary": "Get sending profiles",
         "description": "Get all sending profiles of the newsletter.",
-        "operationId": "get_api_console_app_api_console_sendingprofile_list",
+        "operationId": "get_api_console_app_api_console_sendingprofiles_list",
         "responses": {
           "200": {
             "description": "List of sending profiles",
@@ -1209,11 +1209,11 @@
       "post": {
         "tags": [
           "method:create",
-          "group:sending_profile"
+          "group:sending_profiles"
         ],
         "summary": "Create a sending profile",
         "description": "Creates a new sending profile for the newsletter. The from email's domain must be a verified domain.",
-        "operationId": "post_api_console_app_api_console_sendingprofile_create",
+        "operationId": "post_api_console_app_api_console_sendingprofiles_create",
         "requestBody": {
           "required": true,
           "content": {
@@ -1242,11 +1242,11 @@
       "delete": {
         "tags": [
           "method:delete",
-          "group:sending_profile"
+          "group:sending_profiles"
         ],
         "summary": "Delete a sending profile",
         "description": "Deletes a non-system sending profile of the newsletter. The system sending profile cannot be deleted.",
-        "operationId": "delete_api_console_app_api_console_sendingprofile_delete",
+        "operationId": "delete_api_console_app_api_console_sendingprofiles_delete",
         "parameters": [
           {
             "name": "id",
@@ -1276,11 +1276,11 @@
       "patch": {
         "tags": [
           "method:update",
-          "group:sending_profile"
+          "group:sending_profiles"
         ],
         "summary": "Update a sending profile",
         "description": "Updates a sending profile of the newsletter.",
-        "operationId": "patch_api_console_app_api_console_sendingprofile_update",
+        "operationId": "patch_api_console_app_api_console_sendingprofiles_update",
         "parameters": [
           {
             "name": "id",
@@ -1308,222 +1308,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SendingProfileObject"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/console/subscribers": {
-      "get": {
-        "tags": [
-          "method:list",
-          "group:subscriber"
-        ],
-        "summary": "Get subscribers",
-        "description": "Get subscribers of the newsletter, paginated and optionally filtered by status, list, or search term.",
-        "operationId": "get_api_console_app_api_console_subscriber_list",
-        "responses": {
-          "200": {
-            "description": "List of subscribers",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SubscriberObject"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "method:create",
-          "group:subscriber"
-        ],
-        "summary": "Create or update a subscriber",
-        "description": "Creates a new subscriber, or updates the existing subscriber if one already exists with the given email.",
-        "operationId": "post_api_console_app_api_console_subscriber_create",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSubscriberInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Returns the created or updated subscriber object.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriberObject"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/console/subscribers/email/{email}": {
-      "get": {
-        "tags": [
-          "method:getbyemail",
-          "group:subscriber"
-        ],
-        "summary": "Get a subscriber by email",
-        "description": "Get a subscriber of the newsletter by email address.",
-        "operationId": "get_api_console_app_api_console_subscriber_getbyemail",
-        "parameters": [
-          {
-            "name": "email",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns the subscriber object.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriberObject"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Returned when no subscriber exists with the given email.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Subscriber not found"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/console/subscribers/{id}/resend-opt-in": {
-      "post": {
-        "tags": [
-          "method:resendoptin",
-          "group:subscriber"
-        ],
-        "summary": "Resend opt-in confirmation email",
-        "description": "Resends the opt-in confirmation email to a pending subscriber.",
-        "operationId": "post_api_console_app_api_console_subscriber_resendoptin",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns an empty object on success.",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/console/subscribers/{id}": {
-      "delete": {
-        "tags": [
-          "method:delete",
-          "group:subscriber"
-        ],
-        "summary": "Delete a subscriber",
-        "description": "Deletes a subscriber.",
-        "operationId": "delete_api_console_app_api_console_subscriber_delete",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns an empty object on success.",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/console/subscribers/bulk": {
-      "post": {
-        "tags": [
-          "method:bulk",
-          "group:subscriber"
-        ],
-        "summary": "Bulk update subscribers",
-        "description": "Performs a bulk action (delete, status change, or metadata update) on a set of subscribers.",
-        "operationId": "post_api_console_app_api_console_subscriber_bulk",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BulkActionSubscriberInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Returns the result of the bulk action.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "subscribers": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/SubscriberObject"
-                      }
-                    }
-                  },
-                  "type": "object"
                 }
               }
             }
@@ -1636,15 +1420,231 @@
         }
       }
     },
+    "/api/console/subscribers": {
+      "get": {
+        "tags": [
+          "method:list",
+          "group:subscribers"
+        ],
+        "summary": "Get subscribers",
+        "description": "Get subscribers of the newsletter, paginated and optionally filtered by status, list, or search term.",
+        "operationId": "get_api_console_app_api_console_subscribers_list",
+        "responses": {
+          "200": {
+            "description": "List of subscribers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubscriberObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "method:create",
+          "group:subscribers"
+        ],
+        "summary": "Create or update a subscriber",
+        "description": "Creates a new subscriber, or updates the existing subscriber if one already exists with the given email.",
+        "operationId": "post_api_console_app_api_console_subscribers_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriberInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the created or updated subscriber object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscribers/email/{email}": {
+      "get": {
+        "tags": [
+          "method:getbyemail",
+          "group:subscribers"
+        ],
+        "summary": "Get a subscriber by email",
+        "description": "Get a subscriber of the newsletter by email address.",
+        "operationId": "get_api_console_app_api_console_subscribers_getbyemail",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the subscriber object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when no subscriber exists with the given email.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Subscriber not found"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscribers/{id}/resend-opt-in": {
+      "post": {
+        "tags": [
+          "method:resendoptin",
+          "group:subscribers"
+        ],
+        "summary": "Resend opt-in confirmation email",
+        "description": "Resends the opt-in confirmation email to a pending subscriber.",
+        "operationId": "post_api_console_app_api_console_subscribers_resendoptin",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscribers/{id}": {
+      "delete": {
+        "tags": [
+          "method:delete",
+          "group:subscribers"
+        ],
+        "summary": "Delete a subscriber",
+        "description": "Deletes a subscriber.",
+        "operationId": "delete_api_console_app_api_console_subscribers_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/console/subscribers/bulk": {
+      "post": {
+        "tags": [
+          "method:bulk",
+          "group:subscribers"
+        ],
+        "summary": "Bulk update subscribers",
+        "description": "Performs a bulk action (delete, status change, or metadata update) on a set of subscribers.",
+        "operationId": "post_api_console_app_api_console_subscribers_bulk",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkActionSubscriberInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the result of the bulk action.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "subscribers": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SubscriberObject"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/console/templates": {
       "get": {
         "tags": [
           "method:get",
-          "group:template"
+          "group:templates"
         ],
         "summary": "Get the newsletter template",
         "description": "Get the email template of the newsletter. If the newsletter has not customized its template yet, returns the default template string instead of a template object.",
-        "operationId": "get_api_console_app_api_console_template_get",
+        "operationId": "get_api_console_app_api_console_templates_get",
         "responses": {
           "200": {
             "description": "Returns the template object. If the newsletter has not customized its template, only the `template` property (the default template string) is present.",
@@ -1661,11 +1661,11 @@
       "patch": {
         "tags": [
           "method:update",
-          "group:template"
+          "group:templates"
         ],
         "summary": "Update the newsletter template",
         "description": "Updates (or creates, if none exists) the email template of the newsletter.",
-        "operationId": "patch_api_console_app_api_console_template_update",
+        "operationId": "patch_api_console_app_api_console_templates_update",
         "requestBody": {
           "required": true,
           "content": {
@@ -1694,11 +1694,11 @@
       "post": {
         "tags": [
           "method:preview",
-          "group:template"
+          "group:templates"
         ],
         "summary": "Render a template preview",
         "description": "Renders the given (or the newsletter's current) email template to HTML, using sample content.",
-        "operationId": "post_api_console_app_api_console_template_preview",
+        "operationId": "post_api_console_app_api_console_templates_preview",
         "requestBody": {
           "required": true,
           "content": {
@@ -1732,11 +1732,11 @@
       "get": {
         "tags": [
           "method:list",
-          "group:user"
+          "group:users"
         ],
         "summary": "Get newsletter users",
         "description": "Get all users of the newsletter.",
-        "operationId": "get_api_console_app_api_console_user_list",
+        "operationId": "get_api_console_app_api_console_users_list",
         "responses": {
           "200": {
             "description": "List of newsletter users",
@@ -1756,11 +1756,11 @@
       "post": {
         "tags": [
           "method:create",
-          "group:user"
+          "group:users"
         ],
         "summary": "Add a newsletter user",
         "description": "Adds a HYVOR user (identified by `user_id`) who is already a member of the organization to the newsletter.",
-        "operationId": "post_api_console_app_api_console_user_create",
+        "operationId": "post_api_console_app_api_console_users_create",
         "requestBody": {
           "required": true,
           "content": {
@@ -1787,11 +1787,11 @@
       "delete": {
         "tags": [
           "method:delete",
-          "group:user"
+          "group:users"
         ],
         "summary": "Remove a newsletter user",
         "description": "Removes a user from the newsletter, identified by either its `id` or `user_id` (HYVOR user ID).",
-        "operationId": "delete_api_console_app_api_console_user_delete",
+        "operationId": "delete_api_console_app_api_console_users_delete",
         "requestBody": {
           "required": true,
           "content": {
@@ -2008,22 +2008,10 @@
         },
         "type": "object"
       },
-      "NewsletterFormDefaultColorPalette": {
-        "type": "string",
-        "enum": [
-          "light",
-          "dark",
-          "os"
-        ]
-      },
       "UpdateNewsletterInput": {
         "required": [
           "name",
-          "subdomain",
-          "id",
-          "created_at",
-          "is_rtl",
-          "metadata"
+          "subdomain"
         ],
         "properties": {
           "name": {
@@ -2031,220 +2019,6 @@
           },
           "subdomain": {
             "type": "string"
-          },
-          "setProperties": {
-            "oneOf": [
-              {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            ],
-            "default": []
-          },
-          "id": {
-            "type": "integer"
-          },
-          "created_at": {
-            "type": "integer"
-          },
-          "language_code": {
-            "type": "string",
-            "nullable": true
-          },
-          "is_rtl": {
-            "type": "boolean"
-          },
-          "metadata": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          },
-          "address": {
-            "type": "string",
-            "nullable": true
-          },
-          "unsubscribe_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "branding": {
-            "type": "boolean",
-            "default": true
-          },
-          "template_color_accent": {
-            "title": "Template variables",
-            "type": "string",
-            "nullable": true
-          },
-          "template_color_accent_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_color_background": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_color_background_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_color_box": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_color_box_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_box_shadow": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_box_radius": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_box_border": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_font_family": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_font_size": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_font_weight": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_font_weight_heading": {
-            "type": "string",
-            "nullable": true
-          },
-          "template_font_line_height": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_title": {
-            "title": "Signup Form",
-            "type": "string",
-            "nullable": true
-          },
-          "form_description": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_footer_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_button_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_success_message": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_width": {
-            "type": "integer",
-            "nullable": true,
-            "default": 425
-          },
-          "form_custom_css": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_light_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_light_text_light": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_light_accent": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_light_accent_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_light_input": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_light_input_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_light_input_box_shadow": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_light_input_border": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_light_border_radius": {
-            "type": "integer",
-            "nullable": true
-          },
-          "form_color_dark_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_dark_text_light": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_dark_accent": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_dark_accent_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_dark_input": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_color_dark_input_text": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_dark_input_box_shadow": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_dark_input_border": {
-            "type": "string",
-            "nullable": true
-          },
-          "form_dark_border_radius": {
-            "type": "integer",
-            "nullable": true
-          },
-          "form_default_color_palette": {
-            "$ref": "#/components/schemas/NewsletterFormDefaultColorPalette"
-          },
-          "form_input_border_radius": {
-            "type": "integer",
-            "default": 20
           }
         },
         "type": "object"
@@ -2364,6 +2138,35 @@
           },
           "is_default": {
             "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "CreateSubscriberMetadataDefinitionInput": {
+        "required": [
+          "key",
+          "name"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "[a-zA-Z0-9_]+",
+            "maxLength": 255
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          }
+        },
+        "type": "object"
+      },
+      "UpdateSubscriberMetadataDefinitionInput": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
           }
         },
         "type": "object"
@@ -2612,35 +2415,6 @@
             "additionalProperties": {
               "type": "string"
             }
-          }
-        },
-        "type": "object"
-      },
-      "CreateSubscriberMetadataDefinitionInput": {
-        "required": [
-          "key",
-          "name"
-        ],
-        "properties": {
-          "key": {
-            "type": "string",
-            "pattern": "[a-zA-Z0-9_]+",
-            "maxLength": 255
-          },
-          "name": {
-            "type": "string",
-            "maxLength": 255
-          }
-        },
-        "type": "object"
-      },
-      "UpdateSubscriberMetadataDefinitionInput": {
-        "required": [
-          "name"
-        ],
-        "properties": {
-          "name": {
-            "type": "string"
           }
         },
         "type": "object"
@@ -3144,6 +2918,14 @@
         },
         "type": "object"
       },
+      "NewsletterFormDefaultColorPalette": {
+        "type": "string",
+        "enum": [
+          "light",
+          "dark",
+          "os"
+        ]
+      },
       "NewsletterObject": {
         "required": [
           "id",
@@ -3564,8 +3346,8 @@
       "description": "method:list"
     },
     {
-      "name": "group:api_key",
-      "description": "group:api_key"
+      "name": "group:api_keys",
+      "description": "group:api_keys"
     },
     {
       "name": "method:create",
@@ -3584,16 +3366,16 @@
       "description": "method:update"
     },
     {
-      "name": "group:export",
-      "description": "group:export"
+      "name": "group:exports",
+      "description": "group:exports"
     },
     {
       "name": "method:upload",
       "description": "method:upload"
     },
     {
-      "name": "group:import",
-      "description": "group:import"
+      "name": "group:imports",
+      "description": "group:imports"
     },
     {
       "name": "method:start",
@@ -3604,8 +3386,8 @@
       "description": "method:getlimits"
     },
     {
-      "name": "group:issue",
-      "description": "group:issue"
+      "name": "group:issues",
+      "description": "group:issues"
     },
     {
       "name": "method:get",
@@ -3640,8 +3422,8 @@
       "description": "method:getreport"
     },
     {
-      "name": "group:list",
-      "description": "group:list"
+      "name": "group:lists",
+      "description": "group:lists"
     },
     {
       "name": "group:media",
@@ -3668,12 +3450,16 @@
       "description": "group:newsletters"
     },
     {
-      "name": "group:sending_profile",
-      "description": "group:sending_profile"
+      "name": "group:sending_profiles",
+      "description": "group:sending_profiles"
     },
     {
-      "name": "group:subscriber",
-      "description": "group:subscriber"
+      "name": "group:subscriber_metadata",
+      "description": "group:subscriber_metadata"
+    },
+    {
+      "name": "group:subscribers",
+      "description": "group:subscribers"
     },
     {
       "name": "method:getbyemail",
@@ -3688,16 +3474,12 @@
       "description": "method:bulk"
     },
     {
-      "name": "group:subscriber_metadata",
-      "description": "group:subscriber_metadata"
+      "name": "group:templates",
+      "description": "group:templates"
     },
     {
-      "name": "group:template",
-      "description": "group:template"
-    },
-    {
-      "name": "group:user",
-      "description": "group:user"
+      "name": "group:users",
+      "description": "group:users"
     }
   ]
 }

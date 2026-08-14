@@ -10,9 +10,9 @@ use Hyvor\Sdk\Post\Newsletter;
 use Hyvor\Sdk\RequestOptions;
 
 /**
- * `$client->newsletter($newsletterId)->sending_profile`
+ * `$client->newsletter($newsletterId)->sending_profiles`
  */
-final class SendingProfileResource
+final class SendingProfilesResource
 {
     public function __construct(private readonly Newsletter $client)
     {

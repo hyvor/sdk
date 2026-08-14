@@ -3,9 +3,9 @@ import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 
 /**
- * `client.newsletter(newsletterId).sendingProfile`
+ * `client.newsletter(newsletterId).sendingProfiles`
  */
-export class SendingProfileResource {
+export class SendingProfilesResource {
     constructor(private readonly client: Newsletter) {
     }
 
