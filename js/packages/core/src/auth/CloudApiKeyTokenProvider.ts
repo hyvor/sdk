@@ -1,4 +1,4 @@
-import { AuthenticationException } from '../exceptions/AuthenticationException.js';
+import { AuthenticationException } from '../exceptions.js';
 import { HttpClient } from '../http/HttpClient.js';
 import { Logger } from '../logging/Logger.js';
 import { VERSION } from '../version.js';

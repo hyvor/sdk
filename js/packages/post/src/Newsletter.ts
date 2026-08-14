@@ -1,5 +1,4 @@
-import type { Newsletter as Newsletter2 } from './Dto/Newsletter.js';
-import type { UpdateNewsletterInput } from './Dto/UpdateNewsletterInput.js';
+import type { Newsletter as Newsletter2, UpdateNewsletterInput } from './Dto.js';
 import { ApiKeyResource } from './Newsletter/ApiKeyResource.js';
 import { ExportResource } from './Newsletter/ExportResource.js';
 import { ImportResource } from './Newsletter/ImportResource.js';

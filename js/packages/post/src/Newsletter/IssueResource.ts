@@ -1,7 +1,4 @@
-import type { Issue } from '../Dto/Issue.js';
-import type { Send } from '../Dto/Send.js';
-import type { SendTestInput } from '../Dto/SendTestInput.js';
-import type { UpdateIssueInput } from '../Dto/UpdateIssueInput.js';
+import type { Issue, Send, SendTestInput, UpdateIssueInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

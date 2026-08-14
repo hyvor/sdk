@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { camelCase, pascalCase } from './helpers.ts';
 import { getSchemas, PRODUCT_CONFIG, Product } from './schema.ts';
-import { buildDtoImportMap, generateRequestDtoFiles, generateResponseDtoFiles } from './ts/dto.ts';
+import { buildDtoImportMap, generateDtoFile } from './ts/dto.ts';
+import { DtoImportMap } from './ts/types.ts';
 import { generateOrgFiles, generateResourceFiles } from './ts/resources.ts';
 import { generateProductClientFile } from './ts/clientTemplate.ts';
 
@@ -22,19 +23,15 @@ export function generateTs(outputRoot: string = 'tmp', products?: Product[]) {
         const dtoImports = buildDtoImportMap(processed.responses, processed.requests);
         const orgExampleGroup = processed.endpoints.org[0]?.name ?? null;
 
-        const dtoFiles = [
-            ...generateResponseDtoFiles(processed.responses, dtoImports),
-            ...generateRequestDtoFiles(processed.requests, dtoImports),
-        ];
         const clientClassName = `${productPascal}Client`;
         const resourceClassName = pascalCase(processed.selfGroupName);
 
         const files = [
-            ...dtoFiles,
+            generateDtoFile(processed.responses, processed.requests, dtoImports),
             ...generateOrgFiles(processed, dtoImports),
             ...generateResourceFiles(processed, dtoImports, config),
             generateProductClientFile(product, processed.selfGroupName, orgExampleGroup ? camelCase(orgExampleGroup) : null),
-            generateIndexFile(dtoFiles, clientClassName, resourceClassName),
+            generateIndexFile(dtoImports, clientClassName, resourceClassName),
         ];
 
         for (const file of files) {
@@ -57,25 +54,23 @@ export function generateTs(outputRoot: string = 'tmp', products?: Product[]) {
  *
  * A DTO can share its bare name with the resource client class (ex: Post's
  * `Newsletter` response object vs. the `Newsletter` resource client -
- * disambiguated internally the same way PHP's generated `Newsletter.php`
- * imports its DTO counterpart aliased, see `types.ts`'s `resolveRef`): `export
- * *` can't alias, so that one DTO is re-exported by name instead, as
- * `{Name}Dto`.
+ * disambiguated internally the same way `types.ts`'s `resolveRef` aliases
+ * it within `Newsletter.ts` itself): named individually (rather than
+ * `export * from './Dto.js'`) so that one can be re-exported under
+ * `{Name}Dto` instead.
  */
 function generateIndexFile(
-    dtoFiles: { relativePath: string }[],
+    dtoImports: DtoImportMap,
     clientClassName: string,
     resourceClassName: string,
 ): { relativePath: string, content: string } {
-    const dtoExports = dtoFiles
-        .map(file => file.relativePath.replace(/\.ts$/, ''))
+    const dtoExportNames = Array.from(new Set(Object.values(dtoImports).map(target => target.exportName)));
+
+    const dtoExports = dtoExportNames
         .sort((a, b) => a.localeCompare(b))
-        .map(modulePath => {
-            const exportName = modulePath.split('/').pop()!;
-            return exportName === resourceClassName
-                ? `export { ${exportName} as ${exportName}Dto } from './${modulePath}.js';`
-                : `export * from './${modulePath}.js';`;
-        });
+        .map(name => name === resourceClassName
+            ? `export { ${name} as ${name}Dto } from './Dto.js';`
+            : `export { ${name} } from './Dto.js';`);
 
     const lines = [
         ...dtoExports,

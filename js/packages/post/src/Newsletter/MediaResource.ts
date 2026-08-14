@@ -1,5 +1,4 @@
-import type { Media } from '../Dto/Media.js';
-import type { MediaUploadInput } from '../Dto/MediaUploadInput.js';
+import type { Media, MediaUploadInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

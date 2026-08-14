@@ -1,6 +1,4 @@
-import type { ApiKey } from '../Dto/ApiKey.js';
-import type { CreateApiKeyInput } from '../Dto/CreateApiKeyInput.js';
-import type { UpdateApiKeyInput } from '../Dto/UpdateApiKeyInput.js';
+import type { ApiKey, CreateApiKeyInput, UpdateApiKeyInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

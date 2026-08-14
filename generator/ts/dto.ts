@@ -36,11 +36,13 @@ export function dtoClassName(schemaName: string): string {
     return TS_RESERVED_WORDS.has(stripped.toLowerCase()) ? schemaName : stripped;
 }
 
+const DTO_MODULE_PATH = 'Dto';
+
 /**
- * Maps every response and request Input schema name to the module path its
- * DTO/interface is generated at, so `resolveSchemaType` can resolve a `$ref`
- * regardless of whether it points at a response object, an embedded enum, or
- * a request Input schema - all three live side by side under `Dto/`.
+ * Maps every response and request Input schema name to where its DTO is
+ * generated (`Dto.ts`, one module for the whole product - idiomatic TS
+ * keeps related small types together, unlike PHP's one-class-per-file PSR-4
+ * layout) and the name it's exported under.
  */
 export function buildDtoImportMap(
     responses: Record<string, OpenAPIV3.SchemaObject>,
@@ -49,11 +51,11 @@ export function buildDtoImportMap(
     const map: DtoImportMap = {};
 
     for (const schemaName of Object.keys(responses)) {
-        map[schemaName] = `Dto/${dtoClassName(schemaName)}`;
+        map[schemaName] = { modulePath: DTO_MODULE_PATH, exportName: dtoClassName(schemaName) };
     }
 
     for (const schemaName of Object.keys(requests)) {
-        map[schemaName] = `Dto/${dtoClassName(schemaName)}`;
+        map[schemaName] = { modulePath: DTO_MODULE_PATH, exportName: dtoClassName(schemaName) };
     }
 
     return map;
@@ -63,69 +65,65 @@ function isEnumSchema(schema: OpenAPIV3.SchemaObject): boolean {
     return schema.type === 'string' && Array.isArray(schema.enum);
 }
 
-/**
- * Generates one file per response schema (ex: `Dto/Website.ts`): an
- * `interface` with every property required (nullability, not optionality,
- * is how the API expresses "may be absent" in a response body - matches the
- * PHP SDK's constructor-promoted-property DTOs), or an `enum` for a
- * string-enum schema.
- */
-export function generateResponseDtoFiles(
-    responses: Record<string, OpenAPIV3.SchemaObject>,
-    dtoImports: DtoImportMap,
-): GeneratedFile[] {
-    return Object.entries(responses).map(([name, schema]) => {
-        const className = dtoClassName(name);
-        const modulePath = `Dto/${className}`;
-        const file = new TsFile(modulePath);
-        file.declareExport(className);
+function renderEnum(className: string, schema: OpenAPIV3.SchemaObject): string {
+    const cases = (schema.enum as string[]).map(value => `    ${value.toUpperCase()} = '${value}',`);
+    return [`export enum ${className} {`, ...cases, '}'].join('\n');
+}
 
-        if (isEnumSchema(schema)) {
-            return generateEnumFile(className, schema, file, modulePath);
-        }
+// nullability (not optionality) is how a response body expresses "may be
+// absent" - matches the PHP SDK's constructor-promoted-property DTOs, where
+// every property is a required constructor param.
+function renderResponseDto(name: string, schema: OpenAPIV3.SchemaObject, dtoImports: DtoImportMap, file: TsFile): string {
+    const className = dtoClassName(name);
 
-        const propLines = Object.entries(schema.properties ?? {}).map(([propName, propSchema]) => {
-            const type = resolveSchemaType(propSchema as OpenAPIV3.SchemaObject, file, dtoImports);
-            return `    ${propName}: ${type};`;
-        });
+    if (isEnumSchema(schema)) {
+        return renderEnum(className, schema);
+    }
 
-        const body = [`export interface ${className} {`, ...propLines, '}'].join('\n');
-
-        return { relativePath: `${modulePath}.ts`, content: file.render(body) };
+    const propLines = Object.entries(schema.properties ?? {}).map(([propName, propSchema]) => {
+        const type = resolveSchemaType(propSchema as OpenAPIV3.SchemaObject, file, dtoImports);
+        return `    ${propName}: ${type};`;
     });
+
+    return [`export interface ${className} {`, ...propLines, '}'].join('\n');
+}
+
+// a request Input property is marked optional (`?`) when absent from the
+// schema's `required` list.
+function renderRequestDto(name: string, schema: OpenAPIV3.SchemaObject, dtoImports: DtoImportMap, file: TsFile): string {
+    const className = dtoClassName(name);
+    const required = new Set(schema.required ?? []);
+
+    const propLines = Object.entries(schema.properties ?? {}).map(([propName, propSchema]) => {
+        const type = resolveSchemaType(propSchema as OpenAPIV3.SchemaObject, file, dtoImports);
+        const optional = !required.has(propName);
+        return `    ${propName}${optional ? '?' : ''}: ${type};`;
+    });
+
+    return [`export interface ${className} {`, ...propLines, '}'].join('\n');
 }
 
 /**
- * Generates one file per request Input schema (ex: `Dto/CreateWebsiteInput.ts`):
- * an `interface` with a property marked optional (`?`) when absent from the
- * schema's `required` list.
+ * Generates the single `Dto.ts` file: every response schema (as an
+ * `interface`, or an `enum` for a string-enum schema) and every request
+ * Input schema (as an `interface`), sorted alphabetically by schema name.
+ * Cross-references between DTOs (ex: `Mod.user: AuthUser`) need no import -
+ * they're all declared in this same module.
  */
-export function generateRequestDtoFiles(
+export function generateDtoFile(
+    responses: Record<string, OpenAPIV3.SchemaObject>,
     requests: Record<string, OpenAPIV3.SchemaObject>,
     dtoImports: DtoImportMap,
-): GeneratedFile[] {
-    return Object.entries(requests).map(([name, schema]) => {
-        const className = dtoClassName(name);
-        const modulePath = `Dto/${className}`;
-        const file = new TsFile(modulePath);
-        file.declareExport(className);
+): GeneratedFile {
+    const file = new TsFile(DTO_MODULE_PATH);
 
-        const required = new Set(schema.required ?? []);
-        const propLines = Object.entries(schema.properties ?? {}).map(([propName, propSchema]) => {
-            const type = resolveSchemaType(propSchema as OpenAPIV3.SchemaObject, file, dtoImports);
-            const optional = !required.has(propName);
-            return `    ${propName}${optional ? '?' : ''}: ${type};`;
-        });
+    const sortedEntries = <T>(record: Record<string, T>) =>
+        Object.entries(record).sort(([a], [b]) => a.localeCompare(b));
 
-        const body = [`export interface ${className} {`, ...propLines, '}'].join('\n');
+    const blocks = [
+        ...sortedEntries(responses).map(([name, schema]) => renderResponseDto(name, schema, dtoImports, file)),
+        ...sortedEntries(requests).map(([name, schema]) => renderRequestDto(name, schema, dtoImports, file)),
+    ];
 
-        return { relativePath: `${modulePath}.ts`, content: file.render(body) };
-    });
-}
-
-function generateEnumFile(className: string, schema: OpenAPIV3.SchemaObject, file: TsFile, modulePath: string): GeneratedFile {
-    const cases = (schema.enum as string[]).map(value => `    ${value.toUpperCase()} = '${value}',`);
-    const body = [`export enum ${className} {`, ...cases, '}'].join('\n');
-
-    return { relativePath: `${modulePath}.ts`, content: file.render(body) };
+    return { relativePath: `${DTO_MODULE_PATH}.ts`, content: file.render(blocks.join('\n\n')) };
 }

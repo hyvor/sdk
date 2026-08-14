@@ -1,6 +1,4 @@
-import type { ImportInput } from '../Dto/ImportInput.js';
-import type { SubscriberImport } from '../Dto/SubscriberImport.js';
-import type { UploadImportInput } from '../Dto/UploadImportInput.js';
+import type { ImportInput, SubscriberImport, UploadImportInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

@@ -1,6 +1,4 @@
-import type { CreateUserInput } from '../Dto/CreateUserInput.js';
-import type { DeleteUserInput } from '../Dto/DeleteUserInput.js';
-import type { User } from '../Dto/User.js';
+import type { CreateUserInput, DeleteUserInput, User } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

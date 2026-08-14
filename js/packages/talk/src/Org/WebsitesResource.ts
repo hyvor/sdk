@@ -1,4 +1,4 @@
-import type { CreateWebsiteInput } from '../Dto/CreateWebsiteInput.js';
+import type { CreateWebsiteInput } from '../Dto.js';
 import type { RequestOptions, Transport } from '@hyvor/sdk-core';
 
 /**

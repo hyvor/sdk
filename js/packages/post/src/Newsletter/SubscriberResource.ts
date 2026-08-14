@@ -1,6 +1,4 @@
-import type { BulkActionSubscriberInput } from '../Dto/BulkActionSubscriberInput.js';
-import type { CreateSubscriberInput } from '../Dto/CreateSubscriberInput.js';
-import type { Subscriber } from '../Dto/Subscriber.js';
+import type { BulkActionSubscriberInput, CreateSubscriberInput, Subscriber } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

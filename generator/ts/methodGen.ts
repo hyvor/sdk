@@ -73,11 +73,6 @@ function buildPathExpr(suffix: string, pathParams: PathParam[]): string {
     return '`' + parts.join('') + '`';
 }
 
-function useDto(modulePath: string, file: TsFile): string {
-    const exportName = modulePath.split('/').pop()!;
-    return file.use({ modulePath, exportName }, 'type');
-}
-
 export function renderMethod(
     endpoint: Endpoint,
     docPath: string,
@@ -92,7 +87,7 @@ export function renderMethod(
     const requestOptionsType = file.use(core('RequestOptions'), 'type');
     const params = [
         ...endpoint.pathParams.map(param => `${param.name}: ${pathParamType(param)}`),
-        ...(hasData ? [`data: ${useDto(dtoImports[endpoint.requestSchemaName!], file)}`] : []),
+        ...(hasData ? [`data: ${file.use(dtoImports[endpoint.requestSchemaName!], 'type')}`] : []),
         `options?: ${requestOptionsType}`,
     ].join(', ');
 
@@ -100,10 +95,10 @@ export function renderMethod(
     let denormalizeType: string | null = null;
 
     if (endpoint.response.shape === 'object' && endpoint.response.className) {
-        returnType = useDto(dtoImports[endpoint.response.className], file);
+        returnType = file.use(dtoImports[endpoint.response.className], 'type');
         denormalizeType = returnType;
     } else if (endpoint.response.shape === 'list' && endpoint.response.className) {
-        const itemType = useDto(dtoImports[endpoint.response.className], file);
+        const itemType = file.use(dtoImports[endpoint.response.className], 'type');
         returnType = `${itemType}[]`;
         denormalizeType = itemType;
     } else if (endpoint.response.shape === 'raw') {

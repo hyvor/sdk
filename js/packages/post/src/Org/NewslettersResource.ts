@@ -1,5 +1,4 @@
-import type { CreateNewsletterInput } from '../Dto/CreateNewsletterInput.js';
-import type { Newsletter } from '../Dto/Newsletter.js';
+import type { CreateNewsletterInput, Newsletter } from '../Dto.js';
 import type { RequestOptions, Transport } from '@hyvor/sdk-core';
 
 /**

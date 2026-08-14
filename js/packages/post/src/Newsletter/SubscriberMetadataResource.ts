@@ -1,6 +1,4 @@
-import type { CreateSubscriberMetadataDefinitionInput } from '../Dto/CreateSubscriberMetadataDefinitionInput.js';
-import type { SubscriberMetadataDefinition } from '../Dto/SubscriberMetadataDefinition.js';
-import type { UpdateSubscriberMetadataDefinitionInput } from '../Dto/UpdateSubscriberMetadataDefinitionInput.js';
+import type { CreateSubscriberMetadataDefinitionInput, SubscriberMetadataDefinition, UpdateSubscriberMetadataDefinitionInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

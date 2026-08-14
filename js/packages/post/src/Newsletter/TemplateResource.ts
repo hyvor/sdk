@@ -1,6 +1,4 @@
-import type { RenderTemplateInput } from '../Dto/RenderTemplateInput.js';
-import type { Template } from '../Dto/Template.js';
-import type { UpdateTemplateInput } from '../Dto/UpdateTemplateInput.js';
+import type { RenderTemplateInput, Template, UpdateTemplateInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

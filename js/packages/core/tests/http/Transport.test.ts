@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { StaticTokenProvider } from '../../src/auth/StaticTokenProvider.js';
-import { RateLimitException } from '../../src/exceptions/RateLimitException.js';
-import { ValidationFailedException } from '../../src/exceptions/ValidationFailedException.js';
-import { NetworkException } from '../../src/exceptions/NetworkException.js';
+import { NetworkException, RateLimitException, ValidationFailedException } from '../../src/exceptions.js';
 import { Transport } from '../../src/http/Transport.js';
 import { NullLogger } from '../../src/logging/Logger.js';
 import { FakeHttpClient, jsonResponse } from '../../src/testing/FakeHttpClient.js';

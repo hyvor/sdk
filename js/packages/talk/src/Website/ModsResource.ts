@@ -1,6 +1,4 @@
-import type { CreateModInput } from '../Dto/CreateModInput.js';
-import type { DeleteModInput } from '../Dto/DeleteModInput.js';
-import type { Mod } from '../Dto/Mod.js';
+import type { CreateModInput, DeleteModInput, Mod } from '../Dto.js';
 import type { Website } from '../Website.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

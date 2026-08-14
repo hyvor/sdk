@@ -1,6 +1,4 @@
-import type { CreateSendingProfileInput } from '../Dto/CreateSendingProfileInput.js';
-import type { SendingProfile } from '../Dto/SendingProfile.js';
-import type { UpdateSendingProfileInput } from '../Dto/UpdateSendingProfileInput.js';
+import type { CreateSendingProfileInput, SendingProfile, UpdateSendingProfileInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

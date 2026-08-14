@@ -1,5 +1,4 @@
-import type { CreateDomainInput } from '../Dto/CreateDomainInput.js';
-import type { Domain } from '../Dto/Domain.js';
+import type { CreateDomainInput, Domain } from '../Dto.js';
 import type { RequestOptions, Transport } from '@hyvor/sdk-core';
 
 /**

@@ -5,13 +5,12 @@ type Schema = OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject;
 
 /**
  * Maps a schema name (as it appears in a `$ref`, ex: "WebsiteObject", or a
- * request Input schema, ex: "CreateWebsiteInput") to the module path it's
- * generated at (ex: "Dto/Website"), so cross-references between DTOs
- * resolve to the right import regardless of which folder each side lives
- * in. The module's default export name is always the module path's last
- * segment (mirrors a PHP FQCN embedding its own class name).
+ * request Input schema, ex: "CreateWebsiteInput") to where its DTO is
+ * generated (module path, ex: "Dto") and the name it's exported under (ex:
+ * "Website" - the "Object" suffix stripped, see `dtoClassName`), so
+ * cross-references between DTOs resolve to the right import.
  */
-export type DtoImportMap = Record<string, string>;
+export type DtoImportMap = Record<string, { modulePath: string, exportName: string }>;
 
 export function resolveSchemaType(schema: Schema, file: TsFile, dtoImports: DtoImportMap): string {
     const nullable = !('$ref' in schema) && schema.nullable === true;
@@ -69,12 +68,11 @@ function wrapArrayItem(type: string): string {
 
 function resolveRef(ref: string, file: TsFile, dtoImports: DtoImportMap): string {
     const name = ref.split('/').pop()!;
-    const modulePath = dtoImports[name];
+    const target = dtoImports[name];
 
-    if (!modulePath) {
+    if (!target) {
         throw new Error(`Unknown $ref: ${ref}`);
     }
 
-    const exportName = modulePath.split('/').pop()!;
-    return file.use({ modulePath, exportName }, 'type');
+    return file.use(target, 'type');
 }

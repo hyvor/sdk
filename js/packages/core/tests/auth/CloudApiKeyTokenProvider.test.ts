@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CloudApiKeyTokenProvider } from '../../src/auth/CloudApiKeyTokenProvider.js';
-import { AuthenticationException } from '../../src/exceptions/AuthenticationException.js';
+import { AuthenticationException } from '../../src/exceptions.js';
 import { NullLogger } from '../../src/logging/Logger.js';
 import { FakeHttpClient, jsonResponse } from '../../src/testing/FakeHttpClient.js';
 

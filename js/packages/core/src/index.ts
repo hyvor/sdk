@@ -28,6 +28,6 @@ export {
     ValidationFailedException,
     RateLimitException,
     NetworkException,
-} from './exceptions/index.js';
+} from './exceptions.js';
 
 export { FakeHttpClient, FakeHttpTransportError, jsonResponse } from './testing/FakeHttpClient.js';

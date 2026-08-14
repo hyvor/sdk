@@ -1,19 +1,12 @@
 name: JS SDK Publish
 
-# Publishes each js/packages/<dir> subdirectory to its own standalone repo,
-# tags a GitHub release there (source-history parity with the PHP SDK's
-# publish flow), and publishes the built package to npm directly (npm has no
-# release-webhook equivalent to Packagist's, so publishing can't be a side
-# effect of the GitHub release alone). All packages are released together
+# Publishes each js/packages/<dir> subdirectory to npm, one package per
+# product plus the shared core package. All packages are released together
 # under the same version tag, since they're developed and reviewed as one
 # monorepo.
 #
-# Requires:
-# - repo secret JS_SDK_PUBLISH_TOKEN: a GitHub personal access token (or
-#   fine-grained token) with contents + workflows write access to
-#   hyvor/sdk-js-core, hyvor/sdk-js-talk, and hyvor/sdk-js-post.
-# - repo secret NPM_TOKEN: an npm automation token with publish access to
-#   the @hyvor org.
+# Requires repo secret NPM_TOKEN: an npm automation token with publish
+# access to the @hyvor org.
 
 on:
   push:
@@ -30,13 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
-          - dir: core
-            repo: hyvor/sdk-js-core
-          - dir: talk
-            repo: hyvor/sdk-js-talk
-          - dir: post
-            repo: hyvor/sdk-js-post
+        dir: [core, talk, post]
     steps:
       - name: Determine version
         id: version
@@ -47,10 +34,7 @@ jobs:
             echo "version=${GITHUB_REF#refs/tags/js-v}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Checkout monorepo
-        uses: actions/checkout@v4
-        with:
-          path: monorepo
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
@@ -58,50 +42,17 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install and build the monorepo workspace
-        working-directory: monorepo/js
+        working-directory: js
         run: |
           npm install
           npm run build --workspaces --if-present
 
       - name: Set package version
-        working-directory: monorepo/js/packages/${{ matrix.dir }}
+        working-directory: js/packages/${{ matrix.dir }}
         run: npm version "${{ steps.version.outputs.version }}" --no-git-tag-version --allow-same-version
 
       - name: Publish to npm
-        working-directory: monorepo/js/packages/${{ matrix.dir }}
+        working-directory: js/packages/${{ matrix.dir }}
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Checkout ${{ matrix.repo }}
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ matrix.repo }}
-          token: ${{ secrets.JS_SDK_PUBLISH_TOKEN }}
-          path: package
-
-      - name: Sync package source
-        run: |
-          rsync -a --delete --exclude='.git' --exclude='tests/' --exclude='dist/' --exclude='node_modules/' \
-            monorepo/js/packages/${{ matrix.dir }}/ package/
-          rm -rf package/tests
-
-      - name: Commit and push
-        working-directory: package
-        run: |
-          git config user.name "hyvor-chef"
-          git config user.email "chef@hyvor.com"
-          git add -A
-          git diff --cached --quiet && echo "No changes to publish." && exit 0
-          git commit -m "Release ${{ steps.version.outputs.version }}"
-          git push
-
-      - name: Tag and release
-        working-directory: package
-        env:
-          GH_TOKEN: ${{ secrets.JS_SDK_PUBLISH_TOKEN }}
-        run: |
-          gh release create "${{ steps.version.outputs.version }}" \
-            --repo ${{ matrix.repo }} \
-            --title "${{ steps.version.outputs.version }}" \
-            --generate-notes

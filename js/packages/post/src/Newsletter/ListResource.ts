@@ -1,6 +1,4 @@
-import type { CreateListInput } from '../Dto/CreateListInput.js';
-import type { List } from '../Dto/List.js';
-import type { UpdateListInput } from '../Dto/UpdateListInput.js';
+import type { CreateListInput, List, UpdateListInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

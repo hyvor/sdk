@@ -1,5 +1,4 @@
-import type { Domain } from '../Dto/Domain.js';
-import type { UpdateDomainsInput } from '../Dto/UpdateDomainsInput.js';
+import type { Domain, UpdateDomainsInput } from '../Dto.js';
 import type { Website } from '../Website.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 

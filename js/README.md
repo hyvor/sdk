@@ -159,24 +159,6 @@ await talk.org.websites.create(
 );
 ```
 
-### Acting as a specific moderator
-
-By default, the Console API is authenticated as the website owner. To act as a different
-moderator (see the Console API's "User Authentication" docs), set `X-AUTH-USER-EMAIL` or
-`X-AUTH-USER-SSO-ID` - either as a default for every call made through a website client and its
-sub-resources:
-
-```ts
-const website = talk.website(websiteId, null, { 'X-AUTH-USER-EMAIL': 'mod@example.com' });
-```
-
-or per call, via the third `RequestOptions` argument (overrides the client-level default for that
-call):
-
-```ts
-await website.mods.list({ headers: { 'X-AUTH-USER-EMAIL': 'mod@example.com' } });
-```
-
 ### Errors
 
 All API errors extend `HyvorApiException` (from `@hyvor/sdk-core`):

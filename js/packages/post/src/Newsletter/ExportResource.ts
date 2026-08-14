@@ -1,4 +1,4 @@
-import type { SubscriberExport } from '../Dto/SubscriberExport.js';
+import type { SubscriberExport } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 
