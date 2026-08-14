@@ -55,12 +55,14 @@ jobs:
           path: package
 
       - name: Sync package code
-        run: rsync -a --delete --exclude='.git' monorepo/php/packages/${{ matrix.dir }}/ package/
+        run: |
+          rsync -a --delete --exclude='.git' --exclude='tests/' --exclude='phpunit.xml.dist' monorepo/php/packages/${{ matrix.dir }}/ package/
+          rm -rf package/tests package/phpunit.xml.dist
 
       - name: Strip monorepo-only composer.json fields
         working-directory: package
         run: |
-          jq 'del(.version, .repositories)' composer.json > composer.json.tmp
+          jq 'del(.version, .repositories, .["autoload-dev"])' composer.json > composer.json.tmp
           mv composer.json.tmp composer.json
 
       - name: Commit and push
