@@ -1,4 +1,5 @@
 name: JS SDK Publish
+run-name: JS SDK Publish ${{ inputs.version }}
 
 # Publishes each js/packages/<dir> subdirectory to npm, one package per
 # product plus the shared core package. All packages are released together
@@ -9,9 +10,6 @@ name: JS SDK Publish
 # access to the @hyvor org.
 
 on:
-  push:
-    tags:
-      - 'js-v*'
   workflow_dispatch:
     inputs:
       version:
@@ -27,12 +25,7 @@ jobs:
     steps:
       - name: Determine version
         id: version
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "version=${GITHUB_REF#refs/tags/js-v}" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v4
 
