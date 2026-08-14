@@ -1,0 +1,21 @@
+{
+  "name": "generator",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate.ts",
+  "scripts": {
+    "generate": "tsx generate.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "openapi-types": "^12.1.3"
+  }
+}

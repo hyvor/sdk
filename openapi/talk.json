@@ -8,7 +8,11 @@
   "paths": {
     "/api/console/v1/{websiteId}/domains": {
       "post": {
-        "operationId": "post_api_console_app_api_console_domain_update",
+        "tags": [
+          "method:update",
+          "group:domains"
+        ],
+        "operationId": "post_api_console_app_api_console_domains_update",
         "parameters": [
           {
             "name": "websiteId",
@@ -49,7 +53,11 @@
     },
     "/api/console/v1/{websiteId}/mods": {
       "post": {
-        "operationId": "post_api_console_app_api_console_mod_create",
+        "tags": [
+          "method:create",
+          "group:mods"
+        ],
+        "operationId": "post_api_console_app_api_console_mods_create",
         "parameters": [
           {
             "name": "websiteId",
@@ -95,7 +103,11 @@
         }
       },
       "delete": {
-        "operationId": "delete_api_console_app_api_console_mod_delete",
+        "tags": [
+          "method:delete",
+          "group:mods"
+        ],
+        "operationId": "delete_api_console_app_api_console_mods_delete",
         "parameters": [
           {
             "name": "websiteId",
@@ -134,9 +146,11 @@
     "/api/console/v1/websites": {
       "post": {
         "tags": [
+          "method:create",
+          "group:websites",
           "org-endpoint"
         ],
-        "operationId": "post_api_console_app_api_console_website_create",
+        "operationId": "post_api_console_app_api_console_org_websites_create",
         "requestBody": {
           "required": true,
           "content": {
@@ -148,21 +162,18 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Returns the created website object.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WebsiteObject"
-                }
-              }
-            }
+          "default": {
+            "description": ""
           }
         }
       }
     },
     "/api/console/v1/{websiteId}/website": {
       "delete": {
+        "tags": [
+          "method:delete",
+          "group:website"
+        ],
         "operationId": "delete_api_console_app_api_console_website_delete",
         "parameters": [
           {
@@ -195,20 +206,10 @@
       "UpdateDomainsInput": {
         "properties": {
           "domains": {
-            "oneOf": [
-              {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "default": []
           },
           "operation": {
@@ -301,196 +302,6 @@
         },
         "type": "object"
       },
-      "Domain": {
-        "required": [
-          "id",
-          "websiteId",
-          "domain",
-          "createdAt",
-          "updatedAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "websiteId": {
-            "type": "integer"
-          },
-          "website": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Website"
-              }
-            ]
-          },
-          "domain": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "type": "object"
-      },
-      "Website": {
-        "required": [
-          "id",
-          "name",
-          "domains",
-          "mods",
-          "ownerId",
-          "organizationId",
-          "createdAt",
-          "blocked",
-          "isBlocked",
-          "deleted",
-          "isDeleted",
-          "authType",
-          "ssoStatelessKeyless",
-          "ssoStatelessIsKeyless"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "metadata": {
-            "title": "Arbitrary metadata set by the caller when creating the website (e.g. Hyvor Blogs integration data).",
-            "type": "object",
-            "nullable": true,
-            "additionalProperties": {
-              "nullable": true
-            }
-          },
-          "domains": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Domain"
-            }
-          },
-          "mods": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Mod"
-            }
-          },
-          "ownerId": {
-            "type": "integer"
-          },
-          "organizationId": {
-            "type": "integer"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "blocked": {
-            "type": "boolean"
-          },
-          "isBlocked": {
-            "type": "boolean"
-          },
-          "deleted": {
-            "type": "boolean"
-          },
-          "isDeleted": {
-            "type": "boolean"
-          },
-          "deletedAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "authType": {
-            "type": "string"
-          },
-          "ssoType": {
-            "type": "string",
-            "nullable": true
-          },
-          "ssoPrivateKey": {
-            "type": "string",
-            "nullable": true
-          },
-          "ssoStatelessLoginUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "ssoStatelessKeyless": {
-            "type": "boolean"
-          },
-          "ssoStatelessIsKeyless": {
-            "type": "boolean"
-          },
-          "consoleApiKey": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdBySource": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "type": "object"
-      },
-      "Mod": {
-        "required": [
-          "id",
-          "userId",
-          "role",
-          "websiteId",
-          "createdAt"
-        ],
-        "properties": {
-          "id": {
-            "oneOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          },
-          "userId": {
-            "oneOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          },
-          "role": {
-            "type": "string"
-          },
-          "websiteId": {
-            "type": "integer"
-          },
-          "website": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Website"
-              }
-            ]
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "type": "object"
-      },
       "DomainObject": {
         "required": [
           "id",
@@ -501,7 +312,7 @@
             "type": "integer"
           },
           "domain": {
-            "$ref": "#/components/schemas/Domain"
+            "type": "string"
           }
         },
         "type": "object"
@@ -580,65 +391,41 @@
           }
         },
         "type": "object"
-      },
-      "WebsiteObject": {
-        "required": [
-          "id",
-          "name",
-          "organization_id",
-          "owner_id",
-          "created_at",
-          "is_blocked",
-          "is_deleted",
-          "domains"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "organization_id": {
-            "type": "integer"
-          },
-          "owner_id": {
-            "type": "integer"
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "is_blocked": {
-            "type": "boolean"
-          },
-          "is_deleted": {
-            "type": "boolean"
-          },
-          "metadata": {
-            "type": "object",
-            "nullable": true,
-            "additionalProperties": {
-              "nullable": true
-            }
-          },
-          "created_by_source": {
-            "type": "string",
-            "nullable": true
-          },
-          "domains": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DomainObject"
-            }
-          }
-        },
-        "type": "object"
       }
     }
   },
   "tags": [
     {
-      "name": "org-endpoint"
+      "name": "method:update",
+      "description": "method:update"
+    },
+    {
+      "name": "group:domains",
+      "description": "group:domains"
+    },
+    {
+      "name": "method:create",
+      "description": "method:create"
+    },
+    {
+      "name": "group:mods",
+      "description": "group:mods"
+    },
+    {
+      "name": "method:delete",
+      "description": "method:delete"
+    },
+    {
+      "name": "group:websites",
+      "description": "group:websites"
+    },
+    {
+      "name": "org-endpoint",
+      "description": "org-endpoint"
+    },
+    {
+      "name": "group:website",
+      "description": "group:website"
     }
   ]
 }

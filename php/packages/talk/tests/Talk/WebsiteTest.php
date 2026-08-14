@@ -17,27 +17,12 @@ final class WebsiteTest extends TalkTestCase
     public function testCreateSendsNameAndDomain(): void
     {
         $http = new FakeHttpClient();
-        $this->queueJson($http, [
-            'id' => 7,
-            'name' => 'My Blog',
-            'organization_id' => 1,
-            'owner_id' => 1,
-            'created_at' => '2023-11-14T22:13:20+00:00',
-            'is_blocked' => false,
-            'is_deleted' => false,
-            'metadata' => null,
-            'created_by_source' => null,
-            'domains' => [],
-        ], 201);
+        $this->queueJson($http, [], 201);
 
-        $website = $this->client($http)->websites->create([
+        $this->client($http)->org->websites->create([
             'name' => 'My Blog',
             'domain' => 'blog.example.com',
         ]);
-
-        self::assertSame(7, $website->id);
-        self::assertSame('My Blog', $website->name);
-        self::assertSame([], $website->domains);
 
         $request = $http->requests[0];
         self::assertSame('POST', $request->getMethod());
@@ -60,7 +45,7 @@ final class WebsiteTest extends TalkTestCase
         $client = $this->client($http);
 
         try {
-            $client->websites->create(['name' => 'X', 'domain' => 'taken.com']);
+            $client->org->websites->create(['name' => 'X', 'domain' => 'taken.com']);
             self::fail('Expected ValidationFailedException to be thrown.');
         } catch (ValidationFailedException $e) {
             self::assertSame(422, $e->statusCode);

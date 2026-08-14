@@ -61,7 +61,6 @@ abstract class PostTestCase extends TestCase
             'list_ids' => [1],
             'lists' => ['Default'],
             'subscribe_ip' => null,
-            'is_opted_in' => true,
             'subscribed_at' => 1700000000,
             'metadata' => [],
         ], $overrides);
