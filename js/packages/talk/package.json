@@ -4,6 +4,11 @@
   "description": "Official JavaScript/TypeScript SDK for Hyvor Talk",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyvor/sdk",
+    "directory": "js/packages/talk"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
