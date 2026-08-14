@@ -1,8 +1,6 @@
-import { TokenProvider } from './auth/TokenProvider.js';
-import { HttpClient } from './http/HttpClient.js';
-import { Transport } from './http/Transport.js';
-import { buildTransport } from './http/TransportBuilder.js';
-import { Logger } from './logging/Logger.js';
+import { TokenProvider } from './auth.js';
+import { HttpClient, Transport, buildTransport } from './http.js';
+import { Logger } from './logging.js';
 
 export interface HyvorBaseClientOptions {
     /**

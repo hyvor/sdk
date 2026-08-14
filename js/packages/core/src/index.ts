@@ -3,21 +3,14 @@ export type { HyvorBaseClientOptions } from './HyvorBaseClient.js';
 export type { RequestOptions } from './RequestOptions.js';
 export { VERSION } from './version.js';
 
-export type { TokenProvider } from './auth/TokenProvider.js';
-export { StaticTokenProvider } from './auth/StaticTokenProvider.js';
-export { CloudApiKeyTokenProvider } from './auth/CloudApiKeyTokenProvider.js';
+export type { TokenProvider } from './auth.js';
+export { StaticTokenProvider, CloudApiKeyTokenProvider } from './auth.js';
 
-export type { Logger } from './logging/Logger.js';
-export { NullLogger } from './logging/Logger.js';
+export type { Logger } from './logging.js';
+export { NullLogger } from './logging.js';
 
-export type { HttpClient, HttpRequest, HttpResponse } from './http/HttpClient.js';
-export { FetchHttpClient } from './http/HttpClient.js';
-export { Transport } from './http/Transport.js';
-export type { TransportConfig } from './http/Transport.js';
-export { buildTransport } from './http/TransportBuilder.js';
-export type { TransportBuilderOptions } from './http/TransportBuilder.js';
-export { resolveProductBaseUrl } from './http/ProductBaseUrl.js';
-export { mapErrorResponse, isRetryable } from './http/ErrorMapper.js';
+export type { HttpClient, HttpRequest, HttpResponse, TransportConfig, TransportBuilderOptions } from './http.js';
+export { FetchHttpClient, Transport, buildTransport, resolveProductBaseUrl, mapErrorResponse, isRetryable } from './http.js';
 
 export {
     HyvorApiException,
@@ -30,4 +23,4 @@ export {
     NetworkException,
 } from './exceptions.js';
 
-export { FakeHttpClient, FakeHttpTransportError, jsonResponse } from './testing/FakeHttpClient.js';
+export { FakeHttpClient, FakeHttpTransportError, jsonResponse } from './testing.js';

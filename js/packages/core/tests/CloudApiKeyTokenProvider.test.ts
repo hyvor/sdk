@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { CloudApiKeyTokenProvider } from '../../src/auth/CloudApiKeyTokenProvider.js';
-import { AuthenticationException } from '../../src/exceptions.js';
-import { NullLogger } from '../../src/logging/Logger.js';
-import { FakeHttpClient, jsonResponse } from '../../src/testing/FakeHttpClient.js';
+import { CloudApiKeyTokenProvider } from '../src/auth.js';
+import { AuthenticationException } from '../src/exceptions.js';
+import { NullLogger } from '../src/logging.js';
+import { FakeHttpClient, jsonResponse } from '../src/testing.js';
 
 describe('CloudApiKeyTokenProvider', () => {
     it('exchanges the cloud API key for a token, then caches it', async () => {

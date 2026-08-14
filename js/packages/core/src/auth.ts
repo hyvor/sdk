@@ -1,8 +1,30 @@
-import { AuthenticationException } from '../exceptions.js';
-import { HttpClient } from '../http/HttpClient.js';
-import { Logger } from '../logging/Logger.js';
-import { VERSION } from '../version.js';
-import { TokenProvider } from './TokenProvider.js';
+import { AuthenticationException } from './exceptions.js';
+import { HttpClient } from './http.js';
+import { Logger } from './logging.js';
+import { VERSION } from './version.js';
+
+/**
+ * Resolves the bearer token used to authenticate requests to the Hyvor API.
+ *
+ * Implement this to plug in a custom way of obtaining a token (ex: one
+ * issued by an internal integration).
+ */
+export interface TokenProvider {
+    getToken(): Promise<string>;
+}
+
+/**
+ * Returns a fixed, pre-obtained token (ex: a JWT issued by an internal
+ * integration) on every call.
+ */
+export class StaticTokenProvider implements TokenProvider {
+    constructor(private readonly token: string) {
+    }
+
+    async getToken(): Promise<string> {
+        return this.token;
+    }
+}
 
 const TOKEN_EXCHANGE_PATH = '/api/cloud/token';
 const EXPIRY_LEEWAY_SECONDS = 30;

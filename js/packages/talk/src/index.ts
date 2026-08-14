@@ -1,10 +1,4 @@
-export { AuthUser } from './Dto.js';
-export { CreateModInput } from './Dto.js';
-export { CreateWebsiteInput } from './Dto.js';
-export { DeleteModInput } from './Dto.js';
-export { Domain } from './Dto.js';
-export { Mod } from './Dto.js';
-export { UpdateDomainsInput } from './Dto.js';
+export * as Dto from './Dto.js';
 export * from './TalkClient.js';
 export * from './Org.js';
 export * from './Website.js';

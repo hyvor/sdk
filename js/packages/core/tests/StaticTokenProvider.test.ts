@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { StaticTokenProvider } from '../../src/auth/StaticTokenProvider.js';
+import { StaticTokenProvider } from '../src/auth.js';
 
 describe('StaticTokenProvider', () => {
     it('returns the given token every time', async () => {

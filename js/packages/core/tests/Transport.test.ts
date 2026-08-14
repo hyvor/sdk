@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { StaticTokenProvider } from '../../src/auth/StaticTokenProvider.js';
-import { NetworkException, RateLimitException, ValidationFailedException } from '../../src/exceptions.js';
-import { Transport } from '../../src/http/Transport.js';
-import { NullLogger } from '../../src/logging/Logger.js';
-import { FakeHttpClient, jsonResponse } from '../../src/testing/FakeHttpClient.js';
+import { StaticTokenProvider } from '../src/auth.js';
+import { NetworkException, RateLimitException, ValidationFailedException } from '../src/exceptions.js';
+import { Transport } from '../src/http.js';
+import { NullLogger } from '../src/logging.js';
+import { FakeHttpClient, jsonResponse } from '../src/testing.js';
 
 function makeTransport(http: FakeHttpClient, overrides: Partial<{ retryMaxAttempts: number, retryBackoffFactor: number }> = {}) {
     return new Transport({

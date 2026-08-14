@@ -1,4 +1,4 @@
-import { HttpClient, HttpRequest, HttpResponse } from '../http/HttpClient.js';
+import { HttpClient, HttpRequest, HttpResponse } from './http.js';
 
 export class FakeHttpTransportError extends Error {
 }

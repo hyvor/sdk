@@ -65,6 +65,24 @@ Talk, Post's Console API doesn't embed the newsletter's ID in the URL - every re
 carries an `X-Newsletter-Id` header, which is how an org-level cloud API key (otherwise valid for
 every newsletter the org can access) resolves to one specific newsletter.
 
+### Types
+
+Request/response DTOs are namespaced under `Dto` rather than exported individually, so they don't
+clutter the package's top-level API:
+
+```ts
+import { Dto, TalkClient } from '@hyvor/sdk-talk';
+
+function printDomain(domain: Dto.Domain) {
+    console.log(domain.domain);
+}
+
+// Dto also holds the real enum values (not just types), ex:
+import { Dto as PostDto, PostClient } from '@hyvor/sdk-post';
+
+const status: PostDto.IssueStatus = PostDto.IssueStatus.SENT;
+```
+
 ### Using both products together
 
 `TalkClient` and `PostClient` are fully independent - each builds its own token provider (and thus
