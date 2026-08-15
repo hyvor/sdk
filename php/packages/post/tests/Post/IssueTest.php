@@ -42,7 +42,7 @@ final class IssueTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, [$this->sampleIssue()]);
 
-        $issues = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->list();
+        $issues = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->list();
 
         self::assertCount(1, $issues);
         self::assertSame(IssueStatus::DRAFT, $issues[0]->status);
@@ -54,7 +54,7 @@ final class IssueTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleIssue(), 201);
 
-        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->create();
+        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->create();
 
         self::assertSame(1, $issue->id);
 
@@ -69,7 +69,7 @@ final class IssueTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleIssue());
 
-        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->get(1);
+        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->get(1);
 
         self::assertSame(1, $issue->id);
         self::assertSame($this->baseUrl() . '/issues/1', (string) $http->requests[0]->getUri());
@@ -80,7 +80,7 @@ final class IssueTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleIssue(['subject' => 'Updated']));
 
-        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->update(
+        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->update(
             1,
             ['subject' => 'Updated', 'lists' => [1, 2], 'sending_profile_id' => 1],
         );
@@ -101,7 +101,7 @@ final class IssueTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->delete(1);
+        $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->delete(1);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());
@@ -113,7 +113,7 @@ final class IssueTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleIssue(['status' => 'sending']));
 
-        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->send(1);
+        $issue = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->send(1);
 
         self::assertSame(IssueStatus::SENDING, $issue->status);
 
@@ -142,7 +142,7 @@ final class IssueTest extends PostTestCase
             ],
         ]);
 
-        $sends = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issue->listsends(1);
+        $sends = $this->client($http)->newsletter(self::NEWSLETTER_ID)->issues->listsends(1);
 
         self::assertCount(1, $sends);
         self::assertSame(SendStatus::SENT, $sends[0]->status);

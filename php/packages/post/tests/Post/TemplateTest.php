@@ -14,7 +14,7 @@ final class TemplateTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, ['template' => '<html>{{ content }}</html>']);
 
-        $template = $this->client($http)->newsletter(self::NEWSLETTER_ID)->template->get();
+        $template = $this->client($http)->newsletter(self::NEWSLETTER_ID)->templates->get();
 
         self::assertSame('<html>{{ content }}</html>', $template->template);
         self::assertSame($this->baseUrl() . '/templates', (string) $http->requests[0]->getUri());
@@ -25,7 +25,7 @@ final class TemplateTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, ['template' => '<html>new</html>']);
 
-        $template = $this->client($http)->newsletter(self::NEWSLETTER_ID)->template->update(
+        $template = $this->client($http)->newsletter(self::NEWSLETTER_ID)->templates->update(
             ['template' => '<html>new</html>'],
         );
 
@@ -47,7 +47,7 @@ final class TemplateTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, ['html' => '<html>rendered</html>']);
 
-        $response = $this->client($http)->newsletter(self::NEWSLETTER_ID)->template->preview(
+        $response = $this->client($http)->newsletter(self::NEWSLETTER_ID)->templates->preview(
             ['template' => '<html>{{ content }}</html>'],
         );
 

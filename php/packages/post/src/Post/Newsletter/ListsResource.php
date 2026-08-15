@@ -10,9 +10,9 @@ use Hyvor\Sdk\Post\Newsletter;
 use Hyvor\Sdk\RequestOptions;
 
 /**
- * `$client->newsletter($newsletterId)->list`
+ * `$client->newsletter($newsletterId)->lists`
  */
-final class ListResource
+final class ListsResource
 {
     public function __construct(private readonly Newsletter $client)
     {

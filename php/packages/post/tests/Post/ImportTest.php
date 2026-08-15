@@ -32,7 +32,7 @@ final class ImportTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleImport());
 
-        $import = $this->client($http)->newsletter(self::NEWSLETTER_ID)->import->upload(
+        $import = $this->client($http)->newsletter(self::NEWSLETTER_ID)->imports->upload(
             ['source' => 'https://example.com/subscribers.csv'],
         );
 
@@ -52,7 +52,7 @@ final class ImportTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleImport(['status' => 'importing']));
 
-        $import = $this->client($http)->newsletter(self::NEWSLETTER_ID)->import->start(
+        $import = $this->client($http)->newsletter(self::NEWSLETTER_ID)->imports->start(
             1,
             ['mapping' => ['email' => 'email', 'name' => 'name']],
         );
@@ -69,7 +69,7 @@ final class ImportTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, [$this->sampleImport()]);
 
-        $imports = $this->client($http)->newsletter(self::NEWSLETTER_ID)->import->list();
+        $imports = $this->client($http)->newsletter(self::NEWSLETTER_ID)->imports->list();
 
         self::assertCount(1, $imports);
         self::assertSame($this->baseUrl() . '/imports', (string) $http->requests[0]->getUri());
@@ -85,7 +85,7 @@ final class ImportTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, ['daily_limit_exceeded' => false, 'monthly_limit_exceeded' => true]);
 
-        $limits = $this->client($http)->newsletter(self::NEWSLETTER_ID)->import->getlimits();
+        $limits = $this->client($http)->newsletter(self::NEWSLETTER_ID)->imports->getlimits();
 
         self::assertFalse($limits['daily_limit_exceeded']);
         self::assertTrue($limits['monthly_limit_exceeded']);

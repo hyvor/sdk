@@ -11,9 +11,9 @@ use Hyvor\Sdk\Post\Newsletter;
 use Hyvor\Sdk\RequestOptions;
 
 /**
- * `$client->newsletter($newsletterId)->issue`
+ * `$client->newsletter($newsletterId)->issues`
  */
-final class IssueResource
+final class IssuesResource
 {
     public function __construct(private readonly Newsletter $client)
     {

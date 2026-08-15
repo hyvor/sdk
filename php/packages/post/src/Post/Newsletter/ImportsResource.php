@@ -10,9 +10,9 @@ use Hyvor\Sdk\Post\Newsletter;
 use Hyvor\Sdk\RequestOptions;
 
 /**
- * `$client->newsletter($newsletterId)->import`
+ * `$client->newsletter($newsletterId)->imports`
  */
-final class ImportResource
+final class ImportsResource
 {
     public function __construct(private readonly Newsletter $client)
     {

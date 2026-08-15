@@ -25,11 +25,11 @@ describe('Newsletter', () => {
         expect(request.headers['Authorization']).toBe('Bearer test-jwt-token');
     });
 
-    it('a sub-resource whose group name collides with the fixed apiKey param is exposed as apiKeyResource', async () => {
+    it('a sub-resource whose group name collides with the fixed apiKey param is exposed as apiKeys', async () => {
         const http = new FakeHttpClient();
         http.queueResponse(jsonResponse(200, []));
 
-        await client(http).newsletter(NEWSLETTER_ID).apiKeyResource.list();
+        await client(http).newsletter(NEWSLETTER_ID).apiKeys.list();
 
         expect(http.requests[0].headers['X-Newsletter-Id']).toBe(String(NEWSLETTER_ID));
     });
@@ -38,7 +38,7 @@ describe('Newsletter', () => {
         const http = new FakeHttpClient();
         http.queueResponse(jsonResponse(200, { progress: 42 }));
 
-        const result = await client(http).newsletter(NEWSLETTER_ID).issue.gettestdata(1);
+        const result = await client(http).newsletter(NEWSLETTER_ID).issues.gettestdata(1);
 
         expect(result).toEqual({ progress: 42 });
         expect(http.requests[0].url).toBe('https://post.hyvor.com/api/console/issues/1/test');

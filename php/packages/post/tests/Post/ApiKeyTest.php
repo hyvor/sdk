@@ -31,7 +31,7 @@ final class ApiKeyTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, [$this->sampleApiKey()]);
 
-        $keys = $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_key->list();
+        $keys = $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_keys->list();
 
         self::assertCount(1, $keys);
         self::assertSame('CI key', $keys[0]->name);
@@ -43,7 +43,7 @@ final class ApiKeyTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleApiKey(['key' => 'secret-key-value']), 201);
 
-        $apiKey = $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_key->create(
+        $apiKey = $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_keys->create(
             ['name' => 'CI key', 'scopes' => ['issues.read']],
         );
 
@@ -63,7 +63,7 @@ final class ApiKeyTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleApiKey(['key' => 'new-secret-value']));
 
-        $apiKey = $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_key->regenerate(1);
+        $apiKey = $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_keys->regenerate(1);
 
         self::assertSame('new-secret-value', $apiKey->key);
         self::assertSame($this->baseUrl() . '/api-keys/1', (string) $http->requests[0]->getUri());
@@ -75,7 +75,7 @@ final class ApiKeyTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, $this->sampleApiKey(['name' => 'Renamed', 'is_enabled' => false]));
 
-        $apiKey = $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_key->update(
+        $apiKey = $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_keys->update(
             1,
             ['name' => 'Renamed', 'is_enabled' => false, 'scopes' => ['issues.read']],
         );
@@ -93,7 +93,7 @@ final class ApiKeyTest extends PostTestCase
         $http = new FakeHttpClient();
         $this->queueJson($http, []);
 
-        $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_key->delete(1);
+        $this->client($http)->newsletter(self::NEWSLETTER_ID)->api_keys->delete(1);
 
         $request = $http->requests[0];
         self::assertSame('DELETE', $request->getMethod());
