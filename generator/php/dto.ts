@@ -1,5 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 import { dtoClassName } from '../schema.ts';
+import { enumKey } from '../helpers.ts';
 import { PhpFile } from './write.ts';
 import { DtoImportMap, resolveSchemaType } from './types.ts';
 
@@ -72,7 +73,7 @@ function generateDtoFile(
 }
 
 function generateEnumFile(className: string, schema: OpenAPIV3.SchemaObject, file: PhpFile): GeneratedFile {
-    const cases = (schema.enum as string[]).map(value => `    case ${value.toUpperCase()} = '${value}';`);
+    const cases = (schema.enum as string[]).map(value => `    case ${enumKey(value)} = '${value}';`);
     const body = [`enum ${className}: string`, '{', ...cases, '}'].join('\n');
 
     return {

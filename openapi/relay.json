@@ -1,0 +1,2136 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Hyvor Relay",
+        "description": "Open-source email delivery platform",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/console/analytics/stats": {
+            "get": {
+                "tags": [
+                    "method:stats",
+                    "group:analytics"
+                ],
+                "summary": "Get analytics stats",
+                "description": "Returns the total sends count, bounce rate, and complaint rate for the specified period.",
+                "operationId": "get_api_console_app_api_console_analytics_stats",
+                "parameters": [
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "30d",
+                            "enum": [
+                                "30d",
+                                "7d",
+                                "24h"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Analytics stats for the period",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "sends": {
+                                            "type": "integer"
+                                        },
+                                        "bounce_rate": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "complaint_rate": {
+                                            "type": "number",
+                                            "format": "float"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/analytics/sends/chart": {
+            "get": {
+                "tags": [
+                    "method:sendschart",
+                    "group:analytics"
+                ],
+                "summary": "Get sends chart data",
+                "description": "Returns daily send counts (total, bounced, complained, accepted, queued) for the last 30 days.",
+                "operationId": "get_api_console_app_api_console_analytics_sendschart",
+                "responses": {
+                    "200": {
+                        "description": "Daily sends chart data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "date": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "total": {
+                                                "type": "integer"
+                                            },
+                                            "bounced": {
+                                                "type": "integer"
+                                            },
+                                            "complained": {
+                                                "type": "integer"
+                                            },
+                                            "accepted": {
+                                                "type": "integer"
+                                            },
+                                            "queued": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/api-keys": {
+            "get": {
+                "tags": [
+                    "method:list",
+                    "group:api_keys"
+                ],
+                "summary": "Get all API keys",
+                "description": "Returns all API keys of the project. The raw key is not returned; only its metadata is.",
+                "operationId": "get_api_console_app_api_console_apikeys_list",
+                "responses": {
+                    "200": {
+                        "description": "List of API keys",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ApiKeyObject"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "method:create",
+                    "group:api_keys"
+                ],
+                "summary": "Create a new API key",
+                "description": "Creates a new API key for the project. The raw key is returned only once and must be stored securely.",
+                "operationId": "post_api_console_app_api_console_apikeys_create",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateApiKeyInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the created API key. The `key` property is the raw key, which is only returned once.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKeyObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/api-keys/{id}": {
+            "delete": {
+                "tags": [
+                    "method:delete",
+                    "group:api_keys"
+                ],
+                "summary": "Delete an API key",
+                "description": "Permanently deletes an API key. Requests made with the deleted key will be rejected immediately.",
+                "operationId": "delete_api_console_app_api_console_apikeys_delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns an empty object on success.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "method:update",
+                    "group:api_keys"
+                ],
+                "summary": "Update an API key",
+                "description": "Updates the name, scopes, enabled status, or allowed IPs of an API key.",
+                "operationId": "patch_api_console_app_api_console_apikeys_update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateApiKeyInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated API key object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKeyObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/domains": {
+            "get": {
+                "tags": [
+                    "method:list",
+                    "group:domains"
+                ],
+                "summary": "Get all domains",
+                "description": "Returns all domains registered for the project.",
+                "operationId": "get_api_console_app_api_console_domains_list",
+                "responses": {
+                    "200": {
+                        "description": "List of domains",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/DomainObject"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "method:create",
+                    "group:domains"
+                ],
+                "summary": "Create a domain",
+                "description": "Registers a new domain for the project. Generates DKIM keys by default unless a custom private key is provided.",
+                "operationId": "post_api_console_app_api_console_domains_create",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DomainCreateInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the created domain object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DomainObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "method:delete",
+                    "group:domains"
+                ],
+                "summary": "Delete a domain",
+                "description": "Permanently deletes a domain from the project.",
+                "operationId": "delete_api_console_app_api_console_domains_delete",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DomainIdOrDomainInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns an empty response on success.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/domains/verify": {
+            "post": {
+                "tags": [
+                    "method:verify",
+                    "group:domains"
+                ],
+                "summary": "Verify a domain",
+                "description": "Verifies the DKIM DNS records of a pending domain and updates its status.",
+                "operationId": "post_api_console_app_api_console_domains_verify",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DomainIdOrDomainInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the verified domain object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DomainObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/domains/by": {
+            "get": {
+                "tags": [
+                    "method:get",
+                    "group:domains"
+                ],
+                "summary": "Get a domain by ID or name",
+                "description": "Returns a single domain identified by its ID or domain name.",
+                "operationId": "get_api_console_app_api_console_domains_get",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DomainIdOrDomainInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the domain object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DomainObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/project": {
+            "get": {
+                "tags": [
+                    "method:get",
+                    "group:project"
+                ],
+                "summary": "Get the current project",
+                "description": "Returns the project that the current API key or session belongs to.",
+                "operationId": "get_api_console_app_api_console_project_get",
+                "responses": {
+                    "200": {
+                        "description": "Returns the project object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "method:create",
+                    "group:projects",
+                    "org-endpoint"
+                ],
+                "summary": "Create a project",
+                "description": "Creates a new project in the current organization and adds the authenticated user to it.",
+                "operationId": "post_api_console_app_api_console_org_projects_create",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateProjectInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the project-user object of the creator in the new project.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectUserObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "method:update",
+                    "group:project"
+                ],
+                "summary": "Update the current project",
+                "description": "Updates the current project. Only the project name can be changed.",
+                "operationId": "patch_api_console_app_api_console_project_update",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProjectInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated project object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/project-users": {
+            "get": {
+                "tags": [
+                    "method:list",
+                    "group:project_users"
+                ],
+                "summary": "Get all project users",
+                "description": "Returns all users that have access to the project.",
+                "operationId": "get_api_console_app_api_console_projectusers_list",
+                "responses": {
+                    "200": {
+                        "description": "List of project users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProjectUserObject"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "method:create",
+                    "group:project_users"
+                ],
+                "summary": "Add a user to the project",
+                "description": "Adds an existing user to the project with the given scopes.",
+                "operationId": "post_api_console_app_api_console_projectusers_create",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateProjectUserInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the created project-user object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectUserObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "method:deleteall",
+                    "group:project_users"
+                ],
+                "summary": "Remove all users from the project",
+                "description": "Removes all project users except the owner.",
+                "operationId": "delete_api_console_app_api_console_projectusers_deleteall",
+                "responses": {
+                    "200": {
+                        "description": "Returns an empty object on success.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/project-users/{id}": {
+            "delete": {
+                "tags": [
+                    "method:delete",
+                    "group:project_users"
+                ],
+                "summary": "Remove a user from the project",
+                "description": "Removes a single user from the project.",
+                "operationId": "delete_api_console_app_api_console_projectusers_delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns an empty object on success.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/sends": {
+            "get": {
+                "tags": [
+                    "method:list",
+                    "group:sends"
+                ],
+                "summary": "Get all sends",
+                "description": "Returns a paginated list of emails sent from the project.",
+                "operationId": "get_api_console_app_api_console_sends_list",
+                "responses": {
+                    "200": {
+                        "description": "List of sends",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SendObject"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "method:send",
+                    "group:sends"
+                ],
+                "summary": "Send an email",
+                "description": "Sends an email from the project. Supports To, Cc, Bcc, attachments, and custom headers.",
+                "operationId": "post_api_console_app_api_console_sends_send",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SendEmailInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the created send ID and Message-ID.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "message_id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/sends/{id}": {
+            "get": {
+                "tags": [
+                    "method:get",
+                    "group:sends"
+                ],
+                "summary": "Get a send by ID",
+                "description": "Returns a single send including its recipients, attempts, and feedback.",
+                "operationId": "get_api_console_app_api_console_sends_get",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the send object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SendObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/sends/{id}/retry": {
+            "post": {
+                "tags": [
+                    "method:retry",
+                    "group:sends"
+                ],
+                "summary": "Retry a failed send",
+                "description": "Retries sending to failed recipients of a send. Already queued sends are rescheduled to now.",
+                "operationId": "post_api_console_app_api_console_sends_retry",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RetrySendInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the number of retried recipients and the updated send object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "retried_recipients": {
+                                            "type": "integer"
+                                        },
+                                        "send": {
+                                            "$ref": "#/components/schemas/SendObject"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/sends/uuid/{uuid}": {
+            "get": {
+                "tags": [
+                    "method:getbyuuid",
+                    "group:sends"
+                ],
+                "summary": "Get a send by UUID",
+                "description": "Returns a single send by its public UUID.",
+                "operationId": "get_api_console_app_api_console_sends_getbyuuid",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[13-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the send object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SendObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/sends/uuid/{uuid}/content": {
+            "get": {
+                "tags": [
+                    "method:getcontent",
+                    "group:sends"
+                ],
+                "summary": "Get send content by UUID",
+                "description": "Returns the stored content (HTML, text, headers, and raw) of a send by its UUID.",
+                "operationId": "get_api_console_app_api_console_sends_getcontent",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[13-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the send content object.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SendContentObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/suppressions": {
+            "get": {
+                "tags": [
+                    "method:list",
+                    "group:suppressions"
+                ],
+                "summary": "Get all suppressions",
+                "description": "Returns suppressed email addresses for the project.",
+                "operationId": "get_api_console_app_api_console_suppressions_list",
+                "responses": {
+                    "200": {
+                        "description": "List of suppressions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SuppressionObject"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/suppressions/{id}": {
+            "delete": {
+                "tags": [
+                    "method:delete",
+                    "group:suppressions"
+                ],
+                "summary": "Delete a suppression",
+                "description": "Removes an email address from the project suppressions list.",
+                "operationId": "delete_api_console_app_api_console_suppressions_delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns an empty object on success.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/webhooks": {
+            "get": {
+                "tags": [
+                    "method:list",
+                    "group:webhooks"
+                ],
+                "summary": "Get all webhooks",
+                "description": "Returns all webhooks configured for the project, including their secrets.",
+                "operationId": "get_api_console_app_api_console_webhooks_list",
+                "responses": {
+                    "200": {
+                        "description": "List of webhooks",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/WebhookObject"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "method:create",
+                    "group:webhooks"
+                ],
+                "summary": "Create a webhook",
+                "description": "Creates a new webhook for the project and returns its signing secret.",
+                "operationId": "post_api_console_app_api_console_webhooks_create",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateWebhookInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the created webhook object with its secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WebhookObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/webhooks/{id}": {
+            "delete": {
+                "tags": [
+                    "method:delete",
+                    "group:webhooks"
+                ],
+                "summary": "Delete a webhook",
+                "description": "Permanently deletes a webhook.",
+                "operationId": "delete_api_console_app_api_console_webhooks_delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns an empty object on success.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "method:update",
+                    "group:webhooks"
+                ],
+                "summary": "Update a webhook",
+                "description": "Updates the URL, description, or events of a webhook.",
+                "operationId": "patch_api_console_app_api_console_webhooks_update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateWebhookInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated webhook object. The secret is not returned.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WebhookObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/console/webhooks/deliveries": {
+            "get": {
+                "tags": [
+                    "method:listdeliveries",
+                    "group:webhooks"
+                ],
+                "summary": "Get webhook deliveries",
+                "description": "Returns delivery attempts for webhooks of the project.",
+                "operationId": "get_api_console_app_api_console_webhooks_listdeliveries",
+                "responses": {
+                    "200": {
+                        "description": "List of webhook deliveries",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/WebhookDeliveryObject"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AnalyticsStatsInput": {
+                "properties": {
+                    "period": {
+                        "type": "string",
+                        "default": "30d",
+                        "enum": [
+                            "30d",
+                            "7d",
+                            "24h"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "CreateApiKeyInput": {
+                "required": [
+                    "name",
+                    "scopes"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "scopes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "allowed_ips": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": []
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateApiKeyInput": {
+                "required": [
+                    "name",
+                    "is_enabled",
+                    "scopes",
+                    "allowed_ips"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "is_enabled": {
+                        "type": "boolean"
+                    },
+                    "scopes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "allowed_ips": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "DomainCreateInput": {
+                "required": [
+                    "domain"
+                ],
+                "properties": {
+                    "domain": {
+                        "type": "string"
+                    },
+                    "dkim_selector": {
+                        "type": "string",
+                        "pattern": "[a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?",
+                        "nullable": true
+                    },
+                    "dkim_private_key": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "DomainIdOrDomainInput": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "domain": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ProjectSendType": {
+                "type": "string",
+                "enum": [
+                    "transactional",
+                    "distributional"
+                ]
+            },
+            "CreateProjectInput": {
+                "required": [
+                    "name",
+                    "send_type"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "send_type": {
+                        "$ref": "#/components/schemas/ProjectSendType"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateProjectInput": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1
+                    }
+                },
+                "type": "object"
+            },
+            "CreateProjectUserInput": {
+                "required": [
+                    "user_id",
+                    "scopes"
+                ],
+                "properties": {
+                    "user_id": {
+                        "type": "integer"
+                    },
+                    "scopes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "SendEmailInput": {
+                "required": [
+                    "from",
+                    "to"
+                ],
+                "properties": {
+                    "from": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "string"
+                                }
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "to": {
+                        "oneOf": [
+                            {
+                                "oneOf": [
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "string"
+                                }
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "cc": {
+                        "oneOf": [
+                            {
+                                "oneOf": [
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "string"
+                                }
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ],
+                        "default": []
+                    },
+                    "bcc": {
+                        "oneOf": [
+                            {
+                                "oneOf": [
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "string"
+                                }
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ],
+                        "default": []
+                    },
+                    "subject": {
+                        "type": "string",
+                        "default": "",
+                        "maxLength": 998
+                    },
+                    "body_html": {
+                        "type": "string",
+                        "nullable": true,
+                        "maxLength": 2097152
+                    },
+                    "body_text": {
+                        "type": "string",
+                        "nullable": true,
+                        "maxLength": 2097152
+                    },
+                    "headers": {
+                        "type": "object",
+                        "default": [],
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    },
+                    "attachments": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string",
+                                "nullable": true
+                            }
+                        },
+                        "default": [],
+                        "maxItems": 10
+                    }
+                },
+                "type": "object"
+            },
+            "RetrySendInput": {
+                "properties": {
+                    "send_after": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "recipient_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "CreateWebhookInput": {
+                "required": [
+                    "url",
+                    "description",
+                    "events"
+                ],
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "events": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateWebhookInput": {
+                "required": [
+                    "url",
+                    "description",
+                    "events"
+                ],
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "events": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ApiKeyObject": {
+                "required": [
+                    "id",
+                    "name",
+                    "scopes",
+                    "allowed_ips",
+                    "created_at",
+                    "is_enabled"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "scopes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "allowed_ips": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "key": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "is_enabled": {
+                        "type": "boolean"
+                    },
+                    "last_accessed_at": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "DomainStatus": {
+                "type": "string",
+                "enum": [
+                    "pending",
+                    "active",
+                    "warning",
+                    "suspended"
+                ]
+            },
+            "DomainObject": {
+                "required": [
+                    "id",
+                    "created_at",
+                    "domain",
+                    "status",
+                    "status_changed_at",
+                    "dkim_selector",
+                    "dkim_host",
+                    "dkim_public_key",
+                    "dkim_txt_value"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "domain": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/DomainStatus"
+                    },
+                    "status_changed_at": {
+                        "type": "integer"
+                    },
+                    "dkim_selector": {
+                        "type": "string"
+                    },
+                    "dkim_host": {
+                        "type": "string"
+                    },
+                    "dkim_public_key": {
+                        "type": "string"
+                    },
+                    "dkim_txt_value": {
+                        "type": "string"
+                    },
+                    "dkim_checked_at": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "dkim_error_message": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ProjectObject": {
+                "required": [
+                    "id",
+                    "created_at",
+                    "name",
+                    "send_type"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "send_type": {
+                        "$ref": "#/components/schemas/ProjectSendType"
+                    }
+                },
+                "type": "object"
+            },
+            "ProjectUserMiniObject": {
+                "required": [
+                    "id",
+                    "name",
+                    "email"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "username": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "picture_url": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "oidc_sub": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ProjectUserObject": {
+                "required": [
+                    "id",
+                    "created_at",
+                    "scopes",
+                    "user",
+                    "project"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "scopes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/ProjectUserMiniObject"
+                    },
+                    "oidc_sub": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "project": {
+                        "$ref": "#/components/schemas/ProjectObject"
+                    }
+                },
+                "type": "object"
+            },
+            "SendRecipientType": {
+                "type": "string",
+                "enum": [
+                    "to",
+                    "cc",
+                    "bcc"
+                ]
+            },
+            "SendRecipientStatus": {
+                "type": "string",
+                "enum": [
+                    "queued",
+                    "accepted",
+                    "deferred",
+                    "bounced",
+                    "complained",
+                    "suppressed",
+                    "failed"
+                ]
+            },
+            "SendRecipientObject": {
+                "required": [
+                    "id",
+                    "type",
+                    "address",
+                    "name",
+                    "status",
+                    "try_count"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "type": {
+                        "$ref": "#/components/schemas/SendRecipientType"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SendRecipientStatus"
+                    },
+                    "try_count": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "SendAttemptStatus": {
+                "type": "string",
+                "enum": [
+                    "accepted",
+                    "deferred",
+                    "bounced",
+                    "partial",
+                    "failed"
+                ]
+            },
+            "SendAttemptRecipientObject": {
+                "required": [
+                    "id",
+                    "created_at",
+                    "recipient_id",
+                    "recipient_status",
+                    "smtp_code",
+                    "smtp_message",
+                    "is_suppressed"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "recipient_id": {
+                        "type": "integer"
+                    },
+                    "recipient_status": {
+                        "$ref": "#/components/schemas/SendRecipientStatus"
+                    },
+                    "smtp_code": {
+                        "type": "integer"
+                    },
+                    "smtp_enhanced_code": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "smtp_message": {
+                        "type": "string"
+                    },
+                    "is_suppressed": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "SendAttemptObject": {
+                "required": [
+                    "id",
+                    "created_at",
+                    "status",
+                    "try_count",
+                    "domain",
+                    "resolved_mx_hosts",
+                    "duration_ms"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SendAttemptStatus"
+                    },
+                    "try_count": {
+                        "type": "integer"
+                    },
+                    "domain": {
+                        "type": "string"
+                    },
+                    "resolved_mx_hosts": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "responded_mx_host": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "smtp_conversations": {
+                        "type": "object",
+                        "default": [],
+                        "additionalProperties": {
+                            "nullable": true
+                        }
+                    },
+                    "duration_ms": {
+                        "type": "integer"
+                    },
+                    "recipients": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SendAttemptRecipientObject"
+                        },
+                        "default": []
+                    }
+                },
+                "type": "object"
+            },
+            "SendFeedbackType": {
+                "type": "string",
+                "enum": [
+                    "bounce",
+                    "complaint"
+                ]
+            },
+            "SendFeedbackObject": {
+                "required": [
+                    "id",
+                    "created_at",
+                    "type",
+                    "recipient_id",
+                    "debug_incoming_email_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "type": {
+                        "$ref": "#/components/schemas/SendFeedbackType"
+                    },
+                    "recipient_id": {
+                        "type": "integer"
+                    },
+                    "debug_incoming_email_id": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "SendObject": {
+                "required": [
+                    "id",
+                    "uuid",
+                    "created_at",
+                    "from_address",
+                    "size_bytes",
+                    "queued",
+                    "send_after"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "uuid": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "from_address": {
+                        "type": "string"
+                    },
+                    "from_name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "subject": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "size_bytes": {
+                        "type": "integer"
+                    },
+                    "queued": {
+                        "type": "boolean"
+                    },
+                    "send_after": {
+                        "type": "integer"
+                    },
+                    "recipients": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SendRecipientObject"
+                        },
+                        "default": []
+                    },
+                    "attempts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SendAttemptObject"
+                        },
+                        "default": []
+                    },
+                    "feedback": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SendFeedbackObject"
+                        },
+                        "default": []
+                    }
+                },
+                "type": "object"
+            },
+            "SendContentObject": {
+                "required": [
+                    "headers",
+                    "raw"
+                ],
+                "properties": {
+                    "body_html": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "body_text": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "headers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    },
+                    "raw": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "SuppressionObject": {
+                "required": [
+                    "id",
+                    "created_at",
+                    "email",
+                    "reason"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "WebhookObject": {
+                "required": [
+                    "id",
+                    "url",
+                    "events"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "events": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "secret": {
+                        "type": "string",
+                        "nullable": true,
+                        "default": null
+                    }
+                },
+                "type": "object"
+            },
+            "WebhooksEventEnum": {
+                "type": "string",
+                "enum": [
+                    "send.recipient.accepted",
+                    "send.recipient.deferred",
+                    "send.recipient.bounced",
+                    "send.recipient.complained",
+                    "send.recipient.suppressed",
+                    "send.recipient.failed",
+                    "suppression.created",
+                    "suppression.deleted",
+                    "domain.created",
+                    "domain.status.changed",
+                    "domain.deleted"
+                ]
+            },
+            "WebhookDeliveryStatus": {
+                "type": "string",
+                "enum": [
+                    "pending",
+                    "delivered",
+                    "failed"
+                ]
+            },
+            "WebhookDeliveryObject": {
+                "required": [
+                    "id",
+                    "created_at",
+                    "url",
+                    "event",
+                    "status",
+                    "try_count",
+                    "request_body"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "integer"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "event": {
+                        "$ref": "#/components/schemas/WebhooksEventEnum"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/WebhookDeliveryStatus"
+                    },
+                    "response": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "response_code": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "try_count": {
+                        "type": "integer"
+                    },
+                    "request_body": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "method:stats",
+            "description": "method:stats"
+        },
+        {
+            "name": "group:analytics",
+            "description": "group:analytics"
+        },
+        {
+            "name": "method:sendschart",
+            "description": "method:sendschart"
+        },
+        {
+            "name": "method:list",
+            "description": "method:list"
+        },
+        {
+            "name": "group:api_keys",
+            "description": "group:api_keys"
+        },
+        {
+            "name": "method:create",
+            "description": "method:create"
+        },
+        {
+            "name": "method:delete",
+            "description": "method:delete"
+        },
+        {
+            "name": "method:update",
+            "description": "method:update"
+        },
+        {
+            "name": "group:domains",
+            "description": "group:domains"
+        },
+        {
+            "name": "method:verify",
+            "description": "method:verify"
+        },
+        {
+            "name": "method:get",
+            "description": "method:get"
+        },
+        {
+            "name": "group:project",
+            "description": "group:project"
+        },
+        {
+            "name": "group:projects",
+            "description": "group:projects"
+        },
+        {
+            "name": "org-endpoint",
+            "description": "org-endpoint"
+        },
+        {
+            "name": "group:project_users",
+            "description": "group:project_users"
+        },
+        {
+            "name": "method:deleteall",
+            "description": "method:deleteall"
+        },
+        {
+            "name": "group:sends",
+            "description": "group:sends"
+        },
+        {
+            "name": "method:send",
+            "description": "method:send"
+        },
+        {
+            "name": "method:retry",
+            "description": "method:retry"
+        },
+        {
+            "name": "method:getbyuuid",
+            "description": "method:getbyuuid"
+        },
+        {
+            "name": "method:getcontent",
+            "description": "method:getcontent"
+        },
+        {
+            "name": "group:suppressions",
+            "description": "group:suppressions"
+        },
+        {
+            "name": "group:webhooks",
+            "description": "group:webhooks"
+        },
+        {
+            "name": "method:listdeliveries",
+            "description": "method:listdeliveries"
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
+import { enumKey } from '../helpers.ts';
 import { TsFile } from './write.ts';
 import { DtoImportMap, resolveSchemaType } from './types.ts';
 
@@ -66,7 +67,7 @@ function isEnumSchema(schema: OpenAPIV3.SchemaObject): boolean {
 }
 
 function renderEnum(className: string, schema: OpenAPIV3.SchemaObject): string {
-    const cases = (schema.enum as string[]).map(value => `    ${value.toUpperCase()} = '${value}',`);
+    const cases = (schema.enum as string[]).map(value => `    ${enumKey(value)} = '${value}',`);
     return [`export enum ${className} {`, ...cases, '}'].join('\n');
 }
 

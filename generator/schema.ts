@@ -24,6 +24,11 @@ export const PRODUCT_CONFIG = {
         scope: 'header',
         headerName: 'X-Newsletter-Id',
     },
+    relay: {
+        resourceName: 'project',
+        scope: 'header',
+        headerName: 'X-Project-Id',
+    },
 } satisfies Record<string, ProductConfig>;
 
 export type Product = keyof typeof PRODUCT_CONFIG;
