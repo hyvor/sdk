@@ -10,6 +10,8 @@ final class Website
         public readonly int $id,
         public readonly string $name,
         public readonly string $created_at,
+        public readonly int $organization_id,
+        public readonly ?int $owner_id,
         public readonly bool $is_blocked,
         public readonly bool $is_deleted,
         /** @var array<string, mixed>|null */

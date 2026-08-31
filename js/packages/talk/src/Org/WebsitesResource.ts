@@ -1,4 +1,4 @@
-import type { CreateWebsiteInput, Website } from '../Dto.js';
+import type { CreateWebsiteInput } from '../Dto.js';
 import type { RequestOptions, Transport } from '@hyvor/sdk-core';
 
 /**
@@ -11,9 +11,7 @@ export class WebsitesResource {
     /**
      * POST /api/console/v1/websites
      */
-    async create(data: CreateWebsiteInput, options?: RequestOptions): Promise<Website> {
-        const result = await this.transport.request('POST', '/api/console/v1/websites', data, options);
-
-        return this.transport.denormalize<Website>(result);
+    async create(data: CreateWebsiteInput, options?: RequestOptions): Promise<unknown> {
+        return await this.transport.request('POST', '/api/console/v1/websites', data, options);
     }
 }
