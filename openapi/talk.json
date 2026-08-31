@@ -130,7 +130,7 @@
           }
         },
         "responses": {
-          "204": {
+          "200": {
             "description": "Returns an empty object on successful deletion.",
             "content": {
               "application/json": {
@@ -163,11 +163,24 @@
         },
         "responses": {
           "201": {
-            "description": "Returns the created website object.",
+            "description": "Returns the created website object and the moderator object for the user who created it.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WebsiteObject"
+                  "properties": {
+                    "website": {
+                      "$ref": "#/components/schemas/WebsiteObject"
+                    },
+                    "mod": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/ModObject"
+                        }
+                      ],
+                      "nullable": true
+                    }
+                  },
+                  "type": "object"
                 }
               }
             }
@@ -194,7 +207,7 @@
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "description": "Returns an empty object on successful deletion.",
             "content": {
               "application/json": {
@@ -373,6 +386,7 @@
           "id",
           "name",
           "created_at",
+          "organization_id",
           "is_blocked",
           "is_deleted",
           "domains"
@@ -386,6 +400,13 @@
           },
           "created_at": {
             "type": "string"
+          },
+          "organization_id": {
+            "type": "integer"
+          },
+          "owner_id": {
+            "type": "integer",
+            "nullable": true
           },
           "is_blocked": {
             "type": "boolean"
