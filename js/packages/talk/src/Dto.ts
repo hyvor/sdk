@@ -22,11 +22,18 @@ export interface Website {
     id: number;
     name: string;
     created_at: string;
+    organization_id: number;
+    owner_id: number | null;
     is_blocked: boolean;
     is_deleted: boolean;
     metadata: Record<string, Record<string, unknown> | null> | null;
     created_by_source: string | null;
     domains: Domain[];
+}
+
+export interface WebsitesCreateResponse {
+    website: Website;
+    mod: Mod | null;
 }
 
 export interface CreateModInput {

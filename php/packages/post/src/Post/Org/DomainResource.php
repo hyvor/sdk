@@ -7,6 +7,7 @@ namespace Hyvor\Sdk\Post\Org;
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Http\Transport;
 use Hyvor\Sdk\Post\Dto\Domain;
+use Hyvor\Sdk\Post\Dto\DomainVerifyResponse;
 use Hyvor\Sdk\RequestOptions;
 
 /**
@@ -51,13 +52,13 @@ final class DomainResource
     /**
      * POST /api/console/domains/{id}/verify
      *
-     * @return array<mixed>
-     *
      * @throws HyvorApiException
      */
-    public function verify(int $id, ?RequestOptions $options = null): array
+    public function verify(int $id, ?RequestOptions $options = null): DomainVerifyResponse
     {
-        return $this->transport->request('POST', '/api/console/domains/' . $id . '/verify', null, $options);
+        $result = $this->transport->request('POST', '/api/console/domains/' . $id . '/verify', null, $options);
+
+        return $this->transport->denormalize($result, DomainVerifyResponse::class);
     }
 
     /**

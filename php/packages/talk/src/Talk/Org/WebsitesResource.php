@@ -7,7 +7,7 @@ namespace Hyvor\Sdk\Talk\Org;
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Http\Transport;
 use Hyvor\Sdk\RequestOptions;
-use Hyvor\Sdk\Talk\Dto\Website;
+use Hyvor\Sdk\Talk\Dto\WebsitesCreateResponse;
 
 /**
  * `$client->org->websites`
@@ -30,10 +30,10 @@ final class WebsitesResource
      *
      * @throws HyvorApiException
      */
-    public function create(array $data, ?RequestOptions $options = null): Website
+    public function create(array $data, ?RequestOptions $options = null): WebsitesCreateResponse
     {
         $result = $this->transport->request('POST', '/api/console/v1/websites', $data, $options);
 
-        return $this->transport->denormalize($result, Website::class);
+        return $this->transport->denormalize($result, WebsitesCreateResponse::class);
     }
 }

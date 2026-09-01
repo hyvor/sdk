@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hyvor\Sdk\Post\Newsletter;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
+use Hyvor\Sdk\Post\Dto\ImportsGetlimitsResponse;
 use Hyvor\Sdk\Post\Dto\SubscriberImport;
 use Hyvor\Sdk\Post\Newsletter;
 use Hyvor\Sdk\RequestOptions;
@@ -67,12 +68,12 @@ final class ImportsResource
     /**
      * GET /api/console/imports/limits
      *
-     * @return array<mixed>
-     *
      * @throws HyvorApiException
      */
-    public function getlimits(?RequestOptions $options = null): array
+    public function getlimits(?RequestOptions $options = null): ImportsGetlimitsResponse
     {
-        return $this->client->request('GET', $this->client->path('/api/console/imports/limits'), null, $options);
+        $result = $this->client->request('GET', $this->client->path('/api/console/imports/limits'), null, $options);
+
+        return $this->client->transport->denormalize($result, ImportsGetlimitsResponse::class);
     }
 }

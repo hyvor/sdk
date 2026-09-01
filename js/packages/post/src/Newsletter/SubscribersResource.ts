@@ -1,4 +1,4 @@
-import type { BulkActionSubscriberInput, CreateSubscriberInput, Subscriber } from '../Dto.js';
+import type { BulkActionSubscriberInput, CreateSubscriberInput, Subscriber, SubscribersBulkResponse } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 
@@ -53,7 +53,9 @@ export class SubscribersResource {
     /**
      * POST /api/console/subscribers/bulk
      */
-    async bulk(data: BulkActionSubscriberInput, options?: RequestOptions): Promise<unknown> {
-        return await this.client.request('POST', this.client.path('/api/console/subscribers/bulk'), data, options);
+    async bulk(data: BulkActionSubscriberInput, options?: RequestOptions): Promise<SubscribersBulkResponse> {
+        const result = await this.client.request('POST', this.client.path('/api/console/subscribers/bulk'), data, options);
+
+        return this.client.transport.denormalize<SubscribersBulkResponse>(result);
     }
 }

@@ -103,9 +103,8 @@ final class SubscriberTest extends PostTestCase
             ],
         );
 
-        self::assertSame('ok', $response['status']);
-        self::assertIsArray($response['subscribers']);
-        self::assertCount(2, $response['subscribers']);
+        self::assertSame('ok', $response->status);
+        self::assertCount(2, $response->subscribers);
 
         $request = $http->requests[0];
         self::assertSame('POST', $request->getMethod());

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hyvor\Sdk\Tests\Post;
 
+use Hyvor\Sdk\Post\Dto\RelayDomainStatus;
 use Hyvor\Sdk\Testing\FakeHttpClient;
 use Hyvor\Sdk\Tests\Support\PostTestCase;
 
@@ -55,11 +56,6 @@ final class DomainTest extends PostTestCase
         self::assertSame(['domain' => 'mail.example.com'], json_decode((string) $request->getBody(), true));
     }
 
-    /**
-     * `/domains/{id}/verify`'s response mixes an ad-hoc `data` field with a
-     * `$ref`'d `domain`, so the generator can't denormalize it as a whole -
-     * `verify()` returns the decoded body as a raw array instead.
-     */
     public function testVerify(): void
     {
         $http = new FakeHttpClient();
@@ -70,9 +66,7 @@ final class DomainTest extends PostTestCase
 
         $result = $this->client($http)->org->domain->verify(1);
 
-        self::assertArrayHasKey('domain', $result);
-        self::assertIsArray($result['domain']);
-        self::assertSame('active', $result['domain']['relay_status']);
+        self::assertSame(RelayDomainStatus::ACTIVE, $result->domain->relay_status);
 
         $request = $http->requests[0];
         self::assertSame('POST', $request->getMethod());

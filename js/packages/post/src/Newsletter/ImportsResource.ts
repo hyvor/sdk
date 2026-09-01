@@ -1,4 +1,4 @@
-import type { ImportInput, SubscriberImport, UploadImportInput } from '../Dto.js';
+import type { ImportInput, ImportsGetlimitsResponse, SubscriberImport, UploadImportInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 
@@ -39,7 +39,9 @@ export class ImportsResource {
     /**
      * GET /api/console/imports/limits
      */
-    async getlimits(options?: RequestOptions): Promise<unknown> {
-        return await this.client.request('GET', this.client.path('/api/console/imports/limits'), null, options);
+    async getlimits(options?: RequestOptions): Promise<ImportsGetlimitsResponse> {
+        const result = await this.client.request('GET', this.client.path('/api/console/imports/limits'), null, options);
+
+        return this.client.transport.denormalize<ImportsGetlimitsResponse>(result);
     }
 }

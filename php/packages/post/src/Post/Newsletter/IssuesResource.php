@@ -6,6 +6,10 @@ namespace Hyvor\Sdk\Post\Newsletter;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Post\Dto\Issue;
+use Hyvor\Sdk\Post\Dto\IssuesGetreportResponse;
+use Hyvor\Sdk\Post\Dto\IssuesGettestdataResponse;
+use Hyvor\Sdk\Post\Dto\IssuesPreviewResponse;
+use Hyvor\Sdk\Post\Dto\IssuesSendtestResponse;
 use Hyvor\Sdk\Post\Dto\Send;
 use Hyvor\Sdk\Post\Newsletter;
 use Hyvor\Sdk\RequestOptions;
@@ -101,13 +105,13 @@ final class IssuesResource
     /**
      * GET /api/console/issues/{id}/test
      *
-     * @return array<mixed>
-     *
      * @throws HyvorApiException
      */
-    public function gettestdata(int $id, ?RequestOptions $options = null): array
+    public function gettestdata(int $id, ?RequestOptions $options = null): IssuesGettestdataResponse
     {
-        return $this->client->request('GET', $this->client->path('/api/console/issues/' . $id . '/test'), null, $options);
+        $result = $this->client->request('GET', $this->client->path('/api/console/issues/' . $id . '/test'), null, $options);
+
+        return $this->client->transport->denormalize($result, IssuesGettestdataResponse::class);
     }
 
     /**
@@ -117,25 +121,25 @@ final class IssuesResource
      *     emails: list<string>|array<string, string>,
      * } $data
      *
-     * @return array<mixed>
-     *
      * @throws HyvorApiException
      */
-    public function sendtest(int $id, array $data, ?RequestOptions $options = null): array
+    public function sendtest(int $id, array $data, ?RequestOptions $options = null): IssuesSendtestResponse
     {
-        return $this->client->request('POST', $this->client->path('/api/console/issues/' . $id . '/test'), $data, $options);
+        $result = $this->client->request('POST', $this->client->path('/api/console/issues/' . $id . '/test'), $data, $options);
+
+        return $this->client->transport->denormalize($result, IssuesSendtestResponse::class);
     }
 
     /**
      * GET /api/console/issues/{id}/preview
      *
-     * @return array<mixed>
-     *
      * @throws HyvorApiException
      */
-    public function preview(int $id, ?RequestOptions $options = null): array
+    public function preview(int $id, ?RequestOptions $options = null): IssuesPreviewResponse
     {
-        return $this->client->request('GET', $this->client->path('/api/console/issues/' . $id . '/preview'), null, $options);
+        $result = $this->client->request('GET', $this->client->path('/api/console/issues/' . $id . '/preview'), null, $options);
+
+        return $this->client->transport->denormalize($result, IssuesPreviewResponse::class);
     }
 
     /**
@@ -165,12 +169,12 @@ final class IssuesResource
     /**
      * GET /api/console/issues/{id}/report
      *
-     * @return array<mixed>
-     *
      * @throws HyvorApiException
      */
-    public function getreport(int $id, ?RequestOptions $options = null): array
+    public function getreport(int $id, ?RequestOptions $options = null): IssuesGetreportResponse
     {
-        return $this->client->request('GET', $this->client->path('/api/console/issues/' . $id . '/report'), null, $options);
+        $result = $this->client->request('GET', $this->client->path('/api/console/issues/' . $id . '/report'), null, $options);
+
+        return $this->client->transport->denormalize($result, IssuesGetreportResponse::class);
     }
 }

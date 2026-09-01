@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { OpenAPIV3 } from 'openapi-types';
+import { pascalCase } from './helpers.ts';
 
 /**
  * How a product's resource-level API scopes requests to one instance of its
@@ -38,7 +39,9 @@ export interface ProcessedSchema {
     // (WebsiteClient) instead of becoming a sub-resource class + property.
     selfGroupName: string,
     requests: Record<string, OpenAPIV3.SchemaObject>, // CreateWebsiteInput => schema
-    responses: Record<string, OpenAPIV3.SchemaObject> // WebsiteObject => schema (also holds enum schemas, ex: UserRole)
+    // WebsiteObject => schema (also holds enum schemas, ex: UserRole) - plus
+    // one synthesized entry per endpoint whose response is an inline object (`properties`)
+    responses: Record<string, OpenAPIV3.SchemaObject>
 }
 
 export interface EndpointsGroup {
@@ -152,11 +155,21 @@ function isMeaningfulSchema(schema: OpenAPIV3.SchemaObject): boolean {
 }
 
 // picks the first 2xx response that carries a JSON schema. A `$ref` (or an
-// array of one) is denormalized to that DTO; anything else with real content
-// is decoded and handed back as a raw array (we can't derive a precise type
-// for an inline/ad-hoc shape); a response with no meaningful schema (ex: an
-// empty 204 object) is void.
-function resolveResponse(operation: OpenAPIV3.OperationObject, path: string, httpMethod: string): Endpoint['response'] {
+// array of one) is denormalized to that DTO; an inline object schema (ex:
+// the spec composing `{ website, mod }` ad hoc instead of via a `$ref`) is
+// given a synthesized name (`syntheticName`) and registered into
+// `inlineResponses` so it flows through the rest of the pipeline exactly
+// like a named component schema (see `processSchema`); anything else with
+// real content (ex: a bare array of strings) is decoded and handed back as
+// a raw array (we can't derive a precise type for it); a response with no
+// meaningful schema (ex: an empty 204 object) is void.
+function resolveResponse(
+    operation: OpenAPIV3.OperationObject,
+    path: string,
+    httpMethod: string,
+    syntheticName: string,
+    inlineResponses: Record<string, OpenAPIV3.SchemaObject>,
+): Endpoint['response'] {
     const responses = operation.responses ?? {};
     const codes = Object.keys(responses).sort();
 
@@ -179,6 +192,11 @@ function resolveResponse(operation: OpenAPIV3.OperationObject, path: string, htt
             const name = refName(schema.items.$ref);
             assertObjectSuffix(name, path, httpMethod);
             return { shape: 'list', className: name };
+        }
+
+        if (schema.properties && Object.keys(schema.properties).length > 0) {
+            inlineResponses[syntheticName] = schema;
+            return { shape: 'object', className: syntheticName };
         }
 
         if (isMeaningfulSchema(schema)) {
@@ -230,10 +248,12 @@ export function computeEndpointGroups(
 ): {
     org: EndpointsGroup[],
     resource: EndpointsGroup[],
+    inlineResponses: Record<string, OpenAPIV3.SchemaObject>,
 } {
 
     const orgGroups = new Map<string, EndpointsGroup>();
     const resourceGroups = new Map<string, EndpointsGroup>();
+    const inlineResponses: Record<string, OpenAPIV3.SchemaObject> = {};
     const resourceParamName = config.scope === 'path' ? `${config.resourceName}Id` : null;
     const placeholder = resourceParamName ? `{${resourceParamName}}` : null;
 
@@ -266,6 +286,8 @@ export function computeEndpointGroups(
                 ? path
                 : path.slice(path.indexOf(placeholder) + placeholder.length);
 
+            const syntheticResponseName = `${pascalCase(groupName)}${pascalCase(methodName)}ResponseObject`;
+
             groups.get(groupName)!.endpoints.push({
                 httpMethod: httpMethod.toUpperCase(),
                 methodName,
@@ -273,7 +295,7 @@ export function computeEndpointGroups(
                 suffix,
                 pathParams: extractPathParams(operation, resourceParamName),
                 requestSchemaName: resolveRequestSchemaName(operation, path, httpMethod),
-                response: resolveResponse(operation, path, httpMethod),
+                response: resolveResponse(operation, path, httpMethod, syntheticResponseName, inlineResponses),
             });
         }
     }
@@ -281,12 +303,13 @@ export function computeEndpointGroups(
     return {
         org: Array.from(orgGroups.values()),
         resource: Array.from(resourceGroups.values()),
+        inlineResponses,
     };
 }
 
 export function processSchema(schema: OpenAPIV3.Document, product: Product): ProcessedSchema {
     const config = PRODUCT_CONFIG[product];
-    const endpoints = computeEndpointGroups(schema, config);
+    const { org, resource, inlineResponses } = computeEndpointGroups(schema, config);
 
     const requests: Record<string, OpenAPIV3.SchemaObject> = {};
     const responses: Record<string, OpenAPIV3.SchemaObject> = {};
@@ -301,8 +324,15 @@ export function processSchema(schema: OpenAPIV3.Document, product: Product): Pro
         }
     }
 
+    for (const [name, inlineSchema] of Object.entries(inlineResponses)) {
+        if (responses[name]) {
+            throw new Error(`Synthesized response schema name "${name}" collides with an existing component schema.`);
+        }
+        responses[name] = inlineSchema;
+    }
+
     return {
-        endpoints,
+        endpoints: { org, resource },
         selfGroupName: config.resourceName,
         requests,
         responses,

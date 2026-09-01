@@ -1,4 +1,4 @@
-import type { CreateDomainInput, Domain } from '../Dto.js';
+import type { CreateDomainInput, Domain, DomainVerifyResponse } from '../Dto.js';
 import type { RequestOptions, Transport } from '@hyvor/sdk-core';
 
 /**
@@ -29,8 +29,10 @@ export class DomainResource {
     /**
      * POST /api/console/domains/{id}/verify
      */
-    async verify(id: number, options?: RequestOptions): Promise<unknown> {
-        return await this.transport.request('POST', `/api/console/domains/${id}/verify`, null, options);
+    async verify(id: number, options?: RequestOptions): Promise<DomainVerifyResponse> {
+        const result = await this.transport.request('POST', `/api/console/domains/${id}/verify`, null, options);
+
+        return this.transport.denormalize<DomainVerifyResponse>(result);
     }
 
     /**
