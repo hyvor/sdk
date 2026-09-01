@@ -6,6 +6,7 @@ namespace Hyvor\Sdk\Post\Newsletter;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Post\Dto\Subscriber;
+use Hyvor\Sdk\Post\Dto\SubscribersBulkResponse;
 use Hyvor\Sdk\Post\Newsletter;
 use Hyvor\Sdk\RequestOptions;
 
@@ -105,12 +106,12 @@ final class SubscribersResource
      *     metadata: array<string, string>,
      * } $data
      *
-     * @return array<mixed>
-     *
      * @throws HyvorApiException
      */
-    public function bulk(array $data, ?RequestOptions $options = null): array
+    public function bulk(array $data, ?RequestOptions $options = null): SubscribersBulkResponse
     {
-        return $this->client->request('POST', $this->client->path('/api/console/subscribers/bulk'), $data, $options);
+        $result = $this->client->request('POST', $this->client->path('/api/console/subscribers/bulk'), $data, $options);
+
+        return $this->client->transport->denormalize($result, SubscribersBulkResponse::class);
     }
 }

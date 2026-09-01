@@ -31,6 +31,11 @@ export interface Website {
     domains: Domain[];
 }
 
+export interface WebsitesCreateResponse {
+    website: Website;
+    mod: Mod | null;
+}
+
 export interface CreateModInput {
     user_id: number;
     role?: string;

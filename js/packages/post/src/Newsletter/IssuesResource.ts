@@ -1,4 +1,4 @@
-import type { Issue, Send, SendTestInput, UpdateIssueInput } from '../Dto.js';
+import type { Issue, IssuesGetreportResponse, IssuesGettestdataResponse, IssuesPreviewResponse, IssuesSendtestResponse, Send, SendTestInput, UpdateIssueInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 
@@ -64,22 +64,28 @@ export class IssuesResource {
     /**
      * GET /api/console/issues/{id}/test
      */
-    async gettestdata(id: number, options?: RequestOptions): Promise<unknown> {
-        return await this.client.request('GET', this.client.path(`/api/console/issues/${id}/test`), null, options);
+    async gettestdata(id: number, options?: RequestOptions): Promise<IssuesGettestdataResponse> {
+        const result = await this.client.request('GET', this.client.path(`/api/console/issues/${id}/test`), null, options);
+
+        return this.client.transport.denormalize<IssuesGettestdataResponse>(result);
     }
 
     /**
      * POST /api/console/issues/{id}/test
      */
-    async sendtest(id: number, data: SendTestInput, options?: RequestOptions): Promise<unknown> {
-        return await this.client.request('POST', this.client.path(`/api/console/issues/${id}/test`), data, options);
+    async sendtest(id: number, data: SendTestInput, options?: RequestOptions): Promise<IssuesSendtestResponse> {
+        const result = await this.client.request('POST', this.client.path(`/api/console/issues/${id}/test`), data, options);
+
+        return this.client.transport.denormalize<IssuesSendtestResponse>(result);
     }
 
     /**
      * GET /api/console/issues/{id}/preview
      */
-    async preview(id: number, options?: RequestOptions): Promise<unknown> {
-        return await this.client.request('GET', this.client.path(`/api/console/issues/${id}/preview`), null, options);
+    async preview(id: number, options?: RequestOptions): Promise<IssuesPreviewResponse> {
+        const result = await this.client.request('GET', this.client.path(`/api/console/issues/${id}/preview`), null, options);
+
+        return this.client.transport.denormalize<IssuesPreviewResponse>(result);
     }
 
     /**
@@ -101,7 +107,9 @@ export class IssuesResource {
     /**
      * GET /api/console/issues/{id}/report
      */
-    async getreport(id: number, options?: RequestOptions): Promise<unknown> {
-        return await this.client.request('GET', this.client.path(`/api/console/issues/${id}/report`), null, options);
+    async getreport(id: number, options?: RequestOptions): Promise<IssuesGetreportResponse> {
+        const result = await this.client.request('GET', this.client.path(`/api/console/issues/${id}/report`), null, options);
+
+        return this.client.transport.denormalize<IssuesGetreportResponse>(result);
     }
 }

@@ -20,6 +20,16 @@ export interface Domain {
     relay_error_message: string | null;
 }
 
+export interface DomainVerifyResponse {
+    data: Record<string, unknown>;
+    domain: Domain;
+}
+
+export interface ImportsGetlimitsResponse {
+    daily_limit_exceeded: boolean;
+    monthly_limit_exceeded: boolean;
+}
+
 export interface Issue {
     id: number;
     uuid: string;
@@ -37,6 +47,25 @@ export interface Issue {
     from_name: string | null;
     reply_to_email: string | null;
     sendable_subscribers_count: number;
+}
+
+export interface IssuesGetreportResponse {
+    counts: Record<string, unknown>;
+}
+
+export interface IssuesGettestdataResponse {
+    verified_domains: string[];
+    suggested_emails: string[];
+    test_sent_emails: string[];
+}
+
+export interface IssuesPreviewResponse {
+    html: string;
+    sendable_subscribers_count: number;
+}
+
+export interface IssuesSendtestResponse {
+    success_count: number;
 }
 
 export enum IssueStatus {
@@ -246,6 +275,12 @@ export interface Subscriber {
     metadata: Record<string, boolean | number | string>;
 }
 
+export interface SubscribersBulkResponse {
+    status: string;
+    message: string;
+    subscribers: Subscriber[];
+}
+
 export enum SubscriberSource {
     CONSOLE = 'console',
     FORM = 'form',
@@ -259,6 +294,10 @@ export enum SubscriberStatus {
 
 export interface Template {
     template: string;
+}
+
+export interface TemplatesPreviewResponse {
+    html: string;
 }
 
 export interface UserMini {

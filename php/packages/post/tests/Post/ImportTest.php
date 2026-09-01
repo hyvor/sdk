@@ -75,11 +75,6 @@ final class ImportTest extends PostTestCase
         self::assertSame($this->baseUrl() . '/imports', (string) $http->requests[0]->getUri());
     }
 
-    /**
-     * `/imports/limits`'s response is an inline shape (not a named schema),
-     * so `getlimits()` returns the decoded body as a raw array instead of a
-     * typed DTO.
-     */
     public function testGetlimits(): void
     {
         $http = new FakeHttpClient();
@@ -87,8 +82,8 @@ final class ImportTest extends PostTestCase
 
         $limits = $this->client($http)->newsletter(self::NEWSLETTER_ID)->imports->getlimits();
 
-        self::assertFalse($limits['daily_limit_exceeded']);
-        self::assertTrue($limits['monthly_limit_exceeded']);
+        self::assertFalse($limits->daily_limit_exceeded);
+        self::assertTrue($limits->monthly_limit_exceeded);
         self::assertSame($this->baseUrl() . '/imports/limits', (string) $http->requests[0]->getUri());
     }
 }

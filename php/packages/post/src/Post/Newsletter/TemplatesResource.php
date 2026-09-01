@@ -6,6 +6,7 @@ namespace Hyvor\Sdk\Post\Newsletter;
 
 use Hyvor\Sdk\Exceptions\HyvorApiException;
 use Hyvor\Sdk\Post\Dto\Template;
+use Hyvor\Sdk\Post\Dto\TemplatesPreviewResponse;
 use Hyvor\Sdk\Post\Newsletter;
 use Hyvor\Sdk\RequestOptions;
 
@@ -53,12 +54,12 @@ final class TemplatesResource
      *     template?: string|null,
      * } $data
      *
-     * @return array<mixed>
-     *
      * @throws HyvorApiException
      */
-    public function preview(array $data, ?RequestOptions $options = null): array
+    public function preview(array $data, ?RequestOptions $options = null): TemplatesPreviewResponse
     {
-        return $this->client->request('POST', $this->client->path('/api/console/templates/render'), $data, $options);
+        $result = $this->client->request('POST', $this->client->path('/api/console/templates/render'), $data, $options);
+
+        return $this->client->transport->denormalize($result, TemplatesPreviewResponse::class);
     }
 }

@@ -1,4 +1,4 @@
-import type { RenderTemplateInput, Template, UpdateTemplateInput } from '../Dto.js';
+import type { RenderTemplateInput, Template, TemplatesPreviewResponse, UpdateTemplateInput } from '../Dto.js';
 import type { Newsletter } from '../Newsletter.js';
 import type { RequestOptions } from '@hyvor/sdk-core';
 
@@ -30,7 +30,9 @@ export class TemplatesResource {
     /**
      * POST /api/console/templates/render
      */
-    async preview(data: RenderTemplateInput, options?: RequestOptions): Promise<unknown> {
-        return await this.client.request('POST', this.client.path('/api/console/templates/render'), data, options);
+    async preview(data: RenderTemplateInput, options?: RequestOptions): Promise<TemplatesPreviewResponse> {
+        const result = await this.client.request('POST', this.client.path('/api/console/templates/render'), data, options);
+
+        return this.client.transport.denormalize<TemplatesPreviewResponse>(result);
     }
 }

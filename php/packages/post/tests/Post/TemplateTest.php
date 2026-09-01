@@ -37,11 +37,6 @@ final class TemplateTest extends PostTestCase
         self::assertSame(['template' => '<html>new</html>'], json_decode((string) $request->getBody(), true));
     }
 
-    /**
-     * `/templates/render`'s response is an inline `{html}` shape (not a
-     * named schema), so `preview()` returns the decoded body as a raw array
-     * instead of a typed DTO.
-     */
     public function testPreview(): void
     {
         $http = new FakeHttpClient();
@@ -51,7 +46,7 @@ final class TemplateTest extends PostTestCase
             ['template' => '<html>{{ content }}</html>'],
         );
 
-        self::assertSame('<html>rendered</html>', $response['html']);
+        self::assertSame('<html>rendered</html>', $response->html);
 
         $request = $http->requests[0];
         self::assertSame('POST', $request->getMethod());
