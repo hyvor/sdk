@@ -7,3 +7,5 @@ parameters:
         - packages/talk/tests
         - packages/post/src
         - packages/post/tests
+        - packages/relay/src
+        - packages/relay/tests

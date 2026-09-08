@@ -12,3 +12,9 @@ export function camelCase(word: string): string {
     const pascal = pascalCase(word);
     return pascal.charAt(0).toLowerCase() + pascal.slice(1);
 }
+
+// ex: "send.recipient.accepted" => "SEND_RECIPIENT_ACCEPTED" - PHP and TS enum
+// case names can't contain dots.
+export function enumKey(value: string): string {
+    return value.toUpperCase().replace(/\./g, '_');
+}
