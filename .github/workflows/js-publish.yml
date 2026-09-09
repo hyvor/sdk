@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dir: [core, talk, post]
+        dir: [core, talk, post, relay]
     steps:
       - name: Determine version
         id: version
