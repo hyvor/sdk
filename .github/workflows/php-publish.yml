@@ -30,6 +30,8 @@ jobs:
             repo: hyvor/sdk-php-talk
           - dir: post
             repo: hyvor/sdk-php-post
+          - dir: relay
+            repo: hyvor/sdk-php-relay
     steps:
       - name: Determine version
         id: version
