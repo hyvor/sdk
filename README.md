@@ -8,7 +8,7 @@ and conventions every SDK follows.
 
 ```
 openapi/      API specs (*.json) - the source of truth every SDK is generated from
-generator/    the code generator: openapi/*.json -> php/, js/ SDK source
+generator/    the code generator: openapi/*.json -> php/, js/, go/ SDK source
 php/          PHP SDK - Composer packages (hyvor/sdk-core, hyvor/sdk-talk, hyvor/sdk-post, ...)
 js/           JS/TS SDK - npm packages (@hyvor/sdk-core, @hyvor/sdk-talk, @hyvor/sdk-post, ...)
 python/       Python SDK (not started yet)
@@ -42,14 +42,15 @@ product, or pick up a spec change:
 
    npm run generate:php            # regenerate every PHP product, in place
    npm run generate:ts             # regenerate every TS product, in place
+   npm run generate:go             # regenerate every Go product, in place
    npm run generate:all            # both languages
 
    npm run generate:php -- talk    # just one product
    npm run generate:php -- --tmp   # preview under generator/tmp/php instead of touching php/
    ```
 
-   Output only ever goes to one of two places: straight into the real package (`{php,js}/packages/{product}/src`,
-   the default), or `generator/tmp/{php,js}` for review (`--tmp`). Regenerating overwrites a
+   Output only ever goes to one of two places: straight into the real package (`{php,js}/packages/{product}/src` or
+   `go/{product}`, the default), or `generator/tmp/{php,js,go}` for review (`--tmp`). Regenerating overwrites a
    product's output directory entirely - commit the diff rather than hand-editing generated files.
 3. Review the diff and run the affected language's tests (see [DEV.md](DEV.md)).
 

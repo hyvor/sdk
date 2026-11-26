@@ -1,2 +1,4 @@
 tmp/
 .idea
+# Go SDK: generated output, being tested manually for now
+/go/
