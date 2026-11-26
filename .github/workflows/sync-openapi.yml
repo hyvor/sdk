@@ -1,0 +1,76 @@
+name: Sync OpenAPI spec & regenerate SDKs
+
+# Triggered by a product repo (hyvor/post, hyvor/talk, hyvor/relay) after it merges to main.
+# See "Automation" in README.md for the product-repo side.
+on:
+  repository_dispatch:
+    types: [openapi-updated]
+  workflow_dispatch:
+    inputs:
+      product:
+        description: Product to sync
+        required: true
+        type: choice
+        options: [post, talk, relay]
+      ref:
+        description: Ref of the product repo to take openapi.json from
+        default: main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-openapi-${{ github.event.client_payload.product || inputs.product }}
+  cancel-in-progress: true
+
+env:
+  PRODUCT: ${{ github.event.client_payload.product || inputs.product }}
+  SOURCE_REF: ${{ github.event.client_payload.sha || inputs.ref }}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate product
+        run: |
+          case "$PRODUCT" in post|talk|relay) ;; *) echo "Unknown product: $PRODUCT"; exit 1 ;; esac
+
+      - uses: actions/checkout@v4
+
+      - name: Fetch openapi.json from hyvor/${{ env.PRODUCT }}
+        env:
+          GH_TOKEN: ${{ secrets.SDK_SYNC_TOKEN }}   # read access to the product repos
+        run: |
+          gh api -H "Accept: application/vnd.github.raw" \
+            "repos/hyvor/$PRODUCT/contents/openapi.json?ref=$SOURCE_REF" > "openapi/$PRODUCT.json"
+          jq empty "openapi/$PRODUCT.json"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: generator/package-lock.json
+
+      - name: Regenerate SDKs
+        working-directory: generator
+        run: |
+          npm ci
+          npm run generate:all -- "$PRODUCT"
+
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.SDK_SYNC_TOKEN }}   # a PAT/App token so CI runs on the PR
+          branch: automation/sync-${{ env.PRODUCT }}
+          delete-branch: true
+          commit-message: "feat(${{ env.PRODUCT }}): sync OpenAPI spec and regenerate SDKs"
+          title: "sync(${{ env.PRODUCT }}): update OpenAPI spec and regenerate SDKs"
+          body: |
+            Automated update from `hyvor/${{ env.PRODUCT }}` @ `${{ env.SOURCE_REF }}`.
+
+            - `openapi/${{ env.PRODUCT }}.json` updated
+            - PHP and JS SDKs regenerated
+
+            Review the generated diff; the PHP/JS test workflows run on this PR.
+          labels: automated
