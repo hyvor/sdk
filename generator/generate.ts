@@ -1,9 +1,10 @@
 import { generatePhp } from './php.ts';
 import { generateTs } from './ts.ts';
+import { generateGo } from './go.ts';
 import { GenerateMode } from './outputRoot.ts';
 import { Product } from './schema.ts';
 
-// usage: tsx generate.ts <php|ts|all> [product,product,...] [--tmp]
+// usage: tsx generate.ts <php|ts|go|all> [product,product,...] [--tmp]
 //
 // Output location is fixed, not an arbitrary path:
 //  - default: straight into the real package src (ex: ../php/packages/talk/src)
@@ -11,12 +12,13 @@ import { Product } from './schema.ts';
 //
 // ex: tsx generate.ts php talk        # regenerate hyvor/sdk-talk (PHP) in place
 //     tsx generate.ts ts --tmp        # preview every TS product under tmp/js
+//     tsx generate.ts go talk         # regenerate the Go SDK's talk package in place
 //     tsx generate.ts all             # regenerate every product, every language, in place
-const USAGE = 'Usage: tsx generate.ts <php|ts|all> [product,product,...] [--tmp]';
+const USAGE = 'Usage: tsx generate.ts <php|ts|go|all> [product,product,...] [--tmp]';
 
 const [, , language, ...rest] = process.argv;
 
-if (language !== 'php' && language !== 'ts' && language !== 'all') {
+if (language !== 'php' && language !== 'ts' && language !== 'go' && language !== 'all') {
     console.error(USAGE);
     process.exit(1);
 }
@@ -30,4 +32,7 @@ if (language === 'php' || language === 'all') {
 }
 if (language === 'ts' || language === 'all') {
     generateTs(mode, products);
+}
+if (language === 'go' || language === 'all') {
+    generateGo(mode, products);
 }

@@ -62,6 +62,8 @@ export interface PathParam {
 export interface Endpoint {
     httpMethod: string, // GET, POST, ... - the actual HTTP verb sent on the wire
     methodName: string, // taken verbatim from the `method:{name}` tag - the generated PHP method's name
+    summary: string | null, // the operation's OpenAPI `summary`, if any
+    description: string | null, // the operation's OpenAPI `description`, if any
     path: string, // full path, ex: "/api/console/v1/{websiteId}/domains"
     suffix: string, // path used in generated code: for 'path'-scope products,
                      // relative to the resource ID (ex: "/domains"); for
@@ -296,6 +298,8 @@ export function computeEndpointGroups(
             groups.get(groupName)!.endpoints.push({
                 httpMethod: httpMethod.toUpperCase(),
                 methodName,
+                summary: operation.summary ?? null,
+                description: operation.description ?? null,
                 path,
                 suffix,
                 pathParams: extractPathParams(operation, resourceParamName),
